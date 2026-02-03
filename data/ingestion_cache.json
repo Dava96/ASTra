@@ -1,0 +1,1352 @@
+{
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\config.py": {
+    "hash": "19959d2fcf8b21c1eaff425099c0ca1d89f25ae26b6a043e02ce8d81d65b6be8",
+    "mtime": 1770128183.3459177,
+    "size": 7785
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\main.py": {
+    "hash": "74cd64b8543cdaca4044ef5d5e663d12618073498e1eaff234c722df7089cd49",
+    "mtime": 1770108809.9532068,
+    "size": 8742
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\setup_wizard.py": {
+    "hash": "07dbd15b9da8a20c6a0b7bea3ca606ef206bdf4b73caffa28a9a704836db31ac",
+    "mtime": 1770108809.964708,
+    "size": 3942
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\__init__.py": {
+    "hash": "cffec804e497c8efa2332cc32461e2f5ec74c77393a498f34a9a48d0b842e26e",
+    "mtime": 1769973600.1058204,
+    "size": 67
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\chromadb_store.py": {
+    "hash": "85f827ffddac03c525c0b2255096701bd75514f726bb8e26491e6dc4c217505a",
+    "mtime": 1770126919.5924473,
+    "size": 11769
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\__init__.py": {
+    "hash": "54dc6db42f7ad624534fec1a40182cb38e5b5cdb154c49547644adeceea179b5",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\console.py": {
+    "hash": "3e3cb830255601c73a5ec650ecdd1601fd8a8b49475908b1fd88b3788249914c",
+    "mtime": 1770108809.9437082,
+    "size": 1968
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\__init__.py": {
+    "hash": "131d0dd3deb723c925cc42d4010f2b4217268af99e8cd76f6db7f78b1db76aac",
+    "mtime": 1770019616.0764973,
+    "size": 499
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\discord\\auth.py": {
+    "hash": "3d63ce3918545eba11f3f14e29e14bf8f6fc5d401435017aa8711d34d22decc3",
+    "mtime": 1770075987.900237,
+    "size": 4563
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\discord\\commands.py": {
+    "hash": "a77b69166556580a84bf06ade836ba90d349ba94917fca7037339d1d1414a713",
+    "mtime": 1770128269.474682,
+    "size": 20570
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\discord\\embeds.py": {
+    "hash": "4515734e98e5de6f64defac635d992cbc1918cc022ee8dc16ec15c2074283f7e",
+    "mtime": 1770075170.5792682,
+    "size": 3693
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\discord\\gateway.py": {
+    "hash": "2ebaf2e49d271e4382e1287e7bd17fcc80712222ba8369a8280e8f5079aa0ae9",
+    "mtime": 1770111642.9212918,
+    "size": 12273
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\gateways\\discord\\__init__.py": {
+    "hash": "b0f22a2fd91f8dd0c66467c721b02cf18ee24138305af7c0fd4c7a3a9deec357",
+    "mtime": 1770019637.9659681,
+    "size": 137
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\architecture.py": {
+    "hash": "14b4f133b6339e867da738cbc99281125da7892bd4004279708e0219d443111e",
+    "mtime": 1770121792.7478447,
+    "size": 2891
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\clock.py": {
+    "hash": "0e8edc6691baa4418abc7ed3d4b70b23ecaeedc2f173d9defecd725a83a5154a",
+    "mtime": 1770108809.9622083,
+    "size": 407
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\context.py": {
+    "hash": "ee74d15f4e2fb0c0dd2ad6d1cf83d303e0321345deec8dfb169928eef0b669db",
+    "mtime": 1770120335.530358,
+    "size": 6375
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\llm_client.py": {
+    "hash": "6258fe62a50bb910577055c76dd20517bc1fd5c2ff48a415028c175c8f9783b3",
+    "mtime": 1770073572.797549,
+    "size": 7404
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\monitor.py": {
+    "hash": "a22fc872041d45baa8e130f0fd4566d1c5b90cfe09b216dc1a81e499976a4197",
+    "mtime": 1770108809.9662094,
+    "size": 7576
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\orchestrator.py": {
+    "hash": "701f588a3056baadd99f98592abe29a88aacc99b36ed54c7dd774f74551154c5",
+    "mtime": 1770126919.5979471,
+    "size": 25612
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\safeguard.py": {
+    "hash": "cf98d1b6e78be9e4fbbc6986485c2ee7d4c7ece42b42c1e07ab870f33bddde6c",
+    "mtime": 1770108809.964208,
+    "size": 4000
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\task_queue.py": {
+    "hash": "a8de13f159cde01ac54d178a3efcd3123a32c82815f8be5e9b92d3a5cd58d020",
+    "mtime": 1770116056.739292,
+    "size": 8808
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\template_manager.py": {
+    "hash": "f9f3fdcb9c8aff3c3c5641ac58ab6d885c8f361dd2a3c469dfd99a2f42a2a8b1",
+    "mtime": 1770126919.6044476,
+    "size": 12757
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\tools.py": {
+    "hash": "5e19d5ac0e6df503e1ea4209c595116fb6bb73a1b408eb3716b69353dfe11ff3",
+    "mtime": 1770108809.940207,
+    "size": 1902
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\__init__.py": {
+    "hash": "20c45db0a06986603d7163237068786dff3e27bc5153ba2490a18ef0c213048e",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\handlers\\command_handlers.py": {
+    "hash": "2db73e4b9f25e801c1ee2b56bec391e9c767a22b0b014b3493ab012d6c1adecf",
+    "mtime": 1770105875.8357997,
+    "size": 3309
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\handlers\\project_handlers.py": {
+    "hash": "e0834d74e0f44acea0eca8d6c3c0f42b7b602756b7fe53476861a94a7ee2768c",
+    "mtime": 1770105806.9916177,
+    "size": 6312
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\handlers\\system_handlers.py": {
+    "hash": "a0f0d83cab0e6b1626c4fdb8dc15aa336bcb0b199d9322f71b18f7aaa497b863",
+    "mtime": 1770128267.462184,
+    "size": 10110
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\handlers\\task_handlers.py": {
+    "hash": "ef50f8116b9333539348030c0c58e6d6bedbc0f76121e42e1dd7179be540ec40",
+    "mtime": 1770105802.4764583,
+    "size": 6805
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\dependency_resolver.py": {
+    "hash": "001963ecd3ed014902701509034d1e72d81928eb331e2000dc309f7c56110f9f",
+    "mtime": 1770111050.54493,
+    "size": 5421
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\ingestion_cache.py": {
+    "hash": "0f1208090d241c73edb0975e42ee6f56a7c5990181e06ab61df31acaad939d22",
+    "mtime": 1770110896.7945464,
+    "size": 4156
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\knowledge_graph.py": {
+    "hash": "9cbba395c2af3c0495d44536d54c653e6813a046658fb2a55a9dd002c65cef3b",
+    "mtime": 1770108809.9467082,
+    "size": 6644
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\parser.py": {
+    "hash": "fa97594892504c2d45d627e2b75fa0a04e43bbfeaabe623574882fd6f5ef8797",
+    "mtime": 1770111007.3595808,
+    "size": 16751
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\pipeline.py": {
+    "hash": "8866be7725aa481ca089718a3574bcacfb0c1d850e8fe84a1e35eef73d1304d3",
+    "mtime": 1770111120.2510226,
+    "size": 8559
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\size_estimator.py": {
+    "hash": "d2ff923b46cab6f2f3d6c609c1ef06392ad55bee56e492da5244643cbca18621",
+    "mtime": 1770110896.7945464,
+    "size": 3358
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\ingestion\\__init__.py": {
+    "hash": "d70442b535825e6e4bd9c94299a8b6a11d816e6e4ed9584a17963f31c86b08d0",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\interfaces\\gateway.py": {
+    "hash": "0a3be7079de9b23af9a0d257dc0b20e2146f68e1568e98952a67c7a62349bddc",
+    "mtime": 1770105780.1598535,
+    "size": 2183
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\interfaces\\llm.py": {
+    "hash": "f15ef6f239d06b1a7dd0d22d90f56b6b3dfb23dbb991f7d09f5404ecd1427ade",
+    "mtime": 1770126919.5894473,
+    "size": 2269
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\interfaces\\vcs.py": {
+    "hash": "794d82df0488c259ab329b5db9b4f74244636efb8977c7cba39df581a96cbf67",
+    "mtime": 1770019022.1653383,
+    "size": 3233
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\interfaces\\vector_store.py": {
+    "hash": "ad0adfa40740241a0174f0a29213a7a8c74f249c9e9866e0be53f409a6c80c0d",
+    "mtime": 1770024625.6450968,
+    "size": 2066
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\interfaces\\__init__.py": {
+    "hash": "4609749778e3af0ec561999660cb24af297543f497b07018dc8a61debfe1e102",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\memory\\store.py": {
+    "hash": "12d23ac30a2e161c8a569d980965ce5d6e3727f27affdc1a758a3aeefc975c42",
+    "mtime": 1770126919.6034472,
+    "size": 2721
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\memory\\__init__.py": {
+    "hash": "d445ffa178dbb71219a8c07b5975f756c18fe0c582ce0593cd8dbd3ed6ee701a",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\aider_tool.py": {
+    "hash": "18196958adfb06f01fbeaa372a4e6c85a08de63f4bc090647cdbd8f1f0296224",
+    "mtime": 1770126919.6099477,
+    "size": 11502
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\custom_loader.py": {
+    "hash": "f94cc267dac3c8a0b01f00338bf2332b907548d4924bcebd4f65511b1639320d",
+    "mtime": 1770108809.9542072,
+    "size": 3906
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\file_ops.py": {
+    "hash": "674dd2e90d03361023e520db4f6ec8bd9c77454c4461ced8e28b543153fa8217",
+    "mtime": 1770108809.9697075,
+    "size": 7070
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\git_ops.py": {
+    "hash": "f85cdd66f0e65834679787826b2cf7d170681b95829ad7d3acbcc4960e1bbe4a",
+    "mtime": 1770108809.972708,
+    "size": 12080
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\knowledge.py": {
+    "hash": "c40088044185a96e01dc7d9cfc2012c94c435955f4a621fb50df791a181a5e6a",
+    "mtime": 1770108809.965207,
+    "size": 2166
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\lint.py": {
+    "hash": "bbb7f18303104635b2950d410f95150e25423173cc9673e9842649e73188aee7",
+    "mtime": 1770108809.9667077,
+    "size": 3436
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\manifest.py": {
+    "hash": "eb168cf74d1713bdfaf49b63df04260bd1af364b95ba5507244976d13f233442",
+    "mtime": 1770108809.9637432,
+    "size": 8161
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\pr_review.py": {
+    "hash": "5c285f8b4293a65e37a8c8b04f031d5dfad8435e17565d9bd4bcea61332077af",
+    "mtime": 1770108809.9417071,
+    "size": 4455
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\search.py": {
+    "hash": "2fc0b67dd92c72e7a9e6511dfa66e0b38eb42c1a2b328fd8cd8ba928510cb999",
+    "mtime": 1770108809.9422078,
+    "size": 1987
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\shell.py": {
+    "hash": "01948f261459179c0e866ab6f7c77d125e594cbd6a802cb041eeb922735d1242",
+    "mtime": 1770108809.9437082,
+    "size": 7573
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\__init__.py": {
+    "hash": "8bd0755ea952c1fd6e8d8ea132b3236c8b0b0562d8e8f4cb649c5f617a77a091",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\models.py": {
+    "hash": "987a30591351457d1ee95e4dd5714b7887764bfedba067eea9809c2df0bc2f3e",
+    "mtime": 1770125329.4444633,
+    "size": 2849
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\tool.py": {
+    "hash": "57dff7d639a1f54050c3e3f932efa9080204952bc6c122887b234b8ee7d3bb1d",
+    "mtime": 1770126919.596948,
+    "size": 17534
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\__init__.py": {
+    "hash": "2f1c36ed0b5882b2f87cc8a5988eb516ead758589dfca640c00ab5695b1558b4",
+    "mtime": 1770108809.9437082,
+    "size": 156
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\navigators\\base.py": {
+    "hash": "c5fa39c914da4d1667dba33f5f5d9fa8ebffbf571b810bb35464bc83b33d2ccc",
+    "mtime": 1770108809.9462092,
+    "size": 1086
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\navigators\\registry.py": {
+    "hash": "a1a91458da2b8041a592c610fdb0bdb5ee8b0959f60c9c3aab595193e96a43fb",
+    "mtime": 1770108809.9512086,
+    "size": 1136
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\navigators\\__init__.py": {
+    "hash": "ad9f36091a91c436e0f364891f9b420938a2a1d70a053af51b0e2571e7a4d1c9",
+    "mtime": 1770108809.945208,
+    "size": 360
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\navigators\\implementations\\a11y.py": {
+    "hash": "4f5fbeaddc5aa9fdd4bbb183cebf99ab39aec48a109d212a1d2442efa64e0878",
+    "mtime": 1770108809.9477086,
+    "size": 2531
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\navigators\\implementations\\dom.py": {
+    "hash": "c220d8e5db1a3df07477243bc1894bcbb19b44bbf9dba929c9d9c084e687ed2e",
+    "mtime": 1770108809.9482083,
+    "size": 1921
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\navigators\\implementations\\__init__.py": {
+    "hash": "c29ca6396995057f1e71d34eafebef44f93cfc4751cfe1fce05075c72c8db94e",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\base.py": {
+    "hash": "8bfeacb2a4a5824b431668dfb3c2397198da74554dff6f27a0c680ab85fe1502",
+    "mtime": 1770108809.955708,
+    "size": 832
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\formatter.py": {
+    "hash": "42d79e11061a85d803e2e159bb1d3a81a3f73b701bbfcce53ea297f488339ee1",
+    "mtime": 1770108809.956708,
+    "size": 1799
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\models.py": {
+    "hash": "fd778c7bc338150bc514cfa023eb065a5b26746fa1d7ba55c0cd5d3de1d9d021",
+    "mtime": 1770126800.781674,
+    "size": 2343
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\registry.py": {
+    "hash": "904ac62f714a54d1430c66f22fd81cc7292f85168bd469d685ed866504ed0984",
+    "mtime": 1770126919.5934474,
+    "size": 3792
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\suggestions.py": {
+    "hash": "8a6310058686c39ae3f36950aa5f39776dd66836f4a21abe38d6ccceed355c17",
+    "mtime": 1770126919.594447,
+    "size": 2574
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\tool.py": {
+    "hash": "a11341c82e8fae21c1ae4f2bc692c68a296f4450dcffd7bc5dd1ed5199bbd13c",
+    "mtime": 1770126919.6149466,
+    "size": 5240
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\__init__.py": {
+    "hash": "728ff968b6eee65113ec787bdc7eb504340ffba6f54c8cceeb5edf3e3b583397",
+    "mtime": 1770108809.9552083,
+    "size": 1867
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\parsers\\browser.py": {
+    "hash": "d9ade465bda17aa5987722f1b25bd45ab09713f030fb9bdfbedcf5f6ddf0de76",
+    "mtime": 1770126919.5884473,
+    "size": 3068
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\parsers\\jest.py": {
+    "hash": "1f727a625460aa17f786fd036143ce2264f5b602deaa525b6d11e9e38c616ec1",
+    "mtime": 1770108809.9587085,
+    "size": 2529
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\parsers\\phpunit.py": {
+    "hash": "3a95fc849a8739fe8920ce284d00869d9bd72347609847aaed467d4165cbba04",
+    "mtime": 1770108809.9597085,
+    "size": 1867
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\parsers\\pytest.py": {
+    "hash": "d7059d19e6b4232aa4e7465baa89ac7af089340dc2cdcc7b1f833f14109d5e94",
+    "mtime": 1770126919.5924473,
+    "size": 4960
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\parsers\\__init__.py": {
+    "hash": "ba7452bfafb6a2b59cce00821e70d4f03a3f8c64bcf5bf6fe45c1ed6520f3a33",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\base.py": {
+    "hash": "c11de530912ac4f2f1232edac228a7d170b01843ef20d25fe1b149aab1d66191",
+    "mtime": 1770126742.0097787,
+    "size": 3183
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\models.py": {
+    "hash": "41e447308e96933d7844d498ce9b9081cccda9be817bea05bceefb0eddc48b74",
+    "mtime": 1770126724.0864482,
+    "size": 1445
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\registry.py": {
+    "hash": "4dae5398d95709b3414b61b925a861132a32e85fef30bcd8338db45b53573258",
+    "mtime": 1770126919.5894473,
+    "size": 5125
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\tool.py": {
+    "hash": "d1e34538e7d0248c8b24035c611648d7027c514132728a51c8eead086f8425e0",
+    "mtime": 1770126919.5924473,
+    "size": 4552
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\__init__.py": {
+    "hash": "1db39bd8da51d5e07bba0f3d23abba6697dff10946951698c1c3e47afa7f9156",
+    "mtime": 1770108809.9672084,
+    "size": 798
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\eslint.py": {
+    "hash": "92f28e4fa13a54c8036a35a267a420efb20cdc7863a84a0a66fdea3576d8d29c",
+    "mtime": 1770108809.948709,
+    "size": 1765
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\go.py": {
+    "hash": "1244d416706e4b7fcf9fe729deae177d023fb4b58ac4258acd6167b066ad9949",
+    "mtime": 1770108809.949208,
+    "size": 2023
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\mypy.py": {
+    "hash": "de601f96c28f30d8b7238ec2ef7a102f721526ee92619312ed0ea72778775b67",
+    "mtime": 1770108809.9502072,
+    "size": 1224
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\phpstan.py": {
+    "hash": "d8f51c9f639eb483c1aaa33f5309766fb0ca5c5163b8d4b2728ac4e32e0a7f09",
+    "mtime": 1770108809.9512086,
+    "size": 1791
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\ruff.py": {
+    "hash": "3987e371892501b2a82ef3940b7e558540fed795803a11cfc261a011cb745dcd",
+    "mtime": 1770108809.951708,
+    "size": 1348
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\rust.py": {
+    "hash": "a59a903471c2e402fc8c5091553dd3e4678fd923cad9f3f41d1b7fcf406fa564",
+    "mtime": 1770108809.9527082,
+    "size": 1895
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\linters\\implementations\\__init__.py": {
+    "hash": "58e16d85319cc03fcdd28e7c9aa240e32cc47791d40279cf19ab8608450f85e3",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\memory\\tool.py": {
+    "hash": "8c2bd91b8c1e3ba691a22571b3f885ecaea08666c1fc08d72376fa0ba064d7df",
+    "mtime": 1770127566.6471698,
+    "size": 12322
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\memory\\__init__.py": {
+    "hash": "9b57e81cffe6cac3d1185148d812a14fdbeca3872c65689ccf5ada4ae3f633b0",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\scheduler\\service.py": {
+    "hash": "582765a5a6380f308a337930ffea6c6cb09564a4352b1b2edce62d77edd22dae",
+    "mtime": 1770128520.9359696,
+    "size": 10479
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\scheduler\\tool.py": {
+    "hash": "e40c2e66a0861fc7266c01685d3fc921104cecf48477fdfc1f8fffb1d81d07a5",
+    "mtime": 1770128258.128083,
+    "size": 4978
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\scheduler\\__init__.py": {
+    "hash": "f6455fe7793271d506a9674b6b97661a3c67d8fa8ccbc26a98f422f11e065e50",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\htmlcov\\coverage_html_cb_188fc9a4.js": {
+    "hash": "f89c51412a5c0bbc6dc27e7ef1b61061f19f6e30b4b618d9101b22001d327b02",
+    "mtime": 1770018075.927783,
+    "size": 26185
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\clear_chroma.py": {
+    "hash": "ee53398830021aea05aa3c2e2679f51012759b50f666a2599ee5524282a3bda0",
+    "mtime": 1770108809.940207,
+    "size": 454
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\debug_chroma.py": {
+    "hash": "66cb3db3dabb9cee67b6beddcdc7c87304cc8dbddfc85949983ad42b32b7aced",
+    "mtime": 1770108809.942708,
+    "size": 1218
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\debug_ingest_sync.py": {
+    "hash": "440c11e1e9389e3f0b29f0d661dd9c537fc15baa30104adcdea333a0c7635c33",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\generate_current_arch.py": {
+    "hash": "d295cc62794bf28681b720f26f13e4a774554ce754ec66d8588bcfd6980969f5",
+    "mtime": 1770108809.940207,
+    "size": 874
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\generate_graph.py": {
+    "hash": "2b0786b3cda252a46657c4de6bf3715bac910f61f3cd1254cdb3c3b6df211d85",
+    "mtime": 1770108809.9412067,
+    "size": 2068
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\query_chroma.py": {
+    "hash": "4eb133636cbbe631c74d45abefa5d4a32e44e2151bb69f043962086c748edea2",
+    "mtime": 1770108809.9432085,
+    "size": 7316
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\reproduce_parser_crash.py": {
+    "hash": "c45847711ace8db485246caf9d4205981a109de3e406092b081df7780af2d4e6",
+    "mtime": 0,
+    "size": 0
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\test_raw.py": {
+    "hash": "cb8fe8bc6579238e5f966227a23265cc3bcccc3537d853b1f9d7cde35bfba491",
+    "mtime": 1770108809.944208,
+    "size": 518
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\verify_ingestion_robustness.py": {
+    "hash": "700bbeb6dade4e436134c52c01629c5a267d03e9c729e4e68fe67e487b52b466",
+    "mtime": 1770108809.9457085,
+    "size": 3417
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\scripts\\verify_optimization.py": {
+    "hash": "d77c89e86b14b4d16c3d44b3566ece8a929b30952bafc280a7d790c071283c20",
+    "mtime": 1770108809.9477086,
+    "size": 2280
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\conftest.py": {
+    "hash": "65aedb9c0992d3ba29239dda905ec06afced27f72f589d30a8b4cddfa437292e",
+    "mtime": 1770108809.948709,
+    "size": 324
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_adapters_comprehensive.py": {
+    "hash": "de5ab1be4a4550695f27f7d440f8591bce05f247f2213ee44d2eec2b2fed4621",
+    "mtime": 1770108809.955708,
+    "size": 4769
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_aider_tool.py": {
+    "hash": "de8e07d804c6128df9dbe34bb6f06654e0783fa0c1c076a9c4a454530640e44d",
+    "mtime": 1770108809.9537086,
+    "size": 1824
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_aider_tool_comprehensive.py": {
+    "hash": "f542b384e9a1f6f74b2018b5bb045fc7ab14921ee75cfe5bbbc866860b44cb26",
+    "mtime": 1770108809.9582088,
+    "size": 6533
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_architecture.py": {
+    "hash": "b43b9df5d233b092e534baae7faef861919e71b3f94c2db6ac2d25695d40bfde",
+    "mtime": 1770108809.9432085,
+    "size": 1722
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_browser.py": {
+    "hash": "26b04e35e0295c49c9cd7bea6db6c023df1c11eb69aec9bc91cfe65e8a562266",
+    "mtime": 1770108809.9537086,
+    "size": 4897
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_browser_comprehensive.py": {
+    "hash": "cf73e7153f06980db6fce0db715bd8fee5deb9947d229547766b7127ea3943f1",
+    "mtime": 1770108809.9622083,
+    "size": 11423
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_browser_models.py": {
+    "hash": "aab45434810237df35b3a17cde74ed57e8b85e7c803198a2de37d48dade179fb",
+    "mtime": 1770108809.964208,
+    "size": 1471
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_browser_navigation.py": {
+    "hash": "ab7585f6455f661eb52c4d77ac6d1c7840a63da3c3ca8a62b38822e8caff2eaf",
+    "mtime": 1770108809.9682083,
+    "size": 4622
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_chromadb_optimization.py": {
+    "hash": "86294a0cb0b828b94a8920ba728c9613194fe5ea2c81fe02e117be9a3261bf94",
+    "mtime": 1770108809.9772081,
+    "size": 2639
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_chromadb_store.py": {
+    "hash": "a9a38ecd2cac03807de73c9c49ad488a7a0a71797ccfd48ad9dc9e8efaa4a6ee",
+    "mtime": 1770108809.9797087,
+    "size": 14220
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_command_compliance.py": {
+    "hash": "187833c1659fa834e438fa51589118a4bebef8a9db98e94c5f09e1ab01911799",
+    "mtime": 1770108809.982709,
+    "size": 4056
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_command_handlers.py": {
+    "hash": "57dcaa7543e112bbeb39ade69a653205eb21d18bc2de12ab49105da43deb4a53",
+    "mtime": 1770108809.977708,
+    "size": 10173
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_config.py": {
+    "hash": "39003fd612e5f54b09e243a7c92eb9d04f54d9faa1fb2c37b611c0997405d8fa",
+    "mtime": 1770108809.9787078,
+    "size": 1857
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_context_injection.py": {
+    "hash": "3eb807ca111e4dae7c1edf5a8afae4ee4146df973e31a0b7e66b33233ea3df7e",
+    "mtime": 1770108809.9407082,
+    "size": 2643
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_core_comprehensive.py": {
+    "hash": "9fe419dcd376787300234477b5cc5c24b83df2ad5009d6b8ab4b1cc557caefb6",
+    "mtime": 1770108809.955708,
+    "size": 7369
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_core_enhancements.py": {
+    "hash": "1af82b5f4875891979eec9d4d473a9e9da3c7c91c0ed71e090f4e94925fbc64b",
+    "mtime": 1770108809.9582088,
+    "size": 1242
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_custom_loader.py": {
+    "hash": "90db99463d3d49148d45952aa074cd794c5fde7d5aa17aec9d4dd1dba027005d",
+    "mtime": 1770108809.964208,
+    "size": 3894
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_diagnostic.py": {
+    "hash": "cb445a132b658d88cdc65ece247f495b9e05d2421e98de8a66f932e6412069b7",
+    "mtime": 1770108809.960825,
+    "size": 2242
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_diagnostic_comprehensive.py": {
+    "hash": "85570e5770662cfaa728a882e5f027ae34767912373f557495d5d5d391a0160f",
+    "mtime": 1770108809.9477086,
+    "size": 6232
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_diagnostic_parsers_comprehensive.py": {
+    "hash": "c6f265b3afba899e83aae4cef57703b979bf2eb2fd6e97099bdebb27e50f1fab",
+    "mtime": 1770108809.950708,
+    "size": 3380
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_diagnostic_shim.py": {
+    "hash": "5d8653d4e113c34f9fad3593df939f44f0ef9c67e193f9f4bf7f78f1cecc28d2",
+    "mtime": 1770108809.9532068,
+    "size": 1838
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_discord_auth.py": {
+    "hash": "d93ff0158837770a3d3cfe221f9986b5e291209a36550e608e8f20e95feed555",
+    "mtime": 1770108809.9547079,
+    "size": 1337
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_discord_commands.py": {
+    "hash": "7abd8dff254f3a75c5c1dc3f4dc8e44e581efae932d9c7b8ff7fe8ddbbb186d4",
+    "mtime": 1770108809.9587085,
+    "size": 11655
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_discord_gateway.py": {
+    "hash": "16126400e4b93c16c9831c94b64427760b04baf6a886bac60c38a36a89577284",
+    "mtime": 1770108809.961208,
+    "size": 11394
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_discord_mfa.py": {
+    "hash": "d9a73fd4b27bce0b6ee0ff061eb8e794cabee101292c0ceaba168c080ca8b42d",
+    "mtime": 1770108809.944208,
+    "size": 4702
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_e2e.py": {
+    "hash": "3daea73ba91879956a1c0927d6563ed2d1773636a07d3cb67e1109bb021b4f3c",
+    "mtime": 1770108809.948709,
+    "size": 9892
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_fallback.py": {
+    "hash": "eaff57788dc5e7982475bd52b82d7250f88e97389623ca35e947aff85d65baca",
+    "mtime": 1770108809.9527082,
+    "size": 3374
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_file_ops.py": {
+    "hash": "8da65eed83eb77df91b3ae3c5faa215d0c2e9f8ff2c144ce14cac7fa52fa316a",
+    "mtime": 1770108809.9582088,
+    "size": 4313
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_full_integration.py": {
+    "hash": "7d875e6a3564cf46a826b35388d7f46f0c31bc67085dfabaf6f5e8ea79d04e32",
+    "mtime": 1770108809.9637432,
+    "size": 4954
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_git_ops.py": {
+    "hash": "256ccb93b3722e6e7bd4825acef9a7d6ef5164ffaadb9718c3a8edc5ea70d910",
+    "mtime": 1770108809.973207,
+    "size": 3466
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_git_ops_comprehensive.py": {
+    "hash": "b4a6172f1a8b814ab4d457f7d6242a3586aa20561b4cfc5e0f940303d7f8353c",
+    "mtime": 1770108809.976708,
+    "size": 6132
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_handlers_audit_fixes.py": {
+    "hash": "d6c1844fd8e49edf4f87fc2a9c2e90950260ddcadecd7f4c79d4ea1cf6525c3a",
+    "mtime": 1770108809.973207,
+    "size": 4532
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_heartbeat.py": {
+    "hash": "7c598c18efb2d29aa31d3b471f5cba43ab547f3223b8248c17d8bfd6c83724d2",
+    "mtime": 1770108809.9782083,
+    "size": 2017
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_ingestion_integration.py": {
+    "hash": "92591912c772ddc59a54eb22567d4ae687aacfe739dc240a2a521464ad56d7db",
+    "mtime": 1770111367.8678875,
+    "size": 2901
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_knowledge_graph.py": {
+    "hash": "336f62c79036b2b44ad9dc05f430c8defd6f244967370fb552ce40b31569ed04",
+    "mtime": 1770108809.9537086,
+    "size": 11304
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_knowledge_tool.py": {
+    "hash": "53d3d27aa223255cc5e36c68597c385291d41d956e1af5b955dc5409fd0db19f",
+    "mtime": 1770108809.9572084,
+    "size": 1418
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_lint.py": {
+    "hash": "c0277c6373749ee28ba34901e16041192dfb3eca4d833c5cfc660d7dd0575727",
+    "mtime": 1770108809.9607081,
+    "size": 4717
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_linters_base.py": {
+    "hash": "6827053959fb66d6b0d6cbb88c1647f350f7c868a46b6eadae3168bf4c0ad1fe",
+    "mtime": 1770108809.964208,
+    "size": 2681
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_linters_registry.py": {
+    "hash": "c9b796aac2cad6da0782df972ff155d011bff2bf1ac475c0619194a283b5b8d5",
+    "mtime": 1770108809.9712088,
+    "size": 3032
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_llm_client.py": {
+    "hash": "376358e491e85ecee0a9421a728a94f9363bf0192cd10144d402f3dce3a078bc",
+    "mtime": 1770108809.9697075,
+    "size": 15167
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_llm_client_comprehensive.py": {
+    "hash": "ab75dda23f43da7e629bf0efb0a5ba5b3840e4ee62bd3cfea94cfa734b354492",
+    "mtime": 1770108809.9752078,
+    "size": 3656
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_main.py": {
+    "hash": "84932514e44e8010ba057ce2b1fe9ef30a52f0a068c033d84aa0bfbf6b515b4c",
+    "mtime": 1770108809.981707,
+    "size": 3218
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_manifest_detection.py": {
+    "hash": "eef935c1255e7e24e0ac8025286b4e975b11b93e96df016471d2af838b0b6357",
+    "mtime": 1770108809.973207,
+    "size": 6111
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_manifest_parser.py": {
+    "hash": "286067e9f4496a5cf5953d049c37b2e9858d492da3ed84b898b6fb5bbe39f9fe",
+    "mtime": 1770108809.9787078,
+    "size": 5527
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_manifest_test.py": {
+    "hash": "d76b8ab0f347e5b7c5b1e7284a5e65d539bf930ef93ddefa27bdaa66173205ec",
+    "mtime": 1770108809.9772081,
+    "size": 2154
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_memory.py": {
+    "hash": "20ab183886cdbd5047547bf17e733bcc470bb9d7680f893cc4f49be3e66e4c9e",
+    "mtime": 1770108809.9527082,
+    "size": 2148
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_monitor.py": {
+    "hash": "fce8150fb03031d2be5bc2e0de60bd7b8353aaece93c4ba1780614cc924e1a5f",
+    "mtime": 1770108809.9582088,
+    "size": 4775
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_monitor_safeguard_comprehensive.py": {
+    "hash": "6755e7f9bd29ecf12ddc7118972b51571e80b39a6ffa70c3a229de46d07bc35a",
+    "mtime": 1770108809.9662094,
+    "size": 8264
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_optimizations.py": {
+    "hash": "e145916473713f84cb4f8968ed463e8f43aeeee65a62a1a8546288b72be63eed",
+    "mtime": 1770108809.9667077,
+    "size": 3966
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_orchestrator.py": {
+    "hash": "1deba6e8044ff6b13311c6d4fdb129359531c52bd4e47a79b685a7bead2b73aa",
+    "mtime": 1770108809.976708,
+    "size": 20358
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_orchestrator_comprehensive.py": {
+    "hash": "ead5ebd9fc1ee1b15b8e0d00c79292138ef717e8e2fa50818304e58b5ef86833",
+    "mtime": 1770108809.9742084,
+    "size": 6304
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_parser.py": {
+    "hash": "56b0b86707316804114d2a69efed906ebb4d6956c4c2b418e1ee0c198201fe61",
+    "mtime": 1770108809.973207,
+    "size": 5454
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_path.py": {
+    "hash": "4cd8525823d7b4a8fb91e3d3babca765a417b61d3b53425fafd63e3d17495740",
+    "mtime": 1770108809.9747083,
+    "size": 288
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_performance_optimizations.py": {
+    "hash": "17f8484dd480632ef12534f438de5b817060794712b6022adafa7fed58e9f344",
+    "mtime": 1770108809.9667077,
+    "size": 2577
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_pr_review.py": {
+    "hash": "00dd88c8ab258a1f637fc03c1953072540fb1bbf1610bdea5c190f4253f8f0fa",
+    "mtime": 1770108809.9697075,
+    "size": 3313
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_rag_flow.py": {
+    "hash": "5079c2fd7a63faa1755d6d55bd5e43fea36b1b7a1d9c6388cad6a9b617be45d0",
+    "mtime": 1770108809.9737082,
+    "size": 4416
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_safeguard.py": {
+    "hash": "dca32ee28c1bf6fd99cf801d86d2e1a597019750bc3d77832304a9260517efb8",
+    "mtime": 1770108809.9637432,
+    "size": 3448
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_scheduler.py": {
+    "hash": "559298214164f09602a9205ab8d132daa3183417af3b38dbdf6e3acf13e015b6",
+    "mtime": 1770108809.9687083,
+    "size": 2401
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_search.py": {
+    "hash": "5540e9a39079df83a97c1e7e8016516faf346827c4fb5eff046eeeac0ee39c39",
+    "mtime": 1770108809.973207,
+    "size": 1940
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_setup_wizard.py": {
+    "hash": "acd7b938cb2fd766072cefe6057e7180d6d6add55232683aa9458fe0198584ea",
+    "mtime": 1770108809.973207,
+    "size": 3633
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_shell.py": {
+    "hash": "812e844529b3caeba32e3e467ab0fccc633dc51d8ec5f3aaa5eb6aef727f6c75",
+    "mtime": 1770108809.9857073,
+    "size": 11482
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_task_duration.py": {
+    "hash": "1a43e0ab2308be218780da6a2c57f660eba1ed7ae68f5890be29821e767e04de",
+    "mtime": 1770108809.972708,
+    "size": 3595
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_task_queue.py": {
+    "hash": "460d066789fc61a711b7f4ca00c97f2397b44dbdb4f967434a4326e3280e35cb",
+    "mtime": 1770108809.9792087,
+    "size": 2412
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_templates.py": {
+    "hash": "dbac7779660b5dc8da8e0e0e11d56a1a45f7a03fa957785508cde40e898e5353",
+    "mtime": 1770108809.9792087,
+    "size": 1622
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_tools.py": {
+    "hash": "7cf77cfa0c325ce9d7098116aa95c8d7a243fca2dbc6f20cda8750879f7c1e02",
+    "mtime": 1770108809.9787078,
+    "size": 1695
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_tools_comprehensive.py": {
+    "hash": "261a81a3c037a40ca88be4c6171b957c8be5c4155cab654aa63f320460b6cf3c",
+    "mtime": 1770108809.9802098,
+    "size": 4371
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_tool_compliance.py": {
+    "hash": "43c05e83eebb4bca189bf30ba7330e58f6d07f8d5f26f6736d3729c6fea3888b",
+    "mtime": 1770108809.9772081,
+    "size": 4125
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_dependency_resolver.py": {
+    "hash": "e67b58372749df46e8d761facbf9545918dd77f263a7f5ff35f0ec1bfe8022f6",
+    "mtime": 1770110756.711705,
+    "size": 3662
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_ingestion_cache.py": {
+    "hash": "337313ddb069f8fadafaaa09911838aa99b58d925a74e09f1a9ef70fa7c24078",
+    "mtime": 1770110782.065254,
+    "size": 2201
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\test_size_estimator.py": {
+    "hash": "963bd1d6221de45553a9d0e97d389f1f50cae18f121a077f026a19477b4abcc1",
+    "mtime": 1770110655.6940496,
+    "size": 886
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_adapters_comprehensive.py": {
+    "hash": "159b534643ee6b631bcc443099afa7d3f2380c95d789e4101ef01cda4fa0179f",
+    "mtime": 1770120335.530358,
+    "size": 5120
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_chromadb_optimization.py": {
+    "hash": "a60074eca221e46fcfbda84493ace9242c4b571d20461ddc2b02dc7456e52b55",
+    "mtime": 1770116159.675789,
+    "size": 2601
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_discord_auth.py": {
+    "hash": "d93ff0158837770a3d3cfe221f9986b5e291209a36550e608e8f20e95feed555",
+    "mtime": 1770108809.9547079,
+    "size": 1337
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_chromadb_store.py": {
+    "hash": "ad52d7b677124aa53b59e8733a5cb3ed95e4b3d2d00017ade61d708065d23cec",
+    "mtime": 1770122495.2454917,
+    "size": 14496
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_discord_commands.py": {
+    "hash": "ac26336f91e21321bcd97e1af20072eaba3ab3fde003d23b1c767b37476f31e0",
+    "mtime": 1770114666.8485732,
+    "size": 12261
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_discord_gateway.py": {
+    "hash": "16126400e4b93c16c9831c94b64427760b04baf6a886bac60c38a36a89577284",
+    "mtime": 1770108809.961208,
+    "size": 11394
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_discord_mfa.py": {
+    "hash": "d9a73fd4b27bce0b6ee0ff061eb8e794cabee101292c0ceaba168c080ca8b42d",
+    "mtime": 1770108809.944208,
+    "size": 4702
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_architecture.py": {
+    "hash": "b43b9df5d233b092e534baae7faef861919e71b3f94c2db6ac2d25695d40bfde",
+    "mtime": 1770108809.9432085,
+    "size": 1722
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_config.py": {
+    "hash": "39003fd612e5f54b09e243a7c92eb9d04f54d9faa1fb2c37b611c0997405d8fa",
+    "mtime": 1770108809.9787078,
+    "size": 1857
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_core_comprehensive.py": {
+    "hash": "de6927235552c1170aa6fe32302f8c1db85358aacd0e6055c51b06b5dbcb1ab1",
+    "mtime": 1770121798.730345,
+    "size": 7373
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_context_injection.py": {
+    "hash": "3eb807ca111e4dae7c1edf5a8afae4ee4146df973e31a0b7e66b33233ea3df7e",
+    "mtime": 1770108809.9407082,
+    "size": 2643
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_fallback.py": {
+    "hash": "eaff57788dc5e7982475bd52b82d7250f88e97389623ca35e947aff85d65baca",
+    "mtime": 1770108809.9527082,
+    "size": 3374
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_core_enhancements.py": {
+    "hash": "1af82b5f4875891979eec9d4d473a9e9da3c7c91c0ed71e090f4e94925fbc64b",
+    "mtime": 1770108809.9582088,
+    "size": 1242
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_monitor.py": {
+    "hash": "fce8150fb03031d2be5bc2e0de60bd7b8353aaece93c4ba1780614cc924e1a5f",
+    "mtime": 1770108809.9582088,
+    "size": 4775
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_monitor_safeguard_comprehensive.py": {
+    "hash": "6755e7f9bd29ecf12ddc7118972b51571e80b39a6ffa70c3a229de46d07bc35a",
+    "mtime": 1770108809.9662094,
+    "size": 8264
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_optimizations.py": {
+    "hash": "e6d4a3e24a482ea600cd19cca80126f1f428b94064d45994633a3cf6bf78f501",
+    "mtime": 1770120335.5348577,
+    "size": 3212
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_orchestrator_comprehensive.py": {
+    "hash": "ead5ebd9fc1ee1b15b8e0d00c79292138ef717e8e2fa50818304e58b5ef86833",
+    "mtime": 1770108809.9742084,
+    "size": 6304
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_orchestrator.py": {
+    "hash": "1deba6e8044ff6b13311c6d4fdb129359531c52bd4e47a79b685a7bead2b73aa",
+    "mtime": 1770108809.976708,
+    "size": 20358
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_safeguard.py": {
+    "hash": "dca32ee28c1bf6fd99cf801d86d2e1a597019750bc3d77832304a9260517efb8",
+    "mtime": 1770108809.9637432,
+    "size": 3448
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_task_duration.py": {
+    "hash": "1a43e0ab2308be218780da6a2c57f660eba1ed7ae68f5890be29821e767e04de",
+    "mtime": 1770108809.972708,
+    "size": 3595
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_task_queue.py": {
+    "hash": "460d066789fc61a711b7f4ca00c97f2397b44dbdb4f967434a4326e3280e35cb",
+    "mtime": 1770108809.9792087,
+    "size": 2412
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\e2e\\test_e2e.py": {
+    "hash": "7b84ba16edc184ce956531888600325e068e9e2bb8e8144dbfb69cf529a6b6a7",
+    "mtime": 1770111671.7812667,
+    "size": 9893
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\e2e\\test_full_integration.py": {
+    "hash": "7d875e6a3564cf46a826b35388d7f46f0c31bc67085dfabaf6f5e8ea79d04e32",
+    "mtime": 1770108809.9637432,
+    "size": 4954
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\e2e\\test_rag_flow.py": {
+    "hash": "5079c2fd7a63faa1755d6d55bd5e43fea36b1b7a1d9c6388cad6a9b617be45d0",
+    "mtime": 1770108809.9737082,
+    "size": 4416
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\handlers\\test_command_compliance.py": {
+    "hash": "223a7bd4eb2125623b7e31cd7699c7d32424f9e3d836bd4859a995562fc9e45a",
+    "mtime": 1770111661.1202557,
+    "size": 4057
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\handlers\\test_handlers_audit_fixes.py": {
+    "hash": "d6c1844fd8e49edf4f87fc2a9c2e90950260ddcadecd7f4c79d4ea1cf6525c3a",
+    "mtime": 1770108809.973207,
+    "size": 4532
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\handlers\\test_command_handlers.py": {
+    "hash": "57dcaa7543e112bbeb39ade69a653205eb21d18bc2de12ab49105da43deb4a53",
+    "mtime": 1770108809.977708,
+    "size": 10173
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\handlers\\test_heartbeat.py": {
+    "hash": "7c598c18efb2d29aa31d3b471f5cba43ab547f3223b8248c17d8bfd6c83724d2",
+    "mtime": 1770108809.9782083,
+    "size": 2017
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_dependency_resolver.py": {
+    "hash": "158c007d6f1294b5c854d2c60e1791b4fe312b8ad8260c4ec15542c609d66310",
+    "mtime": 1770120335.5313587,
+    "size": 3614
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_ingestion_cache.py": {
+    "hash": "1c014ac179bdf93410218d9cdfd3172c47b4e58de358b1e5b50d8dee1e289aa2",
+    "mtime": 1770120335.5268588,
+    "size": 2166
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_ingestion_integration.py": {
+    "hash": "37e09c30d2a64118f124b9083c17b02c06c11e00192bcd231dd7c6bdc945be04",
+    "mtime": 1770120335.529358,
+    "size": 3007
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_parser.py": {
+    "hash": "56b0b86707316804114d2a69efed906ebb4d6956c4c2b418e1ee0c198201fe61",
+    "mtime": 1770108809.973207,
+    "size": 5454
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_knowledge_graph.py": {
+    "hash": "336f62c79036b2b44ad9dc05f430c8defd6f244967370fb552ce40b31569ed04",
+    "mtime": 1770108809.9537086,
+    "size": 11304
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_path.py": {
+    "hash": "4cd8525823d7b4a8fb91e3d3babca765a417b61d3b53425fafd63e3d17495740",
+    "mtime": 1770108809.9747083,
+    "size": 288
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_performance_optimizations.py": {
+    "hash": "17f8484dd480632ef12534f438de5b817060794712b6022adafa7fed58e9f344",
+    "mtime": 1770108809.9667077,
+    "size": 2577
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_size_estimator.py": {
+    "hash": "f5048efd85c6a82530ef925734f22197920b4e201ed75025b48230e5606ec923",
+    "mtime": 1770120335.5348577,
+    "size": 858
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\interfaces\\test_llm_client_comprehensive.py": {
+    "hash": "c4af7e23d010d14847a50f3a45cda3d22ad20f517ab2922ce72f479df405e46a",
+    "mtime": 1770121794.7753444,
+    "size": 3660
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\interfaces\\test_llm_client.py": {
+    "hash": "24e7acc96f0fd6f8cd33c848f3425218b53b7a56f983a264296b3acc0c7aa8ab",
+    "mtime": 1770121985.6106656,
+    "size": 16738
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_aider_tool.py": {
+    "hash": "de8e07d804c6128df9dbe34bb6f06654e0783fa0c1c076a9c4a454530640e44d",
+    "mtime": 1770108809.9537086,
+    "size": 1824
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_aider_tool_comprehensive.py": {
+    "hash": "f542b384e9a1f6f74b2018b5bb045fc7ab14921ee75cfe5bbbc866860b44cb26",
+    "mtime": 1770108809.9582088,
+    "size": 6533
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_custom_loader.py": {
+    "hash": "90db99463d3d49148d45952aa074cd794c5fde7d5aa17aec9d4dd1dba027005d",
+    "mtime": 1770108809.964208,
+    "size": 3894
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_file_ops.py": {
+    "hash": "8da65eed83eb77df91b3ae3c5faa215d0c2e9f8ff2c144ce14cac7fa52fa316a",
+    "mtime": 1770108809.9582088,
+    "size": 4313
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_git_ops.py": {
+    "hash": "256ccb93b3722e6e7bd4825acef9a7d6ef5164ffaadb9718c3a8edc5ea70d910",
+    "mtime": 1770108809.973207,
+    "size": 3466
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_knowledge_tool.py": {
+    "hash": "53d3d27aa223255cc5e36c68597c385291d41d956e1af5b955dc5409fd0db19f",
+    "mtime": 1770108809.9572084,
+    "size": 1418
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_git_ops_comprehensive.py": {
+    "hash": "b4a6172f1a8b814ab4d457f7d6242a3586aa20561b4cfc5e0f940303d7f8353c",
+    "mtime": 1770108809.976708,
+    "size": 6132
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_lint.py": {
+    "hash": "c0277c6373749ee28ba34901e16041192dfb3eca4d833c5cfc660d7dd0575727",
+    "mtime": 1770108809.9607081,
+    "size": 4717
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_manifest_detection.py": {
+    "hash": "eef935c1255e7e24e0ac8025286b4e975b11b93e96df016471d2af838b0b6357",
+    "mtime": 1770108809.973207,
+    "size": 6111
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_manifest_parser.py": {
+    "hash": "286067e9f4496a5cf5953d049c37b2e9858d492da3ed84b898b6fb5bbe39f9fe",
+    "mtime": 1770108809.9787078,
+    "size": 5527
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_manifest_test.py": {
+    "hash": "d76b8ab0f347e5b7c5b1e7284a5e65d539bf930ef93ddefa27bdaa66173205ec",
+    "mtime": 1770108809.9772081,
+    "size": 2154
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_memory.py": {
+    "hash": "413f4c3a17e36da75ee33be3eade40a0e0756eb6d9783cc1946175384204e1ff",
+    "mtime": 1770127584.9937315,
+    "size": 4241
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_pr_review.py": {
+    "hash": "00dd88c8ab258a1f637fc03c1953072540fb1bbf1610bdea5c190f4253f8f0fa",
+    "mtime": 1770108809.9697075,
+    "size": 3313
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_search.py": {
+    "hash": "5540e9a39079df83a97c1e7e8016516faf346827c4fb5eff046eeeac0ee39c39",
+    "mtime": 1770108809.973207,
+    "size": 1940
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_scheduler.py": {
+    "hash": "2a26b0a87054ae7c29aed45c7b7b48f8f3945022c219ba4a46dd2d5507d10eae",
+    "mtime": 1770128489.2459755,
+    "size": 10936
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_templates.py": {
+    "hash": "dbac7779660b5dc8da8e0e0e11d56a1a45f7a03fa957785508cde40e898e5353",
+    "mtime": 1770108809.9792087,
+    "size": 1622
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_shell.py": {
+    "hash": "812e844529b3caeba32e3e467ab0fccc633dc51d8ec5f3aaa5eb6aef727f6c75",
+    "mtime": 1770108809.9857073,
+    "size": 11482
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_tools.py": {
+    "hash": "7cf77cfa0c325ce9d7098116aa95c8d7a243fca2dbc6f20cda8750879f7c1e02",
+    "mtime": 1770108809.9787078,
+    "size": 1695
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_tools_comprehensive.py": {
+    "hash": "261a81a3c037a40ca88be4c6171b957c8be5c4155cab654aa63f320460b6cf3c",
+    "mtime": 1770108809.9802098,
+    "size": 4371
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\test_tool_compliance.py": {
+    "hash": "43c05e83eebb4bca189bf30ba7330e58f6d07f8d5f26f6736d3729c6fea3888b",
+    "mtime": 1770108809.9772081,
+    "size": 4125
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\browser\\test_browser.py": {
+    "hash": "e6e521e5c7aa980e0c25649800cf4f87766a2cf933ee0bce78b1485716630bc3",
+    "mtime": 1770126919.5994473,
+    "size": 5819
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\browser\\test_browser_comprehensive.py": {
+    "hash": "cf73e7153f06980db6fce0db715bd8fee5deb9947d229547766b7127ea3943f1",
+    "mtime": 1770108809.9622083,
+    "size": 11423
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\browser\\test_browser_models.py": {
+    "hash": "aab45434810237df35b3a17cde74ed57e8b85e7c803198a2de37d48dade179fb",
+    "mtime": 1770108809.964208,
+    "size": 1471
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\browser\\test_browser_navigation.py": {
+    "hash": "ab7585f6455f661eb52c4d77ac6d1c7840a63da3c3ca8a62b38822e8caff2eaf",
+    "mtime": 1770108809.9682083,
+    "size": 4622
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\diagnostic\\test_diagnostic.py": {
+    "hash": "b5e7fb513f02d429bade2e9b55b05f5c142f9b8d64d4bbca7f430e344afb88e2",
+    "mtime": 1770126209.522825,
+    "size": 2259
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\diagnostic\\test_diagnostic_comprehensive.py": {
+    "hash": "1ca07e721b34a2862818b41d3137d3f2475aa70fd7443f180738c8c66f6b6121",
+    "mtime": 1770126184.8363774,
+    "size": 6232
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\diagnostic\\test_diagnostic_parsers_comprehensive.py": {
+    "hash": "c6f265b3afba899e83aae4cef57703b979bf2eb2fd6e97099bdebb27e50f1fab",
+    "mtime": 1770108809.950708,
+    "size": 3380
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\diagnostic\\test_diagnostic_shim.py": {
+    "hash": "5d8653d4e113c34f9fad3593df939f44f0ef9c67e193f9f4bf7f78f1cecc28d2",
+    "mtime": 1770108809.9532068,
+    "size": 1838
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\linters\\test_linters_base.py": {
+    "hash": "6827053959fb66d6b0d6cbb88c1647f350f7c868a46b6eadae3168bf4c0ad1fe",
+    "mtime": 1770108809.964208,
+    "size": 2681
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\linters\\test_linters_registry.py": {
+    "hash": "ad85580c1711c3d9c37581319445f798900507ccfca99f92d92b2856e9d7c9e6",
+    "mtime": 1770127066.9253929,
+    "size": 3272
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmpah443ohz\\test_project\\main.py": {
+    "hash": "027ff5b0ae118853243af64cb111258b30a9ba37c4c1da0f08170237c3e49dc6",
+    "mtime": 1770116487.6704814,
+    "size": 45
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmpah443ohz\\test_project\\utils.py": {
+    "hash": "d27d4d483437458b7d83b0612f84dbd837924792e9e1b7d1494ca01192ac9928",
+    "mtime": 1770116487.6709797,
+    "size": 33
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_performance.py": {
+    "hash": "17f8484dd480632ef12534f438de5b817060794712b6022adafa7fed58e9f344",
+    "mtime": 1770108809.9667077,
+    "size": 2577
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\ingestion\\test_pipeline.py": {
+    "hash": "20712482d4c967a77808fa7da9d4f8ba7e3eea8e726c8e9b1dc9022fb3dd1c13",
+    "mtime": 1770120335.5353584,
+    "size": 7608
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmp5xxed96u\\test_project\\main.py": {
+    "hash": "027ff5b0ae118853243af64cb111258b30a9ba37c4c1da0f08170237c3e49dc6",
+    "mtime": 1770117641.0160832,
+    "size": 45
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmp5xxed96u\\test_project\\utils.py": {
+    "hash": "d27d4d483437458b7d83b0612f84dbd837924792e9e1b7d1494ca01192ac9928",
+    "mtime": 1770117641.0165832,
+    "size": 33
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmp2ddfgjpy\\test_project\\utils.py": {
+    "hash": "d27d4d483437458b7d83b0612f84dbd837924792e9e1b7d1494ca01192ac9928",
+    "mtime": 1770117786.4916935,
+    "size": 33
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmp2ddfgjpy\\test_project\\main.py": {
+    "hash": "027ff5b0ae118853243af64cb111258b30a9ba37c4c1da0f08170237c3e49dc6",
+    "mtime": 1770117786.4911945,
+    "size": 45
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\verify_context.py": {
+    "hash": "49594cabbf95e20a1274b30df3a22218a2a963dc9fe6a2d4a8c38ef0ac0cb4ad",
+    "mtime": 1770120335.5333576,
+    "size": 1752
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_context_guard.py": {
+    "hash": "513f10c3f80953d40362fac30f7e5eaa94d2906e6b478fffb38848ec92433a69",
+    "mtime": 1770120335.5353584,
+    "size": 2695
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\compression.py": {
+    "hash": "19cf2f14fa3881fe0ebd94ad9cbb0ab401272e87f59b8afa451c956f14438fa7",
+    "mtime": 1770120335.528858,
+    "size": 3515
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_compression.py": {
+    "hash": "ce8e27de8e01bf588b560d22e143c036c82713ac27a54a5d3e65545c3c54d03d",
+    "mtime": 1770120591.1399486,
+    "size": 3036
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\inspect_aider.py": {
+    "hash": "271f0feb0d94211d3536503d5603ba8f6a1ab9fe7df320f8b7ff4b79ae9b4ba3",
+    "mtime": 1770126919.611948,
+    "size": 444
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\check_aider_repo.py": {
+    "hash": "058a6b161c4676931a97b8fee77094fcadf1d5c970ef1a2304926eee525de39a",
+    "mtime": 1770126919.6104476,
+    "size": 45
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\llm_client.py": {
+    "hash": "ef016bb690dff1fccf373da6c23949143a8e66b6984c8e6d24db7607886037bf",
+    "mtime": 1770121770.991345,
+    "size": 7073
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\mixins.py": {
+    "hash": "ec3747320bb178d6073fa7e50b31e72a82dcab8b5e008129a604a5447dfe1aca",
+    "mtime": 1770122019.0997977,
+    "size": 5652
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\adapters\\vcs_git.py": {
+    "hash": "d4ae9d0fa45aca6297f382e47c06e27c4b8f1b3b7b57984e595334a693dc11f9",
+    "mtime": 1770126919.5894473,
+    "size": 6155
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\adapters\\test_vcs_git.py": {
+    "hash": "de539c127eb1e70b8fd21601c809691505a72ed1b686fdf7902f914ff02bda60",
+    "mtime": 1770126919.5984473,
+    "size": 4105
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\memory\\test_store.py": {
+    "hash": "8e8d1c06c4ff38238dee8f7b9b767628dd816d376ad30235bd907238755d31c8",
+    "mtime": 1770126919.5954473,
+    "size": 2332
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\memory\\test_features.py": {
+    "hash": "c86fb18361ad9bb340156c14387fa7f54d3038fd5f6775c49bb16ba72dd27513",
+    "mtime": 1770126919.5919473,
+    "size": 3022
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\core\\test_template_system.py": {
+    "hash": "efc5fd89736fc4110a9501d7276c006494495984ce22f9d2caffa14863ccc378",
+    "mtime": 1770126919.602947,
+    "size": 2920
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\core\\remote_provider.py": {
+    "hash": "ab2e8f1d883150dc37803b58ba8bdb5b2abed3529bc09f22149b886a14f1080c",
+    "mtime": 1770126919.6104476,
+    "size": 3747
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\browser\\scripts.py": {
+    "hash": "ffbc5112e1fbf8a0062202d27d0cbc15c64416bc423c6ffe71b632e6195ec4bf",
+    "mtime": 1770125327.4948065,
+    "size": 1230
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\diagnostic\\parsers\\generic.py": {
+    "hash": "9e307bc038c6907cfafd45543885e4ccb0e3ca1fa070ddf60857f7778679d681",
+    "mtime": 1770126919.5899482,
+    "size": 2779
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\diagnostic\\test_diagnostic_suggestions.py": {
+    "hash": "fa06f708573a11f6a5a478950c1e6be22f06ba72141c461707b331358279737d",
+    "mtime": 1770127066.9263952,
+    "size": 1549
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\tests\\tools\\linters\\test_linters_parallel.py": {
+    "hash": "36527517964ddfbbda2f9e9e06e2dde551397bed50cc2533a21f322822830646",
+    "mtime": 1770126919.6099477,
+    "size": 2493
+  },
+  "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\astra\\tools\\memory\\models.py": {
+    "hash": "c43c0e4dafe39ae91399e8ff2eb287832d287f215dbaf3488d7641801e8e695a",
+    "mtime": 1770127527.9804835,
+    "size": 1167
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmpp5c79qwg\\test_project\\main.py": {
+    "hash": "027ff5b0ae118853243af64cb111258b30a9ba37c4c1da0f08170237c3e49dc6",
+    "mtime": 1770130378.2625043,
+    "size": 45
+  },
+  "C:\\Users\\David\\AppData\\Local\\Temp\\tmpp5c79qwg\\test_project\\utils.py": {
+    "hash": "d27d4d483437458b7d83b0612f84dbd837924792e9e1b7d1494ca01192ac9928",
+    "mtime": 1770130378.2630043,
+    "size": 33
+  }
+}

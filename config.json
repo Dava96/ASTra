@@ -1,0 +1,89 @@
+{
+  "orchestration": {
+    "max_self_heal_attempts": 3,
+    "log_ingestion_limit_kb": 50,
+    "fallback_to_cloud": true,
+    "temperature": 0.0,
+    "resume_tasks": true,
+    "global_timeout_seconds": 600,
+    "log_path": "./logs/astra.log",
+    "allowed_users": [
+      "YOUR_DISCORD_ID"
+    ],
+    "fallback_strategy": {
+      "mode": "ask_user",
+      "escalation_model": "gpt-4o",
+      "api_key_env_var": "OPENAI_API_KEY"
+    },
+    "security": {
+      "auto_install_packages": false,
+      "require_permission_for_shell": true,
+      "admin_users": [
+        "YOUR_DISCORD_ID"
+      ]
+    },
+    "test_heuristics": {
+      "npm": "npm test",
+      "composer": "vendor/bin/phpunit",
+      "python": "pytest",
+      "cargo": "cargo test"
+    }
+  },
+  "git": {
+    "auto_pr": true,
+    "branch_prefix": "ai-dev-",
+    "review_required": true
+  },
+  "ingestion": {
+    "ignore_patterns": [
+      "node_modules",
+      "*.lock",
+      "dist",
+      "build",
+      ".git",
+      ".venv",
+      "__pycache__"
+    ],
+    "priority_files": [
+      "package.json",
+      "composer.json",
+      "tsconfig.json",
+      "README.md",
+      "Makefile"
+    ],
+    "max_file_size_kb": 2048,
+    "ast_depth": 3
+  },
+  "llm": {
+    "planning_model": "gpt-5",
+    "coding_model": null,
+    "host": "http://localhost:11434",
+    "base_url": null
+  },
+  "allowed_users": [
+    "123"
+  ],
+  "skills_mp": {
+    "enabled": true,
+    "api_key": "sk_live_your_api_key",
+    "endpoint": "https://skillsmp.com/api/v1"
+  },
+  "vectordb": {
+    "cleanup_threshold_days": 90,
+    "persist_path": "./data/chromadb",
+    "backup_count": 2
+  },
+  "knowledge_graph": {
+    "enabled": true,
+    "persist_path": "./data/knowledge_graph.graphml"
+  },
+  "progress": {
+    "verbosity": "standard",
+    "update_interval_percent": 10
+  },
+  "context": {
+    "compression_enabled": false,
+    "compression_model": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+    "target_token_count": 2000
+  }
+}

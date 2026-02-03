@@ -1,0 +1,21 @@
+[run]
+source = ./astra
+omit =
+    tests/*
+    setup.py
+    .venv/*
+    *__init__*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if __name__ == .__main__.:
+    raise NotImplementedError
+    if TYPE_CHECKING:
+    pass
+    @abstractmethod
+
+show_missing = True
+skip_covered = True

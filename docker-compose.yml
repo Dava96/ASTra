@@ -1,0 +1,39 @@
+services:
+  astra:
+    build: .
+    container_name: astra
+    restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+    volumes:
+      - ./repos:/app/repos
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json:ro
+      - ./astra/templates:/app/astra/templates
+    depends_on:
+      - ollama
+    healthcheck:
+      test: ["CMD", "python", "-c", "import astra; print('ok')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3。
+      start_period: 60s
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    deploy:
+      resources:
+        reservations:
+          memory: 6G
+
+volumes:
+  ollama_data:

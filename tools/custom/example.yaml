@@ -1,0 +1,7 @@
+# Example Custom Tool Definition
+# Place .yaml files in this directory to register custom tools
+
+name: git_status
+description: Show git status of the current repository
+command: git status
+parameters: {}

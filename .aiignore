@@ -1,0 +1,29 @@
+# Secrets and Environment Variables
+.env
+.env.*
+*.pem
+*.key
+id_rsa
+config.json
+
+# Dependency Directories
+node_modules/
+vendor/
+venv/
+.venv/
+__pycache__/
+
+# Build Artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# System
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
