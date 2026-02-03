@@ -1,5 +1,0 @@
-## Summary
-{{summary}}
-
-## Changes
-{{changes}}
