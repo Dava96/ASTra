@@ -47,6 +47,18 @@ class ConsoleGateway(Gateway):
         """Get history (not supported in console)."""
         return []
 
+    async def send_followup(
+        self,
+        interaction_ref: Any,
+        content: str = "",
+        file_path: str | None = None,
+        metadata: dict[str, Any] | None = None
+    ) -> None:
+        """Send a followup (print to console)."""
+        print(f"\n[Followup] 🤖 ASTra:\n{content}")
+        if file_path:
+            print(f"[File attached: {file_path}]")
+
     def register_command(self, name: str, handler: Any, description: str = "") -> None:
         """Register command (no-op for CLI mode)."""
         pass

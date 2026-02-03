@@ -85,7 +85,8 @@ async def test_shell_output_capping_simple():
     mock_stderr = MagicMock()
     mock_stderr.readline = AsyncMock(return_value=b"")
     
-    with patch("astra.tools.shell.asyncio.create_subprocess_exec") as mock_exec:
+    with patch("astra.tools.shell.asyncio.create_subprocess_exec") as mock_exec, \
+         patch("astra.tools.shell.ShellExecutor._is_allowed", return_value=(True, None)):
         process = MagicMock()
         process.returncode = 0
         process.stdout = mock_stdout

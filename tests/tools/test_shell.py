@@ -180,7 +180,7 @@ class TestRunString:
 
         assert result.success == False
         assert result.blocked == True
-        assert "Failed to parse" in result.stderr
+        assert "Parse error" in result.stderr
 
 
 class TestEdgeCases:

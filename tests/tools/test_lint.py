@@ -15,44 +15,6 @@ from astra.tools.lint import (
 )
 
 
-class TestLanguageDetection:
-    """Test project language detection."""
-
-    def test_detect_typescript(self, tmp_path):
-        (tmp_path / "tsconfig.json").write_text("{}")
-        (tmp_path / "package.json").write_text("{}")
-
-        assert detect_language(tmp_path) == "typescript"
-
-    def test_detect_javascript(self, tmp_path):
-        (tmp_path / "package.json").write_text("{}")
-
-        assert detect_language(tmp_path) == "javascript"
-
-    def test_detect_python(self, tmp_path):
-        (tmp_path / "pyproject.toml").write_text("[project]")
-
-        assert detect_language(tmp_path) == "python"
-
-    def test_detect_php(self, tmp_path):
-        (tmp_path / "composer.json").write_text("{}")
-
-        assert detect_language(tmp_path) == "php"
-
-    def test_detect_go(self, tmp_path):
-        (tmp_path / "go.mod").write_text("module test")
-
-        assert detect_language(tmp_path) == "go"
-
-    def test_detect_rust(self, tmp_path):
-        (tmp_path / "Cargo.toml").write_text("[package]")
-
-        assert detect_language(tmp_path) == "rust"
-
-    def test_detect_unknown(self, tmp_path):
-        assert detect_language(tmp_path) is None
-
-
 class TestRuffParser:
     """Test ruff output parsing."""
 

@@ -27,3 +27,18 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+logs/
+
+# Testing & Large outputs
+.pytest_cache/
+.coverage
+htmlcov/
+test_output*.txt
+*_TEST_RUN.txt
+out.txt
+
+# Temp / Junk
+tmp/
+tmp_chroma/
+dummy/
+MagicMock/

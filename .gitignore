@@ -1,1 +1,75 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+# .venv  <-- User pref to keep or ignore? Standard is ignore. I will ignore it as it's standard.
+.venv/
+venv/
+env/
+# UV
+uv.lock
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test_output*.txt
+*_TEST_RUN.txt
+.tox/
+.nox/
+
+# Logs
+logs/
+*.log
+
+# Data & Databases
+data/*/
+*.sqlite3
+*.db
+
+# Temp / Junk
+tmp/
+tmp_chroma/
+dummy/
+out.txt
+MagicMock/
+
+# IDE
+.vscode/
+.idea/
+
+# Aider
 .aider*
+
+# Config
+config.json
+
+# System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python / Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs & Output
+logs/
+*.log
+tools_output*.txt
+test_output*.txt
+out.txt
+.gitignore
+
+tools_verify_2.txt
+tools_verify.txt

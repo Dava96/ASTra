@@ -57,7 +57,9 @@
   "llm": {
     "planning_model": "gpt-5",
     "coding_model": null,
+    "model": "ollama_chat/qwen2.5-coder:7b",
     "host": "http://localhost:11434",
+    "context_limit": 65536,
     "base_url": null
   },
   "allowed_users": [

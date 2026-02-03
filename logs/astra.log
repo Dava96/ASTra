@@ -3235,3 +3235,33 @@
 {"asctime": "2026-02-03T14:32:56+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 94 documents to ASTra (Skipped 0 unchanged)"}
 {"asctime": "2026-02-03T14:32:56+0000", "name": "astra.ingestion.knowledge_graph", "levelname": "INFO", "message": "Saved knowledge graph: 16987 nodes"}
 {"asctime": "2026-02-03T14:32:56+0000", "name": "astra.ingestion.pipeline", "levelname": "INFO", "message": "Ingestion complete. Total nodes: 488. Skipped files: 173/201"}
+{"asctime": "2026-02-03T14:58:00+0000", "name": "__main__", "levelname": "INFO", "message": "\ud83d\ude80 Ingesting project: ASTra at C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra"}
+{"asctime": "2026-02-03T14:58:02+0000", "name": "astra.adapters.chromadb_store", "levelname": "INFO", "message": "ChromaDB initialized at ./data/chromadb"}
+{"asctime": "2026-02-03T14:58:02+0000", "name": "astra.ingestion.knowledge_graph", "levelname": "INFO", "message": "Loaded knowledge graph: 16987 nodes, 17070 edges"}
+{"asctime": "2026-02-03T14:58:02+0000", "name": "astra.ingestion.pipeline", "levelname": "INFO", "message": "Starting ingestion pipeline for C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra -> ASTra"}
+{"asctime": "2026-02-03T14:58:02+0000", "name": "astra.ingestion.pipeline", "levelname": "INFO", "message": "Scanning files..."}
+{"asctime": "2026-02-03T14:58:02+0000", "name": "astra.ingestion.pipeline", "levelname": "INFO", "message": "Total files: 203. Skipped (O(1)): 162. To process: 41"}
+{"asctime": "2026-02-03T14:58:02+0000", "name": "astra.ingestion.pipeline", "levelname": "INFO", "message": "Spinning up 2 worker processes..."}
+{"asctime": "2026-02-03T14:58:08+0000", "name": "astra.adapters.chromadb_store", "levelname": "INFO", "message": "Loading embedding model: all-MiniLM-L6-v2"}
+{"asctime": "2026-02-03T14:58:08+0000", "name": "sentence_transformers.SentenceTransformer", "levelname": "INFO", "message": "Use pytorch device_name: cpu"}
+{"asctime": "2026-02-03T14:58:08+0000", "name": "sentence_transformers.SentenceTransformer", "levelname": "INFO", "message": "Load pretrained SentenceTransformer: all-MiniLM-L6-v2"}
+{"asctime": "2026-02-03T14:58:11+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 73 documents to ASTra (Skipped 3 unchanged)"}
+{"asctime": "2026-02-03T14:58:12+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 36 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:14+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 52 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:15+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 56 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:15+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 17 documents to ASTra (Skipped 1 unchanged)"}
+{"asctime": "2026-02-03T14:58:16+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 14 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:17+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 44 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:17+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 20 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:18+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 15 documents to ASTra (Skipped 3 unchanged)"}
+{"asctime": "2026-02-03T14:58:19+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 46 documents to ASTra (Skipped 5 unchanged)"}
+{"asctime": "2026-02-03T14:58:19+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 17 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:21+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 69 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:22+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 49 documents to ASTra (Skipped 1 unchanged)"}
+{"asctime": "2026-02-03T14:58:23+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 30 documents to ASTra (Skipped 4 unchanged)"}
+{"asctime": "2026-02-03T14:58:23+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 21 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:24+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 56 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:25+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 39 documents to ASTra (Skipped 0 unchanged)"}
+{"asctime": "2026-02-03T14:58:26+0000", "name": "astra.adapters.mixins", "levelname": "INFO", "message": "Added 35 documents to ASTra (Skipped 1 unchanged)"}
+{"asctime": "2026-02-03T14:58:26+0000", "name": "astra.ingestion.knowledge_graph", "levelname": "INFO", "message": "Saved knowledge graph: 17658 nodes"}
+{"asctime": "2026-02-03T14:58:26+0000", "name": "astra.ingestion.pipeline", "levelname": "INFO", "message": "Ingestion complete. Total nodes: 689. Skipped files: 162/203"}

@@ -4,6 +4,7 @@ import asyncio
 import logging
 import os
 import re
+import subprocess
 import sys
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
@@ -84,6 +85,7 @@ class AiderTool(BaseTool):
         return {
             "success": result.success,
             "output": result.output[:2000],  # Cap return output for the tool response
+            "error": result.error,
             "modified": result.files_modified
         }
 
@@ -127,10 +129,45 @@ class AiderTool(BaseTool):
         if self._api_key_env and isinstance(self._api_key_env, str) and self._api_key_env in os.environ:
             env[self._api_key_env] = os.environ[self._api_key_env]
 
+        # Inject Ollama Host if present in config
+        config = get_config()
+        if config.llm.host:
+             env["OLLAMA_API_BASE"] = config.llm.host
+
         # Disable interactive prompts
         env["AIDER_YES"] = "true"
 
         return env
+
+    def _ensure_model_settings(self, cwd: str) -> None:
+        """Generate .aider.model.settings.yml if using Ollama to enforce context limits."""
+        # Only relevant for Ollama models
+        if "ollama" not in self._model.lower():
+            return
+            
+        config = get_config()
+        if not config.llm.context_limit:
+            return
+
+        settings_path = os.path.join(cwd, ".aider.model.settings.yml")
+        
+        # We need to use the exact model string passed to aider
+        # If using ollama_chat/ prefix, exclude it for the 'name' field in settings? 
+        # Aider docs say: "name: ollama/..." so we likely match what we pass.
+        # But if we pass "ollama_chat/model", the settings item name should probably match that.
+        
+        content = (
+            f"- name: {self._model}\n"
+            f"  extra_params:\n"
+            f"    num_ctx: {config.llm.context_limit}\n"
+        )
+        
+        try:
+            with open(settings_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            logger.debug(f"Generated settings file at {settings_path}")
+        except Exception as e:
+            logger.warning(f"Failed to write Aider settings file: {e}")
 
     def run(
         self,
@@ -141,6 +178,7 @@ class AiderTool(BaseTool):
         timeout: int | None = None
     ) -> AiderResult:
         """Run Aider synchronously and return result."""
+        self._ensure_model_settings(cwd)
         cmd = self._build_command(message, files, auto_commits=auto_commits)
         env = self._build_env()
         timeout = timeout or self._timeout
@@ -175,6 +213,8 @@ class AiderTool(BaseTool):
     ) -> AiderResult:
         """Run Aider asynchronously with optional progress streaming and memory safety."""
         MAX_OUTPUT_BYTES = 10 * 1024 * 1024  # 10MB limit
+
+        self._ensure_model_settings(cwd)
 
         # Resolve context files if not provided
         if context_files is None:

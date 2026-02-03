@@ -1,86 +1,189 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch, AsyncMock
 
 import pytest
 
-from astra.interfaces.vcs import BranchResult, CommitResult, PRResult
 from astra.tools.git_ops import GitHubVCS
 
 
 @pytest.fixture
-def vcs():
-    return GitHubVCS()
+def vcs_and_shell():
+    with patch("astra.tools.git_ops.ShellExecutor") as MockShell:
+        shell = MockShell.return_value
+        vcs = GitHubVCS()
+        yield vcs, shell
+
+# Stub helper
+def mock_run(stdout="", stderr="", success=True):
+    return MagicMock(success=success, stdout=stdout, stderr=stderr)
 
 @pytest.mark.asyncio
-async def test_vcs_execute_branch(vcs):
-    with patch.object(vcs, 'create_branch') as mock_branch:
-        mock_branch.return_value = BranchResult(success=True, branch_name="feat")
-        result = await vcs.execute(action="branch", repo_path=".", branch_name="feat")
-        assert "Created branch feat" in result
+async def test_execute_tool_actions(vcs_and_shell):
+    vcs, shell = vcs_and_shell
 
-@pytest.mark.asyncio
-async def test_vcs_execute_checkout(vcs):
-    with patch.object(vcs, 'checkout') as mock_checkout:
-        mock_checkout.return_value = BranchResult(success=True, branch_name="main")
-        result = await vcs.execute(action="checkout", repo_path=".", branch_name="main")
-        assert "Switched to main" in result
+    # Branch
+    shell.run_async = AsyncMock(return_value=mock_run())
+    res = await vcs.execute("branch", ".", branch_name="feat/new")
+    assert "✅ Created branch" in res
 
-@pytest.mark.asyncio
-async def test_vcs_execute_commit(vcs):
-    with patch.object(vcs, 'commit') as mock_commit:
-        mock_commit.return_value = CommitResult(success=True, commit_hash="abc")
-        result = await vcs.execute(action="commit", repo_path=".", message="docs")
-        assert "Committed abc" in result
+    # Missing branch name
+    res = await vcs.execute("branch", ".")
+    assert "Branch name required" in res
 
-@pytest.mark.asyncio
-async def test_vcs_execute_push(vcs):
-    with patch.object(vcs, 'push') as mock_push:
-        mock_push.return_value = True
-        result = await vcs.execute(action="push", repo_path=".", branch_name="main")
-        assert "Pushed main" in result
+    # Checkout
+    res = await vcs.execute("checkout", ".", branch_name="main")
+    assert "✅ Switched to" in res
 
-@pytest.mark.asyncio
-async def test_vcs_execute_pr(vcs):
+    # Commit failure
+    shell.run_async = AsyncMock(return_value=mock_run(success=False, stderr="Nothing to commit"))
+    res = await vcs.execute("commit", ".", message="fail")
+    assert "❌ Failed" in res
+
+    # Push
+    shell.run_async = AsyncMock(return_value=mock_run())
+    # Mock current branch lookup
+    with patch.object(vcs, 'get_current_branch', return_value="main"):
+        res = await vcs.execute("push", ".")
+        assert "✅ Pushed" in res
+
+    # PR
     with patch.object(vcs, 'create_pr') as mock_pr:
-        mock_pr.return_value = PRResult(success=True, pr_url="http://pr")
-        result = await vcs.execute(action="pr", repo_path=".", title="T", body="B")
-        assert "PR created: http://pr" in result
+        mock_pr.return_value = MagicMock(success=True, pr_url="http://pr/1")
+        res = await vcs.execute("pr", ".", title="My PR")
+        assert "http://pr/1" in res
 
-@pytest.mark.asyncio
-async def test_vcs_execute_status(vcs):
-    with patch.object(vcs, 'get_current_branch') as mock_branch, \
-         patch.object(vcs, 'get_changed_files') as mock_files:
-        mock_branch.return_value = "main"
-        mock_files.return_value = ["f1.py"]
+    # Status
+    with patch.object(vcs, 'get_changed_files', return_value=["f.py"]):
+        res = await vcs.execute("status", ".")
+        assert res["changed_files"] == ["f.py"]
 
-        result = await vcs.execute(action="status", repo_path=".")
-        assert result["branch"] == "main"
-        assert "f1.py" in result["changed_files"]
+    # Merge
+    with patch.object(vcs, 'merge') as mock_merge:
+        mock_merge.return_value = MagicMock(success=True, merge_commit="abc")
+        res = await vcs.execute("merge", ".", source_branch="feat", target_branch="main")
+        assert "Merged feat" in res
 
-@pytest.mark.asyncio
-async def test_vcs_error_handling(vcs):
-    # Missing args
-    assert "Branch name required" in await vcs.execute(action="branch", repo_path=".")
-    assert "Branch name required" in await vcs.execute(action="checkout", repo_path=".")
-    assert "Message required" in await vcs.execute(action="commit", repo_path=".")
-    assert "Unknown action" in await vcs.execute(action="invalid", repo_path=".")
+    # Unknown
+    res = await vcs.execute("dance", ".")
+    assert "Unknown action" in res
 
-def test_vcs_git_methods(vcs):
-    # Mocking self._run which is uses in all git methods
-    with patch.object(vcs, '_run') as mock_run:
-        mock_run.return_value = (True, "output", "")
+def test_clone_auth(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+    shell.run_async = AsyncMock(return_value=mock_run())
 
-        vcs.clone("url", "dest")
-        mock_run.assert_called_with(["git", "clone", "url", "dest"])
+    vcs.clone("https://github.com/repo.git", ".", "token123")
 
-        vcs.create_branch(".", "b")
-        mock_run.assert_called_with(["git", "checkout", "-b", "b"], cwd=".")
+    args = shell.run.call_args[0][0]
+    assert "https://token123@github.com/repo.git" in args
 
-        vcs.push(".", "b")
-        mock_run.assert_called_with(["git", "push", "-u", "origin", "b"], cwd=".")
+def test_create_branch_fail(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+    shell.run_async = AsyncMock(return_value=mock_run(success=False, stderr="Branch exists"))
 
-        # PR create (gh cli)
-        vcs.create_pr(".", "T", "B")
-        args, kwargs = mock_run.call_args
-        assert "gh" in args[0]
-        assert "pr" in args[0]
-        assert "create" in args[0]
+    res = vcs.create_branch(".", "b1")
+    assert not res.success
+    assert res.error == "Branch exists"
+
+def test_commit_success(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+    # Sequence: [add, commit, rev-parse]
+    shell.run_async = AsyncMock(side_effect=[
+        mock_run(), # add
+        mock_run(), # commit
+        mock_run(stdout="hash123") # rev-parse
+    ])
+
+    res = vcs.commit(".", "msg", files=["a.py"])
+    assert res.success
+    assert res.commit_hash == "hash123"
+
+def test_create_pr_parser(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+
+    # Success case
+    shell.run_async = AsyncMock(return_value=mock_run(stdout="https://github.com/user/repo/pull/123"))
+    res = vcs.create_pr(".", "Title", "Body")
+    assert res.success
+    assert res.pr_number == 123
+
+    # Fail case
+    shell.run_async = AsyncMock(return_value=mock_run(success=False, stderr="Error"))
+    res = vcs.create_pr(".", "Title", "Body")
+    assert not res.success
+
+def test_pr_status(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+    from astra.interfaces.vcs import PRStatus
+
+    shell.run_async = AsyncMock(return_value=mock_run(stdout='{"state": "MERGED"}'))
+    status = vcs.get_pr_status(".", 1)
+    assert status == PRStatus.MERGED
+
+    shell.run_async = AsyncMock(return_value=mock_run(stdout='{"state": "OPEN"}'))
+    status = vcs.get_pr_status(".", 1)
+    assert status == PRStatus.OPEN
+
+    # JSON Error
+    shell.run_async = AsyncMock(return_value=mock_run(stdout="invalid json"))
+    status = vcs.get_pr_status(".", 1)
+    assert status == PRStatus.OPEN
+
+def test_rebase(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+
+    # Success
+    shell.run_async = AsyncMock(return_value=mock_run())
+    assert vcs.rebase(".")
+
+    # Fail
+    shell.run_async = AsyncMock(side_effect=[
+        mock_run(), # fetch
+        mock_run(success=False, stderr="conflict"), # rebase
+        mock_run() # abort
+    ])
+    assert not vcs.rebase(".")
+
+def test_merge_flow(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+
+    # Checkout Fail
+    with patch.object(vcs, 'checkout', return_value=MagicMock(success=False, error="chk fail")):
+        res = vcs.merge(".", "src")
+        assert not res.success
+        assert "chk fail" in res.error
+
+    # Merge Conflict
+    shell.run_async = AsyncMock(side_effect=[
+        mock_run(success=False, stdout="CONFLICT (content): Merge conflict in file.txt"), # merge
+        mock_run(stdout="file.txt"), # diff check
+        mock_run() # abort
+    ])
+
+    # We must patch checkout to succeed this time
+    with patch.object(vcs, 'checkout', return_value=MagicMock(success=True)):
+        res = vcs.merge(".", "src")
+        assert not res.success
+        assert res.has_conflicts
+        assert "file.txt" in res.conflicting_files
+
+    # Generic Merge Fail
+    shell.run_async = AsyncMock(side_effect=[
+        mock_run(success=False, stderr="Fatal error"), # merge
+    ])
+    with patch.object(vcs, 'checkout', return_value=MagicMock(success=True)):
+        res = vcs.merge(".", "src")
+        assert not res.success
+        assert "Fatal error" in res.error
+
+def test_get_changed_files(vcs_and_shell):
+    vcs, shell = vcs_and_shell
+
+    shell.run_async = AsyncMock(return_value=mock_run(stdout="file1.py\nfile2.py\n"))
+    files = vcs.get_changed_files(".")
+    assert files == ["file1.py", "file2.py"]
+
+    shell.run_async = AsyncMock(return_value=mock_run(success=False))
+    assert vcs.get_changed_files(".") == []
+
+    vcs, shell = vcs_and_shell
+    shell.run_async = AsyncMock(return_value=mock_run())
+    assert vcs.pull_latest(".", "main")

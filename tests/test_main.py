@@ -50,7 +50,7 @@ def test_cli_ingest_command_with_depth():
     with patch('astra.main.run_ingestion', new_callable=AsyncMock) as mock_ingest:
         result = runner.invoke(app, ["ingest", ".", "--depth", "3"])
         assert result.exit_code == 0
-        mock_ingest.assert_called_once_with(".", 3)
+        mock_ingest.assert_called_once_with(".", 3, None)
 
 def test_cli_cleanup_command():
     with patch('astra.adapters.chromadb_store.ChromaDBStore') as mock_store_cls:

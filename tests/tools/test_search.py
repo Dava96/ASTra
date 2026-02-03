@@ -24,9 +24,12 @@ class TestSearchTool:
 
             result = await tool.execute("query")
 
-            assert "Source 1: [T1](h1)" in result
-            assert "b1" in result
-            assert "Source 2: [T2](h2)" in result
+            result = await tool.execute("query")
+
+            assert isinstance(result, list)
+            assert result[0]["title"] == "T1"
+            assert result[0]["href"] == "h1"
+            assert result[1]["body"] == "b2"
 
     @pytest.mark.asyncio
     async def test_execute_empty(self):
@@ -38,7 +41,7 @@ class TestSearchTool:
             mock_instance.text.return_value = []
 
             result = await tool.execute("query")
-            assert "No search results found" in result
+            assert result == []
 
     @pytest.mark.asyncio
     async def test_execute_error(self):
@@ -50,6 +53,6 @@ class TestSearchTool:
             mock_instance.text.side_effect = Exception("Search API Down")
 
             result = await tool.execute("query")
-            assert result == "No search results found." # Returns formatted empty list on error
+            assert result == []
             # Or check generic "Search failed" if implemented?
             # Code: return self._format_results([]) -> "No search results found."

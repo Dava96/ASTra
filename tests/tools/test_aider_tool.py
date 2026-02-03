@@ -1,76 +1,175 @@
 
+import os
+import subprocess
 from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
-from astra.tools.aider_tool import AiderTool
-from astra.tools.shell import ShellResult
+from astra.tools.aider_tool import AiderResult, AiderTool
+
+# --- Standard AsyncMock for Stream ---
+
+# Replace AsyncStream with standard AsyncMock usage in tests
+# We can't easily mock __aiter__ on AsyncMock in older python versions without extra work, 
+# but for readline(), side_effect is enough.
 
 @pytest.fixture
-def mock_shell():
-    with patch("astra.tools.aider_tool.ShellExecutor") as MockShell:
-        shell_instance = MockShell.return_value
-        shell_instance._is_allowed.return_value = (True, None) # Default allow
-        yield shell_instance
+def aider_tool():
+    with patch("astra.tools.shell.ShellExecutor._is_allowed", return_value=(True, None)):
+        yield AiderTool(model="gpt-4")
 
 @pytest.mark.asyncio
-async def test_aider_tool_success(mock_shell):
-    tool = AiderTool()
-    
-    # Mock run_async success
-    mock_shell.run_async = AsyncMock(return_value=ShellResult(
-        success=True,
-        stdout="Applied edits to file.py",
-        stderr="",
-        return_code=0,
-        command=["aider", "edit", "file.py"]
-    ))
+async def test_aider_security_block(aider_tool):
+    """Test verification of security blocking."""
+    # Mock the internal shell's _is_allowed method which AiderTool uses
+    with patch.object(aider_tool._shell, "_is_allowed", return_value=(False, "Blocked command")):
+         res = await aider_tool.execute("edit", instruction="bad cmd")
+         assert res["success"] is False
+         assert "Blocked" in res["error"]
 
-    res = await tool.execute("edit", instruction="Fix bugs", files=["file.py"])
-    
-    assert res["success"] is True
-    assert "Applied edits" in res["output"]
-    
-    # Verify command construction
-    call_args = mock_shell.run_async.call_args
-    # call_args[0] is args tuple. cmd is first arg
-    cmd = call_args[0][0]
-    assert "aider" in cmd
-    assert "--message" in cmd
-    assert "Fix bugs" in cmd
+def test_aider_tool_init_variants():
+    """Test __init__ with different config structures."""
+    with patch("astra.tools.aider_tool.get_config") as mock_config:
+        # Case 1: dict fallback config
+        # We need to simulate multiple calls to .get(). 
+        # First call 'orchestration', 'fallback_strategy'.
+        def mock_get(*args, **kwargs):
+            if args == ("orchestration", "fallback_strategy"):
+                return {"api_key_env_var": "KEY"}
+            return kwargs.get("default")
+        
+        mock_config.return_value.get.side_effect = mock_get
+        tool = AiderTool()
+        assert tool._api_key_env == "KEY"
+
+def test_aider_run_sync(aider_tool):
+    """Test synchronous run method."""
+    with patch("subprocess.run") as mock_run:
+        mock_run.return_value.returncode = 0
+        mock_run.return_value.stdout = "Applying edits to f1.py\nWriting f2.py\nTokens: 100 sent"
+        mock_run.return_value.stderr = ""
+
+        result = aider_tool.run("msg", ".", files=["f1.py"])
+        assert result.success
+        assert "f1.py" in result.files_modified
+        assert "f2.py" in result.files_modified
+        assert result.tokens_used == 100
+
+def test_aider_run_sync_errors(aider_tool):
+    """Test sync run error paths."""
+    with patch("subprocess.run") as mock_run:
+        # Timeout
+        mock_run.side_effect = subprocess.TimeoutExpired(["cmd"], 10)
+        result = aider_tool.run("msg", ".")
+        assert not result.success
+        # ShellExecutor returns "Command timed out after..."
+        assert "timed out" in str(result.error).lower() or "timeout" in str(result.error).lower()
+
+        # Not Found
+        mock_run.side_effect = FileNotFoundError("executable not found")
+        result = aider_tool.run("msg", ".")
+        assert "not found" in str(result.error).lower()
 
 @pytest.mark.asyncio
-async def test_aider_tool_security_block(mock_shell):
-    tool = AiderTool()
-    
-    # Mock block via _is_allowed check if AiderTool calls it manualy?
-    # AiderTool calls shell.run_async, which does the check internally.
-    # However, AiderTool explicitly calls _is_allowed first in my refactor? 
-    # Let's check aider_tool.py refactor:
-    # "allowed, error_msg = self._shell._is_allowed(cmd)"
-    # So we mock _is_allowed
-    mock_shell._is_allowed.return_value = (False, "Blocked command")
-    
-    res = await tool.execute("edit", instruction="Delete everything")
-    
-    assert res["success"] is False
-    assert "Blocked" in res["error"]
+async def test_aider_run_async_success(aider_tool):
+    """Test successful async run."""
+    with patch("asyncio.create_subprocess_exec") as mock_exec, \
+         patch.dict(os.environ, {"MY_KEY": "secret"}):
+
+        aider_tool._api_key_env = "MY_KEY"
+        mock_proc = AsyncMock()
+        mock_exec.return_value = mock_proc
+        mock_proc.returncode = 0
+        
+        # Configure stdout readline side effects
+        # Must return bytes, ending with empty bytes
+        import itertools
+        # Start with content, then infinite empty bytes to avoid StopIteration
+        mock_proc.stdout.readline.side_effect = itertools.chain(
+            [
+                b"Applying edits to f1.py",
+                b"Writing f2.py",
+                b"Tokens: 100 sent",
+            ],
+            itertools.repeat(b"")
+        )
+        # stderr empty
+        mock_proc.stderr.readline.side_effect = itertools.repeat(b"")
+        
+        mock_proc.wait = AsyncMock(return_value=0)
+
+        result = await aider_tool.run_async("msg", ".")
+        assert result.success
+        assert "f1.py" in result.files_modified
+        assert result.tokens_used == 100
 
 @pytest.mark.asyncio
-async def test_aider_tool_failure(mock_shell):
-    tool = AiderTool()
-    
-    # Mock failure
-    # Ensure _is_allowed passes
-    mock_shell._is_allowed.return_value = (True, None)
-    
-    mock_shell.run_async = AsyncMock(return_value=ShellResult(
-        success=False,
-        stdout="",
-        stderr="Aider failed",
-        return_code=1,
-        command=["aider", "edit"]
-    ))
+async def test_aider_run_async_generic_exception(aider_tool):
+    """Test generic Exception in run_async."""
+    with patch("asyncio.create_subprocess_exec") as mock_exec:
+        mock_proc = AsyncMock()
+        mock_exec.return_value = mock_proc
+        mock_proc.wait.side_effect = Exception("General Failure")
+        
+        # Setup streams to finish immediately so we hit the exception in wait()
+        mock_proc.stdout.readline.side_effect = [b""]
+        mock_proc.stderr.readline.side_effect = [b""]
 
-    res = await tool.execute("edit", instruction="Bad things")
-    
-    assert res["success"] is False
-    assert "Aider failed" in res["error"]
+        result = await aider_tool.run_async("msg", ".")
+        assert result.success is False
+        assert "General Failure" in result.error
+
+@pytest.mark.asyncio
+async def test_aider_stream_output(aider_tool):
+    """Test stream_output generator."""
+    with patch("asyncio.create_subprocess_exec") as mock_exec:
+        mock_proc = AsyncMock()
+        mock_exec.return_value = mock_proc
+        mock_proc.stdout.readline.side_effect = [b"line1", b"line2", b""]
+        mock_proc.wait = AsyncMock(return_value=0)
+
+        lines = []
+        async for line in aider_tool.stream_output("hi", "."):
+            lines.append(line)
+
+        assert lines == ["line1", "line2"]
+
+@pytest.mark.asyncio
+async def test_aider_run_async_timeout(aider_tool):
+    """Test timeout in run_async."""
+    with patch("asyncio.create_subprocess_exec") as mock_exec:
+        mock_proc = AsyncMock()
+        mock_exec.return_value = mock_proc
+        mock_proc.stdout.readline.side_effect = [b"Thinking..."] # Infinite or just one line
+
+        with patch("asyncio.wait_for", side_effect=TimeoutError()):
+            result = await aider_tool.run_async("msg", ".", timeout=0.1)
+            assert not result.success
+            mock_proc.kill.assert_called()
+            assert "timed out" in result.error.lower() or "timeout" in result.error.lower()
+
+def test_aider_token_parsing_robust(aider_tool):
+    """Test token parsing with malformed input."""
+    assert aider_tool._parse_token_usage("Tokens:") is None
+    assert aider_tool._parse_token_usage("Tokens: abc sent") is None
+    assert aider_tool._parse_token_usage("Some other output") is None
+
+def test_aider_check_installed_robust(aider_tool):
+    """Test check_installed."""
+    with patch("subprocess.run") as mock_run:
+        # Success case
+        # We need the return value of run() to have a returncode attribute
+        process_mock = MagicMock()
+        process_mock.returncode = 0
+        mock_run.return_value = process_mock
+        
+        assert aider_tool.check_installed() is True
+
+        # Failure case (return code 1)
+        process_mock_fail = MagicMock()
+        process_mock_fail.returncode = 1
+        mock_run.return_value = process_mock_fail
+        
+        assert aider_tool.check_installed() is False
+
+        # Exception case
+        mock_run.side_effect = Exception("err")
+        assert aider_tool.check_installed() is False

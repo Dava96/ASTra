@@ -9,7 +9,7 @@ from astra.interfaces.llm import ChatMessage
 
 @pytest.fixture
 def llm_client():
-    with patch("astra.core.llm_client.get_config") as mock_config:
+    with patch("astra.adapters.llm_client.get_config") as mock_config:
         # Mock internal config structure
         mock_config.return_value.get.side_effect = lambda *args, **kwargs: "gpt-4" if "model" in args[1] else kwargs.get("default")
         return LiteLLMClient()
@@ -17,7 +17,7 @@ def llm_client():
 @pytest.mark.asyncio
 async def test_llm_chat_success(llm_client):
     """Test successful chat completion with acompletion mock."""
-    with patch("astra.core.llm_client.acompletion") as mock_acompletion:
+    with patch("astra.adapters.llm_client.acompletion") as mock_acompletion:
         mock_res = MagicMock()
         mock_res.choices = [MagicMock()]
         message = MagicMock()
@@ -41,7 +41,7 @@ async def test_llm_chat_success(llm_client):
 @pytest.mark.asyncio
 async def test_llm_tool_calls(llm_client):
     """Test chat with tool calls."""
-    with patch("astra.core.llm_client.acompletion") as mock_acompletion:
+    with patch("astra.adapters.llm_client.acompletion") as mock_acompletion:
         mock_res = MagicMock()
         mock_res.choices = [MagicMock()]
         message = MagicMock()
@@ -77,14 +77,14 @@ def test_llm_specialized_clients(llm_client):
 @pytest.mark.asyncio
 async def test_llm_chat_failure(llm_client):
     """Test chat failure handling."""
-    with patch("astra.core.llm_client.acompletion", side_effect=Exception("API Error")):
+    with patch("astra.adapters.llm_client.acompletion", side_effect=Exception("API Error")):
         with pytest.raises(Exception):
             await llm_client.chat([ChatMessage(role="user", content="hi")])
 
 @pytest.mark.asyncio
 async def test_llm_chat_stream(llm_client):
     """Test streaming completion."""
-    with patch("astra.core.llm_client.acompletion") as mock_acompletion:
+    with patch("astra.adapters.llm_client.acompletion") as mock_acompletion:
         async def mock_gen():
             yield MagicMock(choices=[MagicMock(delta=MagicMock(content="part1"))])
             yield MagicMock(choices=[MagicMock(delta=MagicMock(content="part2"))])

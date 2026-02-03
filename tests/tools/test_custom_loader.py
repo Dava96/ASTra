@@ -2,6 +2,7 @@
 
 import tempfile
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 
 import pytest
 
@@ -16,7 +17,8 @@ class TestShellCommandTool:
 
     @pytest.fixture
     def echo_tool(self):
-        return ShellCommandTool(
+        with patch("astra.tools.shell.ShellExecutor._is_allowed", return_value=(True, None)):
+            return ShellCommandTool(
             name="echo_test",
             description="Echo a message",
             command="echo {message}",

@@ -71,7 +71,7 @@ class IngestionConfig(BaseModel):
     safe_branches: list[str] = ["main", "master"]
 
 class LLMConfig(BaseModel):
-    model: str = "ollama/qwen2.5-coder:7b"
+    model: str = "ollama_chat/qwen2.5-coder:7b"
     host: str = "http://localhost:11434"
     context_limit: int = 32000
     base_url: str | None = None

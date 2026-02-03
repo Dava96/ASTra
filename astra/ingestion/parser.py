@@ -26,6 +26,7 @@ EXTENSION_TO_LANGUAGE = {
     ".py": "python",
     ".js": "javascript",
     ".jsx": "javascript",
+    ".mjs": "javascript",
     ".ts": "typescript",
     ".tsx": "tsx",
     ".go": "go",
@@ -44,9 +45,9 @@ LANGUAGE_MANIFEST_FILES = {
     "typescript": ["package.json", "tsconfig.json"],
     "tsx": ["package.json", "tsconfig.json"],
     "rust": ["Cargo.toml"],
-    "go": ["go.mod"],
+    "go": ["go.mod", "go.sum"],
     "java": ["pom.xml", "build.gradle"],
-    "php": ["composer.json"],
+    "php": ["composer.json", "composer.lock"],
     "ruby": ["Gemfile"],
 }
 
