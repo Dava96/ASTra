@@ -2,6 +2,12 @@
 
 ## Review of: {{request}}
 
+## Current Plan
+{{plan}}
+
+## Context Reference
+{{context}}
+
 ### 1. Strategic Audit
 - **Completeness**: Does the plan handle edge cases? [Yes/No]
 - **Architecture**: Is this domain-agnostic? [Yes/No]

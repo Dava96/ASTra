@@ -1,6 +1,5 @@
-
 import pytest
-from pathlib import Path
+
 from astra.tools.file_ops import FileOps
 
 
@@ -8,12 +7,14 @@ from astra.tools.file_ops import FileOps
 def temp_dir(tmp_path):
     return tmp_path
 
+
 @pytest.fixture
 def file_ops(temp_dir):
     ops = FileOps(backup_enabled=True)
     # Override root_dir to temp_dir to pass confinement checks
     ops._root_dir = temp_dir
     return ops
+
 
 @pytest.mark.asyncio
 async def test_file_ops_execute_read(file_ops, temp_dir):
@@ -23,12 +24,14 @@ async def test_file_ops_execute_read(file_ops, temp_dir):
     result = await file_ops.execute(operation="read", path=str(test_file))
     assert result == "hello"
 
+
 @pytest.mark.asyncio
 async def test_file_ops_execute_write(file_ops, temp_dir):
     test_file = temp_dir / "new.txt"
     result = await file_ops.execute(operation="write", path=str(test_file), content="world")
     assert "✅" in result
     assert test_file.read_text(encoding="utf-8") == "world"
+
 
 @pytest.mark.asyncio
 async def test_file_ops_execute_delete(file_ops, temp_dir):
@@ -38,6 +41,7 @@ async def test_file_ops_execute_delete(file_ops, temp_dir):
     result = await file_ops.execute(operation="delete", path=str(test_file))
     assert "✅" in result
     assert not test_file.exists()
+
 
 @pytest.mark.asyncio
 async def test_file_ops_execute_copy(file_ops, temp_dir):
@@ -50,6 +54,7 @@ async def test_file_ops_execute_copy(file_ops, temp_dir):
     assert dst.exists()
     assert dst.read_text(encoding="utf-8") == "content"
 
+
 @pytest.mark.asyncio
 async def test_file_ops_execute_move(file_ops, temp_dir):
     src = temp_dir / "move_src.txt"
@@ -61,6 +66,7 @@ async def test_file_ops_execute_move(file_ops, temp_dir):
     assert dst.exists()
     assert not src.exists()
 
+
 @pytest.mark.asyncio
 async def test_file_ops_execute_exists(file_ops, temp_dir):
     test_file = temp_dir / "exists.txt"
@@ -68,6 +74,7 @@ async def test_file_ops_execute_exists(file_ops, temp_dir):
 
     assert await file_ops.execute(operation="exists", path=str(test_file)) is True
     assert await file_ops.execute(operation="exists", path=str(temp_dir / "none.txt")) is False
+
 
 @pytest.mark.asyncio
 async def test_file_ops_execute_list(file_ops, temp_dir):
@@ -77,6 +84,7 @@ async def test_file_ops_execute_list(file_ops, temp_dir):
     result = await file_ops.execute(operation="list", path=str(temp_dir))
     assert isinstance(result, list)
     assert len(result) >= 2
+
 
 @pytest.mark.asyncio
 async def test_file_ops_error_cases(file_ops, temp_dir):
@@ -95,19 +103,23 @@ async def test_file_ops_error_cases(file_ops, temp_dir):
     result = await file_ops.execute(operation="unknown", path="any")
     assert "Unknown operation" in result
 
+
 @pytest.mark.asyncio
 async def test_file_ops_confinement_error(file_ops, temp_dir):
     # Temporarily set root to subfolder to test confinement
     sub = temp_dir / "subdir"
     sub.mkdir()
     file_ops._root_dir = sub
-    
+
     outside = temp_dir / "outside.txt"
     outside.write_text("bad", encoding="utf-8")
-    
+
     result = await file_ops.execute(operation="read", path=str(outside))
     # Implementation returns f"❌ Security Error: {e}" or "Failed to read"
-    assert "Security Error" in result or "outside project root" in result or "Failed to read" in result
+    assert (
+        "Security Error" in result or "outside project root" in result or "Failed to read" in result
+    )
+
 
 def test_file_ops_backup_behavior(file_ops, temp_dir):
     test_file = temp_dir / "backup.txt"
@@ -124,6 +136,7 @@ def test_file_ops_backup_behavior(file_ops, temp_dir):
     assert test_file.read_text(encoding="utf-8") == "old"
     assert not backup_file.exists()
 
+
 def test_file_ops_delete_backup(file_ops, temp_dir):
     test_file = temp_dir / "delete_bak.txt"
     test_file.write_text("data", encoding="utf-8")
@@ -133,11 +146,13 @@ def test_file_ops_delete_backup(file_ops, temp_dir):
     assert deleted_bak.exists()
     assert not test_file.exists()
 
+
 def test_file_ops_get_size(file_ops, temp_dir):
     test_file = temp_dir / "size.txt"
     test_file.write_text("12345", encoding="utf-8")
     assert file_ops.get_size(test_file) == 5
     assert file_ops.get_size(temp_dir / "nonexistent") == 0
+
 
 def test_file_ops_max_depth(temp_dir):
     """Test max_depth logic."""
@@ -150,13 +165,13 @@ def test_file_ops_max_depth(temp_dir):
     ops = FileOps()
     # Override root because fixture does. But here we use temp_dir directly as root?
     # FileOps(root_dir=...) defaults to cwd or config.
-    ops._root_dir = temp_dir 
+    ops._root_dir = temp_dir
 
     # depth=1 (root children only)
     # Note: list_files implementation depends on how it calculates depth.
     # If recursive=True (default list_files usually does walk).
     # Let's verify FileOps.list_files signature: (path, recursive=True, max_depth=None)
-    
+
     files = list(ops.list_files(temp_dir, max_depth=1))
     names = [f.name for f in files]
     assert "root.txt" in names
@@ -167,7 +182,7 @@ def test_file_ops_max_depth(temp_dir):
     # If max_depth=1, usually means immediate children.
     # d1.txt is child of sub (depth 2 from root).
     assert "d1.txt" not in names
-    
+
     files_d2 = list(ops.list_files(temp_dir, max_depth=2))
     names_d2 = [f.name for f in files_d2]
     assert "root.txt" in names_d2

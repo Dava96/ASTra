@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 from astra.core.tools import BaseTool
 
@@ -18,22 +18,21 @@ class SearchTool(BaseTool):
     parameters = {
         "type": "object",
         "properties": {
-            "query": {
-                "type": "string",
-                "description": "The search query to perform"
-            },
+            "query": {"type": "string", "description": "The search query to perform"},
             "site": {
                 "type": "string",
-                "description": "Restrict search to a specific domain (e.g. 'python.org')"
-            }
+                "description": "Restrict search to a specific domain (e.g. 'python.org')",
+            },
         },
-        "required": ["query"]
+        "required": ["query"],
     }
 
     def __init__(self, max_results: int = 5):
         self._max_results = max_results
 
-    async def execute(self, query: str, site: str | None = None, **kwargs: Any) -> list[dict[str, str]]:
+    async def execute(
+        self, query: str, site: str | None = None, **kwargs: Any
+    ) -> list[dict[str, str]]:
         """Execute web search and return structured results."""
         if site:
             query = f"site:{site} {query}"
@@ -49,11 +48,13 @@ class SearchTool(BaseTool):
             results = []
             with DDGS() as ddgs:
                 for r in ddgs.text(query, max_results=self._max_results):
-                    results.append({
-                        "title": r.get("title", ""),
-                        "href": r.get("href", ""),
-                        "body": r.get("body", "")
-                    })
+                    results.append(
+                        {
+                            "title": r.get("title", ""),
+                            "href": r.get("href", ""),
+                            "body": r.get("body", ""),
+                        }
+                    )
             return results
         except Exception as e:
             logger.error(f"Search failed: {e}")

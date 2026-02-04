@@ -7,6 +7,7 @@ from typing import Any
 @dataclass
 class LintIssue:
     """A single lint issue."""
+
     file: str
     line: int
     column: int | None = None
@@ -23,13 +24,14 @@ class LintIssue:
             "code": self.code,
             "message": self.message,
             "severity": self.severity,
-            "fixable": self.fixable
+            "fixable": self.fixable,
         }
 
 
 @dataclass
 class LintResult:
     """Result of running a linter."""
+
     linter: str
     success: bool
     issues: list[LintIssue] = field(default_factory=list)
@@ -48,5 +50,5 @@ class LintResult:
             "error_count": self.error_count,
             "warning_count": self.warning_count,
             "fixable_count": self.fixable_count,
-            "fixed_count": self.fixed_count
+            "fixed_count": self.fixed_count,
         }

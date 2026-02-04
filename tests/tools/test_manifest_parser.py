@@ -20,13 +20,9 @@ class TestPackageJsonParser:
         pkg = {
             "name": "my-app",
             "version": "1.0.0",
-            "scripts": {
-                "test": "jest",
-                "lint": "eslint .",
-                "build": "webpack"
-            },
+            "scripts": {"test": "jest", "lint": "eslint .", "build": "webpack"},
             "dependencies": {"react": "^18.0.0"},
-            "devDependencies": {"jest": "^29.0.0"}
+            "devDependencies": {"jest": "^29.0.0"},
         }
 
         pkg_file = tmp_path / "package.json"
@@ -56,12 +52,9 @@ class TestComposerJsonParser:
     def test_parse_full(self, tmp_path):
         composer = {
             "name": "vendor/app",
-            "scripts": {
-                "test": "phpunit",
-                "lint": "phpstan analyse"
-            },
+            "scripts": {"test": "phpunit", "lint": "phpstan analyse"},
             "require": {"php": "^8.0"},
-            "require-dev": {"phpunit/phpunit": "^10.0"}
+            "require-dev": {"phpunit/phpunit": "^10.0"},
         }
 
         composer_file = tmp_path / "composer.json"
@@ -183,12 +176,8 @@ class TestFormatManifest:
             "language": "javascript",
             "test_command": "npm test",
             "lint_command": "npm run lint",
-            "scripts": {
-                "test": "jest",
-                "lint": "eslint .",
-                "build": "webpack"
-            },
-            "dependencies": ["react", "lodash"]
+            "scripts": {"test": "jest", "lint": "eslint .", "build": "webpack"},
+            "dependencies": ["react", "lodash"],
         }
 
         context = format_manifest_for_context(manifest)

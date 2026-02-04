@@ -18,8 +18,11 @@ logger = logging.getLogger(__name__)
 # Callback type: (percent, current_count, total_count) -> Awaitable[None]
 ProgressCallback = Callable[[float, int, int], Awaitable[None]]
 
+
 # Top-level worker function for ProcessPoolExecutor (must be picklable)
-def _parse_worker(file_path: str, directory: str, ast_depth: int) -> tuple[str, list[Any] | None, str | None]:
+def _parse_worker(
+    file_path: str, directory: str, ast_depth: int
+) -> tuple[str, list[Any] | None, str | None]:
     """
     Worker function to parse a file in a separate process.
     Returns: (file_path_str, nodes, content_hash)
@@ -40,6 +43,7 @@ def _parse_worker(file_path: str, directory: str, ast_depth: int) -> tuple[str, 
         # Return None to indicate failure, but don't crash the worker
         print(f"Worker failed on {file_path}: {e}")
         return (file_path, None, None)
+
 
 class IngestionPipeline:
     """
@@ -66,7 +70,7 @@ class IngestionPipeline:
         collection_name: str,
         progress_callback: ProgressCallback | None = None,
         max_depth: int | None = None,
-        ast_depth: int | None = None
+        ast_depth: int | None = None,
     ) -> int:
         """
         Run the ingestion pipeline asynchronously.
@@ -92,16 +96,23 @@ class IngestionPipeline:
             now = time.time()
             if p >= 100 or (now - self._last_progress_time) >= self._progress_throttle_sec:
                 self._last_progress_time = now
+                coro = on_parse_progress(p, c, t)
                 try:
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
-                        loop.create_task(on_parse_progress(p, c, t))
+                        loop.create_task(coro)
+                    else:
+                        coro.close()
                 except Exception:
-                    pass
+                    coro.close()
 
         # -------------------------------------------------------------
         #  RUTHLESS OPTIMIZATION: O(1) Check + Parallel Parse
         # -------------------------------------------------------------
+
+        # RUTHLESS OPTIMIZATION: Preload model in background to avoid heartbeat blackouts
+        # This prevents the 10s+ freeze when first accessing embeddings
+        await self.store.preload_model()
 
         directory_path = Path(directory)
         files_to_process = []
@@ -120,7 +131,10 @@ class IngestionPipeline:
                 except ValueError:
                     pass
 
-            if any(p in str(root_path) for p in [".git", "__pycache__", "node_modules", ".venv", "env"] + ignore_patterns):
+            if any(
+                p in str(root_path)
+                for p in [".git", "__pycache__", "node_modules", ".venv", "env"] + ignore_patterns
+            ):
                 dirs[:] = []
                 continue
 
@@ -134,13 +148,15 @@ class IngestionPipeline:
                         files_to_process.append(str(fp))
 
         total_files = len(files_to_process) + skipped_count
-        logger.info(f"Total files: {total_files}. Skipped (O(1)): {skipped_count}. To process: {len(files_to_process)}")
+        logger.info(
+            f"Total files: {total_files}. Skipped (O(1)): {skipped_count}. To process: {len(files_to_process)}"
+        )
 
         if not files_to_process:
-             # Just save graph (it might have updates from other runs if we shared it, but usually fine)
-             # If completely skipped, we are done.
-             sync_progress_bridge(100, total_files, total_files)
-             return 0
+            # Just save graph (it might have updates from other runs if we shared it, but usually fine)
+            # If completely skipped, we are done.
+            sync_progress_bridge(100, total_files, total_files)
+            return 0
 
         # 1b. Parallel Parsing
         nodes_buffer = []
@@ -148,7 +164,7 @@ class IngestionPipeline:
         processed_count = 0
 
         # We use a limited number of workers to avoid memory explosion
-        max_workers = 2 # Conservative for stability
+        max_workers = 2  # Conservative for stability
 
         logger.info(f"Spinning up {max_workers} worker processes...")
 
@@ -174,10 +190,14 @@ class IngestionPipeline:
                     await self._process_batch(collection_name, nodes_buffer)
                     total_nodes += len(nodes_buffer)
                     nodes_buffer = []
-                    self.cache.save() # Save cache checkpoints
+                    self.cache.save()  # Save cache checkpoints
 
                 current_total_progress = skipped_count + processed_count
-                sync_progress_bridge(int(current_total_progress / total_files * 100), current_total_progress, total_files)
+                sync_progress_bridge(
+                    int(current_total_progress / total_files * 100),
+                    current_total_progress,
+                    total_files,
+                )
 
         # Process remaining
         if nodes_buffer:
@@ -185,10 +205,30 @@ class IngestionPipeline:
             total_nodes += len(nodes_buffer)
             self.cache.save()
 
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self.graph.save)
+        print(f"DEBUG PIPELINE: Saving graph to {self.graph._persist_path}")
+        self.graph.save()
 
-        logger.info(f"Ingestion complete. Total nodes: {total_nodes}. Skipped files: {skipped_count}/{total_files}")
+
+            # In IngestionPipeline._process_batch or at the end of run_async
+    
+        # 1. Build Graph
+        # ... (existing graph building) ...
+        
+        # 2. Calculate Importance
+        centrality_scores = self.graph.calculate_centrality()
+        
+        # 3. Update nodes with importance before upserting to Chroma
+        for node in nodes_buffer:
+            # Get score, default to low value if isolated
+            score = centrality_scores.get(node.id, 0.0)
+            node.metadata["importance"] = score
+            
+        # 4. Upsert to Chroma
+        self.store.add_nodes(collection_name, nodes_buffer)
+
+        logger.info(
+            f"Ingestion complete. Total nodes: {total_nodes}. Skipped files: {skipped_count}/{total_files}"
+        )
         return total_nodes
 
     async def _process_batch(self, collection: str, nodes: list[Any]):
@@ -214,4 +254,5 @@ class IngestionPipeline:
 
         # Explicit GC to prevent OOM on large ingestions
         import gc
+
         gc.collect()

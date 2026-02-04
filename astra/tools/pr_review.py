@@ -17,21 +17,15 @@ class PRReviewTool(BaseTool):
     parameters = {
         "type": "object",
         "properties": {
-            "pr_number": {
-                "type": "integer",
-                "description": "Pull request number to review"
-            },
-            "repo": {
-                "type": "string",
-                "description": "Repository name (owner/repo format)"
-            },
+            "pr_number": {"type": "integer", "description": "Pull request number to review"},
+            "repo": {"type": "string", "description": "Repository name (owner/repo format)"},
             "changed_files": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "List of changed file paths (if already known)"
-            }
+                "description": "List of changed file paths (if already known)",
+            },
         },
-        "required": ["pr_number", "repo"]
+        "required": ["pr_number", "repo"],
     }
 
     def __init__(self, knowledge_graph=None, vcs=None):
@@ -40,14 +34,10 @@ class PRReviewTool(BaseTool):
         self._vcs = vcs
 
     async def execute(
-        self,
-        pr_number: int,
-        repo: str,
-        changed_files: list[str] | None = None,
-        **kwargs: Any
+        self, pr_number: int, repo: str, changed_files: list[str] | None = None, **kwargs: Any
     ) -> dict[str, Any]:
         """Review a PR and return analysis results.
-        
+
         Returns:
             dict with keys: summary, risks, recommendations, impact_analysis
         """
@@ -57,7 +47,7 @@ class PRReviewTool(BaseTool):
             "summary": "",
             "risks": [],
             "recommendations": [],
-            "impact_analysis": {}
+            "impact_analysis": {},
         }
 
         # 1. Get changed files (from VCS if not provided)
@@ -91,17 +81,17 @@ class PRReviewTool(BaseTool):
 
         # 3. Build risk assessment
         if high_impact_files:
-            results["risks"].append({
-                "severity": "high",
-                "message": f"{len(high_impact_files)} files have high blast radius",
-                "files": [f["file"] for f in high_impact_files]
-            })
+            results["risks"].append(
+                {
+                    "severity": "high",
+                    "message": f"{len(high_impact_files)} files have high blast radius",
+                    "files": [f["file"] for f in high_impact_files],
+                }
+            )
 
         # 4. Generate recommendations
         if len(affected_dependents) > 10:
-            results["recommendations"].append(
-                "Consider breaking this PR into smaller changes"
-            )
+            results["recommendations"].append("Consider breaking this PR into smaller changes")
 
         if any(f.endswith("package.json") or f.endswith("composer.json") for f in changed_files):
             results["recommendations"].append(
@@ -118,7 +108,7 @@ class PRReviewTool(BaseTool):
         results["impact_analysis"] = {
             "changed_files": len(changed_files),
             "affected_dependents": len(affected_dependents),
-            "high_impact_files": len(high_impact_files)
+            "high_impact_files": len(high_impact_files),
         }
 
         return results
@@ -129,9 +119,6 @@ class PRReviewTool(BaseTool):
             return None
         try:
             dependents = self._kg.get_dependents(filepath)
-            return {
-                "file": filepath,
-                "dependents": dependents
-            }
+            return {"file": filepath, "dependents": dependents}
         except Exception:
             return None

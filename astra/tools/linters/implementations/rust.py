@@ -9,6 +9,7 @@ from astra.tools.linters.models import LintIssue
 def _register_rust(cls):
     """Delayed registration to avoid circular import."""
     from astra.tools.linters.registry import register_linter
+
     return register_linter(cls)
 
 
@@ -42,15 +43,17 @@ class ClippyLinter(BaseLinter):
             # Capture location line
             loc_match = re.match(r"^\s*--> (.+):(\d+):(\d+)$", line)
             if loc_match and current_message:
-                issues.append(LintIssue(
-                    file=loc_match.group(1),
-                    line=int(loc_match.group(2)),
-                    column=int(loc_match.group(3)),
-                    message=current_message,
-                    severity=current_severity,
-                    code="clippy",
-                    fixable=True
-                ))
+                issues.append(
+                    LintIssue(
+                        file=loc_match.group(1),
+                        line=int(loc_match.group(2)),
+                        column=int(loc_match.group(3)),
+                        message=current_message,
+                        severity=current_severity,
+                        code="clippy",
+                        fixable=True,
+                    )
+                )
                 current_message = ""
 
         return issues

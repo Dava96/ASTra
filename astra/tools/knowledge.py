@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 # The KnowledgeTool is stateless otherwise, but the graph is stateful (loaded from pickle)
 _SHARED_GRAPH = None
 
+
 def get_shared_graph() -> KnowledgeGraph:
     global _SHARED_GRAPH
     if _SHARED_GRAPH is None:
@@ -29,14 +30,14 @@ class KnowledgeTool(BaseTool):
             "query_type": {
                 "type": "string",
                 "enum": ["dependencies", "dependents", "info", "impact", "stats"],
-                "description": "Type of query to perform"
+                "description": "Type of query to perform",
             },
             "target": {
                 "type": "string",
-                "description": "Target file path or node ID (required for non-stats queries)"
-            }
+                "description": "Target file path or node ID (required for non-stats queries)",
+            },
         },
-        "required": ["query_type"]
+        "required": ["query_type"],
     }
 
     def __init__(self):
@@ -53,11 +54,17 @@ class KnowledgeTool(BaseTool):
 
         if query_type == "dependencies":
             deps = self._graph.get_file_dependencies(target)
-            return f"Dependencies of {target}:\n" + "\n".join(deps) if deps else "No dependencies found."
+            return (
+                f"Dependencies of {target}:\n" + "\n".join(deps)
+                if deps
+                else "No dependencies found."
+            )
 
         elif query_type == "dependents":
             deps = self._graph.get_file_dependents(target)
-            return f"Dependents of {target}:\n" + "\n".join(deps) if deps else "No dependents found."
+            return (
+                f"Dependents of {target}:\n" + "\n".join(deps) if deps else "No dependents found."
+            )
 
         elif query_type == "info":
             info = self._graph.get_node_info(target)

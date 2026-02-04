@@ -8,7 +8,7 @@ from astra.tools.linters.models import LintIssue, LintResult
 
 class BaseLinter(ABC):
     """Abstract base class for linters.
-    
+
     Subclasses must define:
     - name: Unique linter identifier
     - languages: List of language codes this linter supports
@@ -24,8 +24,8 @@ class BaseLinter(ABC):
     fix_cmd: list[str] | None = None
     is_type_checker: bool = False
     detect_files: list[str] = []  # Legacy Pattern detection
-    manifest_files: list[str] = [] # Files that define project metadata (e.g. pyproject.toml)
-    config_files: list[str] = []   # Files that configure this tool (e.g. ruff.toml)
+    manifest_files: list[str] = []  # Files that define project metadata (e.g. pyproject.toml)
+    config_files: list[str] = []  # Files that configure this tool (e.g. ruff.toml)
 
     def can_run(self, project_path: Path) -> bool:
         """Check if this linter can run on the project."""
@@ -50,7 +50,7 @@ class BaseLinter(ABC):
 
     def run(self, project_path: Path, auto_fix: bool = False) -> LintResult:
         """Run the linter on a project.
-        
+
         This is a template method - subclasses typically don't override this.
         """
         from astra.tools.shell import ShellExecutor
@@ -75,7 +75,7 @@ class BaseLinter(ABC):
             error_count=sum(1 for i in issues if i.severity == "error"),
             warning_count=sum(1 for i in issues if i.severity == "warning"),
             fixable_count=sum(1 for i in issues if i.fixable),
-            raw_output=result.stdout[:2000]
+            raw_output=result.stdout[:2000],
         )
 
         # If we did a fix run, check what's remaining

@@ -26,16 +26,17 @@ async def test_rag_first_flow():
     mock_config = MagicMock()
     mock_config.llm.model = "test-model"
 
-    with patch('astra.core.orchestrator.TaskQueue'), \
-         patch('astra.core.orchestrator.LiteLLMClient', return_value=mock_llm), \
-         patch('astra.core.orchestrator.ChromaDBStore'), \
-         patch('astra.core.orchestrator.ASTParser'), \
-         patch('astra.core.orchestrator.KnowledgeGraph'), \
-         patch('astra.core.orchestrator.GitHubVCS'), \
-         patch('astra.core.orchestrator.ShellExecutor'), \
-         patch('astra.core.orchestrator.FileOps'), \
-         patch('astra.core.orchestrator.AiderTool'):
-
+    with (
+        patch("astra.core.orchestrator.TaskQueue"),
+        patch("astra.core.orchestrator.LiteLLMClient", return_value=mock_llm),
+        patch("astra.core.orchestrator.ChromaDBStore"),
+        patch("astra.core.orchestrator.ASTParser"),
+        patch("astra.core.orchestrator.KnowledgeGraph"),
+        patch("astra.core.orchestrator.GitHubVCS"),
+        patch("astra.core.orchestrator.ShellExecutor"),
+        patch("astra.core.orchestrator.FileOps"),
+        patch("astra.core.orchestrator.AiderTool"),
+    ):
         orch = Orchestrator(gateway=mock_gateway)
         orch._tools.get = MagicMock(return_value=mock_knowledge_tool)
 
@@ -49,10 +50,17 @@ async def test_rag_first_flow():
         # Since we can't easily access the return_value of the patch in the context manager
         # unless we assign it. But we patched the CLASS.
         # So orch._vector_store is an instance of the Mock class.
-        orch._vector_store.query.return_value = [mock_result]
+        orch._vector_store.query = MagicMock(return_value=[mock_result])
 
         # Create a task
-        task = Task(id="t1", type="feature", request="Update login logic", channel_id="c1", user_id="u1", project="p1")
+        task = Task(
+            id="t1",
+            type="feature",
+            request="Update login logic",
+            channel_id="c1",
+            user_id="u1",
+            project="p1",
+        )
         context = TaskContext(task=task, project_path=".", collection_name="c1", branch_name="b1")
 
         # Mock _plan method to isolate the RAG logic if it's separate?
@@ -78,9 +86,11 @@ async def test_rag_first_flow():
         # Mock LLM chat
         mock_chat_llm = MagicMock()
         mock_response = MagicMock(content="Plan: Do stuff")
-        mock_response.tool_calls = None # Ensure it's treated as final text, not tool call
+        mock_response.tool_calls = None  # Ensure it's treated as final text, not tool call
         mock_chat_llm.chat = AsyncMock(return_value=mock_response)
         mock_llm.for_planning.return_value = mock_chat_llm
+        mock_llm.for_critic.return_value = mock_chat_llm
+        orch._llm = mock_llm  # Ensure orch uses our mock_llm
 
         # Execute
         await orch._plan(context)

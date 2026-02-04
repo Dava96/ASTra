@@ -1,4 +1,3 @@
-
 from astra.adapters.chromadb_store import ChromaDBStore
 
 
@@ -15,6 +14,7 @@ def test():
         # Use a simple text query
         results = store.query(name, "test", n_results=1)
         print(f"Results: {results}")
+
 
 if __name__ == "__main__":
     test()

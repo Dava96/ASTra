@@ -11,6 +11,7 @@ from astra.tools.file_ops import FileOps
 
 logger = logging.getLogger(__name__)
 
+
 class ArchitectureGenerator:
     """Generates architecture documentation for a project."""
 
@@ -21,7 +22,17 @@ class ArchitectureGenerator:
 
     async def generate_if_missing(self, project_path: str) -> bool:
         """Generate ARCHITECTURE.md if it doesn't exist."""
-        path = Path(project_path) / "ARCHITECTURE.md"
+        # Prefer .astra directory
+        astra_dir = Path(project_path) / ".astra"
+        astra_dir.mkdir(exist_ok=True)
+
+        path = astra_dir / "ARCHITECTURE.md"
+
+        # Backward compatibility check
+        root_path = Path(project_path) / "ARCHITECTURE.md"
+        if root_path.exists():
+            return False
+
         if path.exists():
             return False
 
@@ -58,11 +69,13 @@ class ArchitectureGenerator:
         )
 
         messages = [
-             ChatMessage(role="system", content="You are a senior software architect. Document the architecture of the provided codebase."),
-             ChatMessage(role="user", content=prompt)
+            ChatMessage(
+                role="system",
+                content="You are a senior software architect. Document the architecture of the provided codebase.",
+            ),
+            ChatMessage(role="user", content=prompt),
         ]
 
         # 3. Get Response
         response = await self._llm.chat(messages)
         return response.content
-

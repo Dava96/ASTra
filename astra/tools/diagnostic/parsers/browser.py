@@ -10,6 +10,7 @@ from astra.tools.diagnostic.suggestions import get_suggestion
 def _register_browser_parser(cls):
     """Delayed registration to avoid circular import."""
     from astra.tools.diagnostic.registry import register_parser
+
     return register_parser(cls)
 
 
@@ -36,15 +37,15 @@ class BrowserConsoleParser(OutputParser):
     # 3. message (required)
     # Modified to allow spaced optional groups and leading whitespace
     ERROR_REGEX = re.compile(
-        r"^\s*(?:(?P<prefix>Uncaught|console\.error[:\(]|\[ERROR\])\s*)?" # Optional Prefix
-        r"(?:(?P<type>\w+Error):\s*)?"                                    # Optional Type
-        r"(?P<message>.+)",                                               # Message
-        re.MULTILINE
+        r"^\s*(?:(?P<prefix>Uncaught|console\.error[:\(]|\[ERROR\])\s*)?"  # Optional Prefix
+        r"(?:(?P<type>\w+Error):\s*)?"  # Optional Type
+        r"(?P<message>.+)",  # Message
+        re.MULTILINE,
     )
 
     STACK_REGEX = re.compile(
         r"(?:at\s+.+?\s+\()?(?:https?://[^/]+)?(?P<file>/[^:]+):(?P<line>\d+):(?P<col>\d+)",
-        re.IGNORECASE
+        re.IGNORECASE,
     )
 
     def parse(self, output: str) -> TestResult:
@@ -64,17 +65,17 @@ class BrowserConsoleParser(OutputParser):
             result.failed += 1
 
             final_type = err_type or (prefix.strip() if prefix else "Error")
-            final_type = final_type.replace(":", "").replace("(", "") # clean up
+            final_type = final_type.replace(":", "").replace("(", "")  # clean up
 
             error = ParsedError(
                 error_type=final_type,
                 message=message.strip()[:200],
-                suggestion=get_suggestion(f"{final_type}: {message}")
+                suggestion=get_suggestion(f"{final_type}: {message}"),
             )
 
             # Look ahead for stack trace in immediate context (next 500 chars)
             start_idx = match.end()
-            context = output[start_idx:start_idx+500]
+            context = output[start_idx : start_idx + 500]
             stack_match = self.STACK_REGEX.search(context)
 
             if stack_match:

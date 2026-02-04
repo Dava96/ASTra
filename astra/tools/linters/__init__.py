@@ -5,10 +5,10 @@ a separate module that registers itself via the @register_linter decorator.
 
 Usage:
     from astra.tools.linters import LintTool, run_lint
-    
+
     # Run linters on a project
     result = run_lint("/path/to/project")
-    
+
     # Get available linters
     from astra.tools.linters.registry import LINTER_REGISTRY
     print(LINTER_REGISTRY.keys())

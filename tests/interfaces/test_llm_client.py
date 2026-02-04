@@ -34,7 +34,7 @@ class TestLLMResponse:
             completion_tokens=50,
             total_tokens=150,
             model="gpt-4",
-            finish_reason="stop"
+            finish_reason="stop",
         )
 
         assert response.content == "This is the response"
@@ -58,11 +58,7 @@ class TestTokenUsage:
     def test_add_single_response(self):
         usage = TokenUsage()
         response = LLMResponse(
-            content="test",
-            prompt_tokens=100,
-            completion_tokens=50,
-            total_tokens=150,
-            model="test"
+            content="test", prompt_tokens=100, completion_tokens=50, total_tokens=150, model="test"
         )
 
         usage.add(response)
@@ -81,7 +77,7 @@ class TestTokenUsage:
                 prompt_tokens=100,
                 completion_tokens=50,
                 total_tokens=150,
-                model="test"
+                model="test",
             )
             usage.add(response)
 
@@ -115,7 +111,7 @@ class TestLiteLLMClientMocked:
                 ("llm", "planning_model"): None,
                 ("llm", "coding_model"): None,
                 ("orchestration", "fallback_strategy"): {"escalation_model": "gpt-4o"},
-                ("orchestration", "fallback_strategy", "escalation_model"): "gpt-4o"
+                ("orchestration", "fallback_strategy", "escalation_model"): "gpt-4o",
             }
             return mapping.get(args, default)
 
@@ -124,8 +120,9 @@ class TestLiteLLMClientMocked:
 
     @pytest.fixture
     def llm_client(self, mock_config):
-        with patch('astra.adapters.llm_client.get_config', return_value=mock_config):
+        with patch("astra.adapters.llm_client.get_config", return_value=mock_config):
             from astra.adapters.llm_client import LiteLLMClient
+
             return LiteLLMClient()
 
     def test_client_initialization(self, llm_client):
@@ -146,7 +143,7 @@ class TestLiteLLMClientMocked:
         """Test message formatting."""
         messages = [
             ChatMessage(role="system", content="System prompt"),
-            ChatMessage(role="user", content="User message")
+            ChatMessage(role="user", content="User message"),
         ]
 
         formatted = llm_client._format_messages(messages)
@@ -158,17 +155,14 @@ class TestLiteLLMClientMocked:
     @pytest.mark.asyncio
     async def test_chat_calls_acompletion(self, llm_client):
         """Test that chat method calls LiteLLM acompletion."""
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock_completion:
+        with patch(
+            "astra.adapters.llm_client.acompletion", new_callable=AsyncMock
+        ) as mock_completion:
             mock_completion.return_value = MagicMock(
-                choices=[MagicMock(
-                    message=MagicMock(content="Response text"),
-                    finish_reason="stop"
-                )],
-                usage=MagicMock(
-                    prompt_tokens=100,
-                    completion_tokens=50,
-                    total_tokens=150
-                )
+                choices=[
+                    MagicMock(message=MagicMock(content="Response text"), finish_reason="stop")
+                ],
+                usage=MagicMock(prompt_tokens=100, completion_tokens=50, total_tokens=150),
             )
             # Ensure mock integers behave like integers
             mock_completion.return_value.usage.prompt_tokens = 100
@@ -185,17 +179,12 @@ class TestLiteLLMClientMocked:
     @pytest.mark.asyncio
     async def test_chat_tracks_usage(self, llm_client):
         """Test that chat accumulates token usage."""
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock_completion:
+        with patch(
+            "astra.adapters.llm_client.acompletion", new_callable=AsyncMock
+        ) as mock_completion:
             mock_completion.return_value = MagicMock(
-                choices=[MagicMock(
-                    message=MagicMock(content="Response"),
-                    finish_reason="stop"
-                )],
-                usage=MagicMock(
-                    prompt_tokens=100,
-                    completion_tokens=50,
-                    total_tokens=150
-                )
+                choices=[MagicMock(message=MagicMock(content="Response"), finish_reason="stop")],
+                usage=MagicMock(prompt_tokens=100, completion_tokens=50, total_tokens=150),
             )
             mock_completion.return_value.usage.prompt_tokens = 100
             mock_completion.return_value.usage.completion_tokens = 50
@@ -212,10 +201,7 @@ class TestLiteLLMClientMocked:
     def test_reset_usage(self, llm_client):
         """Test resetting token usage."""
         llm_client._usage = TokenUsage(
-            prompt_tokens=1000,
-            completion_tokens=500,
-            total_tokens=1500,
-            calls=10
+            prompt_tokens=1000, completion_tokens=500, total_tokens=1500, calls=10
         )
 
         llm_client.reset_usage()
@@ -234,31 +220,37 @@ class TestTokenCounting:
         config.model = "gpt-4"
         config.get = MagicMock(return_value=None)
 
-        with patch('astra.adapters.llm_client.get_config', return_value=config):
+        with patch("astra.adapters.llm_client.get_config", return_value=config):
             from astra.adapters.llm_client import LiteLLMClient
+
             return LiteLLMClient()
 
     def test_count_tokens_short_text(self, llm_client):
         """Test counting tokens in short text."""
-        with patch('astra.adapters.llm_client.token_counter', return_value=5):
+        with patch("astra.adapters.llm_client.token_counter", return_value=5):
             count = llm_client.count_tokens("Hello world!")
             assert count == 5
 
     def test_count_tokens_fallback(self, llm_client):
         """Test fallback when token_counter fails."""
-        with patch('astra.adapters.llm_client.token_counter', side_effect=Exception("Failed")):
+        with patch("astra.adapters.llm_client.token_counter", side_effect=Exception("Failed")):
             count = llm_client.count_tokens("Hello world!")  # 12 chars -> ~3 tokens
             assert count >= 1  # Fallback estimate
 
-    @pytest.mark.parametrize("text,expected_min,expected_max", [
-        ("", 0, 1),
-        ("a", 0, 2),
-        ("Hello, how are you today?", 5, 10),
-        ("x" * 1000, 200, 300),  # Long text
-    ])
+    @pytest.mark.parametrize(
+        "text,expected_min,expected_max",
+        [
+            ("", 0, 1),
+            ("a", 0, 2),
+            ("Hello, how are you today?", 5, 10),
+            ("x" * 1000, 200, 300),  # Long text
+        ],
+    )
     def test_count_tokens_ranges(self, llm_client, text, expected_min, expected_max):
         """Test token counting for various text lengths."""
-        with patch('astra.adapters.llm_client.token_counter', side_effect=Exception("Use fallback")):
+        with patch(
+            "astra.adapters.llm_client.token_counter", side_effect=Exception("Use fallback")
+        ):
             count = llm_client.count_tokens(text)
             # Fallback is len(text) // 4
             expected = len(text) // 4
@@ -272,17 +264,20 @@ class TestFallbackBehavior:
     def llm_with_fallback(self):
         config = MagicMock()
         config.model = "ollama/qwen2.5-coder:7b"
-        config.get = MagicMock(side_effect=lambda *args, default=None: {
-            ("llm", "planning_model"): "ollama/qwen2.5-coder:7b",
-            ("llm", "coding_model"): None,
-            ("llm", "base_url"): None,
-            ("llm", "host"): "http://localhost:11434",
-            ("llm", "context_limit"): 32000,
-            ("orchestration", "fallback_strategy"): {"escalation_model": "gpt-4o"},
-        }.get(args, default))
+        config.get = MagicMock(
+            side_effect=lambda *args, default=None: {
+                ("llm", "planning_model"): "ollama/qwen2.5-coder:7b",
+                ("llm", "coding_model"): None,
+                ("llm", "base_url"): None,
+                ("llm", "host"): "http://localhost:11434",
+                ("llm", "context_limit"): 32000,
+                ("orchestration", "fallback_strategy"): {"escalation_model": "gpt-4o"},
+            }.get(args, default)
+        )
 
-        with patch('astra.adapters.llm_client.get_config', return_value=config):
+        with patch("astra.adapters.llm_client.get_config", return_value=config):
             from astra.adapters.llm_client import LiteLLMClient
+
             return LiteLLMClient()
 
     @pytest.mark.asyncio
@@ -296,18 +291,17 @@ class TestFallbackBehavior:
             if call_count == 1:
                 raise Exception("Primary model unavailable")
             mock_resp = MagicMock(
-                choices=[MagicMock(
-                    message=MagicMock(content="Fallback response"),
-                    finish_reason="stop"
-                )],
-                usage=MagicMock(prompt_tokens=50, completion_tokens=25, total_tokens=75)
+                choices=[
+                    MagicMock(message=MagicMock(content="Fallback response"), finish_reason="stop")
+                ],
+                usage=MagicMock(prompt_tokens=50, completion_tokens=25, total_tokens=75),
             )
             mock_resp.usage.prompt_tokens = 50
             mock_resp.usage.completion_tokens = 25
             mock_resp.usage.total_tokens = 75
             return mock_resp
 
-        with patch('astra.adapters.llm_client.acompletion', side_effect=mock_acompletion):
+        with patch("astra.adapters.llm_client.acompletion", side_effect=mock_acompletion):
             messages = [ChatMessage(role="user", content="Hello")]
             response = await llm_with_fallback.chat_with_fallback(messages)
 
@@ -317,7 +311,7 @@ class TestFallbackBehavior:
     @pytest.mark.asyncio
     async def test_fallback_also_fails(self, llm_with_fallback):
         """Test handling when both primary and fallback fail."""
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock:
+        with patch("astra.adapters.llm_client.acompletion", new_callable=AsyncMock) as mock:
             mock.side_effect = Exception("All models failed")
 
             messages = [ChatMessage(role="user", content="Hello")]
@@ -337,27 +331,30 @@ class TestTemperatureSettings:
         config.llm.model = "test-model"
         config.get = MagicMock(return_value=None)
 
-        with patch('astra.adapters.llm_client.get_config', return_value=config):
+        with patch("astra.adapters.llm_client.get_config", return_value=config):
             from astra.adapters.llm_client import LiteLLMClient
+
             return LiteLLMClient()
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("temperature", [0.0, 0.5, 0.7, 1.0, 1.5, 2.0])
     async def test_temperature_passed_correctly(self, llm_client, temperature):
         """Test that temperature is passed to the API."""
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock:
+        with patch("astra.adapters.llm_client.acompletion", new_callable=AsyncMock) as mock:
             mock.return_value = MagicMock(
                 choices=[MagicMock(message=MagicMock(content=""), finish_reason="stop")],
-                usage=MagicMock(prompt_tokens=10, completion_tokens=5, total_tokens=15)
+                usage=MagicMock(prompt_tokens=10, completion_tokens=5, total_tokens=15),
             )
             mock.return_value.usage.prompt_tokens = 10
             mock.return_value.usage.completion_tokens = 5
             mock.return_value.usage.total_tokens = 15
 
-            await llm_client.chat([ChatMessage(role="user", content="test")], temperature=temperature)
+            await llm_client.chat(
+                [ChatMessage(role="user", content="test")], temperature=temperature
+            )
 
             call_kwargs = mock.call_args[1]
-            assert call_kwargs['temperature'] == temperature
+            assert call_kwargs["temperature"] == temperature
 
 
 class TestEdgeCases:
@@ -371,17 +368,18 @@ class TestEdgeCases:
         config.llm.model = "test-model"
         config.get = MagicMock(return_value=None)
 
-        with patch('astra.adapters.llm_client.get_config', return_value=config):
+        with patch("astra.adapters.llm_client.get_config", return_value=config):
             from astra.adapters.llm_client import LiteLLMClient
+
             return LiteLLMClient()
 
     @pytest.mark.asyncio
     async def test_empty_message_list(self, llm_client):
         """Test handling of empty message list."""
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock:
+        with patch("astra.adapters.llm_client.acompletion", new_callable=AsyncMock) as mock:
             mock.return_value = MagicMock(
                 choices=[MagicMock(message=MagicMock(content=""), finish_reason="stop")],
-                usage=MagicMock(prompt_tokens=0, completion_tokens=0, total_tokens=0)
+                usage=MagicMock(prompt_tokens=0, completion_tokens=0, total_tokens=0),
             )
             mock.return_value.usage.prompt_tokens = 0
             mock.return_value.usage.completion_tokens = 0
@@ -396,10 +394,10 @@ class TestEdgeCases:
         """Test handling of very long messages."""
         long_content = "x" * 100000  # 100KB message
 
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock:
+        with patch("astra.adapters.llm_client.acompletion", new_callable=AsyncMock) as mock:
             mock.return_value = MagicMock(
                 choices=[MagicMock(message=MagicMock(content="Response"), finish_reason="length")],
-                usage=MagicMock(prompt_tokens=25000, completion_tokens=100, total_tokens=25100)
+                usage=MagicMock(prompt_tokens=25000, completion_tokens=100, total_tokens=25100),
             )
             mock.return_value.usage.prompt_tokens = 25000
             mock.return_value.usage.completion_tokens = 100
@@ -412,10 +410,12 @@ class TestEdgeCases:
     @pytest.mark.asyncio
     async def test_unicode_content(self, llm_client):
         """Test handling of unicode in messages."""
-        with patch('astra.adapters.llm_client.acompletion', new_callable=AsyncMock) as mock:
+        with patch("astra.adapters.llm_client.acompletion", new_callable=AsyncMock) as mock:
             mock.return_value = MagicMock(
-                choices=[MagicMock(message=MagicMock(content="こんにちは！"), finish_reason="stop")],
-                usage=MagicMock(prompt_tokens=10, completion_tokens=5, total_tokens=15)
+                choices=[
+                    MagicMock(message=MagicMock(content="こんにちは！"), finish_reason="stop")
+                ],
+                usage=MagicMock(prompt_tokens=10, completion_tokens=5, total_tokens=15),
             )
             mock.return_value.usage.prompt_tokens = 10
             mock.return_value.usage.completion_tokens = 5

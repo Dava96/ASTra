@@ -15,23 +15,27 @@ class TestAiderGitAdapter:
     def adapter(self):
         return AiderGitAdapter()
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_clone_success(self, mock_repo_cls, adapter):
         """Test successful clone."""
         result = adapter.clone("https://github.com/test/repo", "/tmp/repo")
 
-        mock_repo_cls.clone_from.assert_called_once_with("https://github.com/test/repo", "/tmp/repo")
+        mock_repo_cls.clone_from.assert_called_once_with(
+            "https://github.com/test/repo", "/tmp/repo"
+        )
         assert result.success
         assert result.path == "/tmp/repo"
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_clone_auth_injection(self, mock_repo_cls, adapter):
         """Test authentication token injection."""
         adapter.clone("https://github.com/test/repo", "/tmp/repo", "secret_token")
 
-        mock_repo_cls.clone_from.assert_called_once_with("https://secret_token@github.com/test/repo", "/tmp/repo")
+        mock_repo_cls.clone_from.assert_called_once_with(
+            "https://secret_token@github.com/test/repo", "/tmp/repo"
+        )
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_clone_failure(self, mock_repo_cls, adapter):
         """Test clone failure handling."""
         mock_repo_cls.clone_from.side_effect = GitCommandError("clone", "failed")
@@ -40,7 +44,7 @@ class TestAiderGitAdapter:
         assert not result.success
         assert "failed" in result.error
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_create_branch(self, mock_repo_cls, adapter):
         """Test branch creation."""
         mock_repo = MagicMock()
@@ -54,7 +58,7 @@ class TestAiderGitAdapter:
         assert result.success
         assert result.branch_name == "feature/test"
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_commit_changes(self, mock_repo_cls, adapter):
         """Test committing changes."""
         mock_repo = MagicMock()
@@ -68,7 +72,7 @@ class TestAiderGitAdapter:
         assert result.success
         assert result.commit_hash == "abc1234"
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_push_changes(self, mock_repo_cls, adapter):
         """Test pushing changes."""
         mock_repo = MagicMock()
@@ -79,7 +83,7 @@ class TestAiderGitAdapter:
         mock_repo.git.push.assert_called_with("--set-upstream", "origin", "feature/test")
         assert success
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_merge_conflict(self, mock_repo_cls, adapter):
         """Test merge conflict handling."""
         mock_repo = MagicMock()
@@ -92,7 +96,7 @@ class TestAiderGitAdapter:
         assert result.has_conflicts
         assert "CONFLICT" in result.error
 
-    @patch('astra.adapters.vcs_git.Repo')
+    @patch("astra.adapters.vcs_git.Repo")
     def test_get_changed_files(self, mock_repo_cls, adapter):
         """Test getting changed files."""
         mock_repo = MagicMock()

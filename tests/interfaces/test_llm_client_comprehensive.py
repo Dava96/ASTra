@@ -1,4 +1,3 @@
-
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -11,8 +10,11 @@ from astra.interfaces.llm import ChatMessage
 def llm_client():
     with patch("astra.adapters.llm_client.get_config") as mock_config:
         # Mock internal config structure
-        mock_config.return_value.get.side_effect = lambda *args, **kwargs: "gpt-4" if "model" in args[1] else kwargs.get("default")
+        mock_config.return_value.get.side_effect = (
+            lambda *args, **kwargs: "gpt-4" if "model" in args[1] else kwargs.get("default")
+        )
         return LiteLLMClient()
+
 
 @pytest.mark.asyncio
 async def test_llm_chat_success(llm_client):
@@ -37,6 +39,7 @@ async def test_llm_chat_success(llm_client):
         assert response.content == "hello"
         assert response.total_tokens == 15
         assert llm_client._usage.total_tokens == 15
+
 
 @pytest.mark.asyncio
 async def test_llm_tool_calls(llm_client):
@@ -66,6 +69,7 @@ async def test_llm_tool_calls(llm_client):
         assert len(response.tool_calls) == 1
         assert response.tool_calls[0]["function"]["name"] == "my_tool"
 
+
 def test_llm_specialized_clients(llm_client):
     """Test specialized client wrappers."""
     p_client = LiteLLMClient.for_planning()
@@ -74,17 +78,21 @@ def test_llm_specialized_clients(llm_client):
     e_client = LiteLLMClient.for_coding()
     assert e_client._purpose == "coding"
 
+
 @pytest.mark.asyncio
 async def test_llm_chat_failure(llm_client):
     """Test chat failure handling."""
-    with patch("astra.adapters.llm_client.acompletion", side_effect=Exception("API Error")):
-        with pytest.raises(Exception):
-            await llm_client.chat([ChatMessage(role="user", content="hi")])
+    with patch(
+        "astra.adapters.llm_client.acompletion", side_effect=Exception("API Error")
+    ), pytest.raises(Exception, match="API Error"):
+        await llm_client.chat([ChatMessage(role="user", content="hi")])
+
 
 @pytest.mark.asyncio
 async def test_llm_chat_stream(llm_client):
     """Test streaming completion."""
     with patch("astra.adapters.llm_client.acompletion") as mock_acompletion:
+
         async def mock_gen():
             yield MagicMock(choices=[MagicMock(delta=MagicMock(content="part1"))])
             yield MagicMock(choices=[MagicMock(delta=MagicMock(content="part2"))])

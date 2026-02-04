@@ -15,10 +15,10 @@ class TestSearchTool:
 
         mock_results = [
             {"title": "T1", "href": "h1", "body": "b1"},
-            {"title": "T2", "href": "h2", "body": "b2"}
+            {"title": "T2", "href": "h2", "body": "b2"},
         ]
 
-        with patch('astra.tools.search.DDGS') as MockDDGS:
+        with patch("astra.tools.search.DDGS") as MockDDGS:
             mock_instance = MockDDGS.return_value.__enter__.return_value
             mock_instance.text.return_value = mock_results
 
@@ -36,7 +36,7 @@ class TestSearchTool:
         """Test empty search results."""
         tool = SearchTool()
 
-        with patch('astra.tools.search.DDGS') as MockDDGS:
+        with patch("astra.tools.search.DDGS") as MockDDGS:
             mock_instance = MockDDGS.return_value.__enter__.return_value
             mock_instance.text.return_value = []
 
@@ -48,7 +48,7 @@ class TestSearchTool:
         """Test search exception handling."""
         tool = SearchTool()
 
-        with patch('astra.tools.search.DDGS') as MockDDGS:
+        with patch("astra.tools.search.DDGS") as MockDDGS:
             mock_instance = MockDDGS.return_value.__enter__.return_value
             mock_instance.text.side_effect = Exception("Search API Down")
 

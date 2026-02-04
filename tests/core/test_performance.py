@@ -11,14 +11,17 @@ from astra.core.task_queue import TaskQueue
 def monitor():
     return Monitor()
 
+
 @pytest.fixture
 def task_queue(tmp_path):
     persist_path = tmp_path / "test_queue.json"
     return TaskQueue(persist_path=str(persist_path))
 
+
 @pytest.fixture
 def safeguard():
     return Safeguard()
+
 
 def test_monitor_caching(monitor):
     """Verify that Monitor health checks are cached (O(1))."""
@@ -35,7 +38,8 @@ def test_monitor_caching(monitor):
     assert res1 == res2
     # Cached run should be sub-millisecond, uncached usually >10ms
     assert dur2 < dur1
-    assert dur2 < 0.005 # Less than 5ms for cached lookup
+    assert dur2 < 0.005  # Less than 5ms for cached lookup
+
 
 def test_task_queue_efficiency(task_queue):
     """Verify that TaskQueue operations are non-destructive and efficient."""
@@ -50,12 +54,13 @@ def test_task_queue_efficiency(task_queue):
     # Check position - should be O(N) but non-destructive
     pos = task_queue.get_position(tasks[5].id)
     assert pos == 6
-    assert task_queue.qsize() == 10 # Queue preserved
+    assert task_queue.qsize() == 10  # Queue preserved
 
     # Verify next task
     next_t = task_queue.get_next()
     assert next_t.id == tasks[0].id
     assert task_queue.qsize() == 9
+
 
 def test_safeguard_repo_caching(safeguard):
     """Verify that Safeguard caches expensive GitHub API/Resource checks."""
@@ -72,7 +77,8 @@ def test_safeguard_repo_caching(safeguard):
     dur2 = time.time() - start
 
     assert dur2 < dur1 if dur1 > 0.001 else True
-    assert dur2 < 0.001 # Cached lookup should be near-zero
+    assert dur2 < 0.001  # Cached lookup should be near-zero
+
 
 def test_safeguard_system_caching(safeguard):
     """Verify that system resource checks are cached."""

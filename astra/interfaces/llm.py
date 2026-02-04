@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 class ChatMessage(BaseModel):
     """Represents a chat message, matching OpenAI schema."""
+
     role: Literal["system", "user", "assistant", "tool"]
     content: str | None = None
     tool_calls: list[dict[str, Any]] | None = None
@@ -19,6 +20,7 @@ class ChatMessage(BaseModel):
 
 class LLMResponse(BaseModel):
     """Response from an LLM call."""
+
     content: str | None
     prompt_tokens: int
     completion_tokens: int
@@ -30,6 +32,7 @@ class LLMResponse(BaseModel):
 
 class TokenUsage(BaseModel):
     """Accumulated token usage for a task."""
+
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
@@ -52,17 +55,13 @@ class LLM(ABC):
         messages: list[ChatMessage],
         temperature: float = 0.0,
         max_tokens: int | None = None,
-        tools: list[dict] | None = None
+        tools: list[dict] | None = None,
     ) -> LLMResponse:
         """Send a chat completion request."""
         pass
 
     @abstractmethod
-    async def chat_stream(
-        self,
-        messages: list[ChatMessage],
-        temperature: float = 0.0
-    ):
+    async def chat_stream(self, messages: list[ChatMessage], temperature: float = 0.0):
         """Stream a chat completion response."""
         pass
 

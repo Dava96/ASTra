@@ -10,28 +10,30 @@ from astra.tools.manifest import (
 
 def test_parse_package_json(tmp_path):
     pkg_file = tmp_path / "package.json"
-    pkg_file.write_text(json.dumps({
-        "name": "test-pkg",
-        "scripts": {"build": "tsc"},
-        "dependencies": {"react": "18"}
-    }))
+    pkg_file.write_text(
+        json.dumps(
+            {"name": "test-pkg", "scripts": {"build": "tsc"}, "dependencies": {"react": "18"}}
+        )
+    )
 
     data = parse_package_json(pkg_file)
     assert data["name"] == "test-pkg"
     assert data["scripts"]["build"] == "tsc"
     assert "react" in data["dependencies"]
 
+
 def test_parse_composer_json(tmp_path):
     comp_file = tmp_path / "composer.json"
-    comp_file.write_text(json.dumps({
-        "name": "vendor/pkg",
-        "scripts": {"test": "phpunit"},
-        "require": {"php": ">=8.0"}
-    }))
+    comp_file.write_text(
+        json.dumps(
+            {"name": "vendor/pkg", "scripts": {"test": "phpunit"}, "require": {"php": ">=8.0"}}
+        )
+    )
 
     data = parse_composer_json(comp_file)
     assert data["name"] == "vendor/pkg"
     assert data["test_command"] == "phpunit"
+
 
 def test_parse_pyproject_toml(tmp_path):
     toml_file = tmp_path / "pyproject.toml"
@@ -39,13 +41,14 @@ def test_parse_pyproject_toml(tmp_path):
     toml_file.write_text(
         '[project]\nname = "astra"\ndependencies = ["requests"]\n'
         '[tool.poetry.scripts]\nstart = "main:run"\n',
-        encoding="utf-8"
+        encoding="utf-8",
     )
 
     data = parse_pyproject_toml(toml_file)
     assert data["name"] == "astra"
     assert "requests" in data["dependencies"]
     assert data["scripts"]["start"] == "main:run"
+
 
 def test_get_project_manifest_priority(tmp_path):
     # If both exist, package.json preferred? (actually order is JS, PHP, Python...)
@@ -54,6 +57,7 @@ def test_get_project_manifest_priority(tmp_path):
 
     manifest = get_project_manifest(tmp_path)
     assert manifest["language"] in ["javascript", "typescript"]
+
 
 def test_parse_errors(tmp_path):
     # Invalid JSON

@@ -11,19 +11,30 @@ logger = logging.getLogger(__name__)
 
 # --- Nested Configuration Models ---
 
+
 class SecurityConfig(BaseModel):
     auto_install_packages: bool = False
     require_permission_for_shell: bool = True
     command_allowlist: list[str] = [
-        "git", "npm", "node", "python", "pytest", "php", "composer", "cargo"
+        "git",
+        "npm",
+        "node",
+        "python",
+        "pytest",
+        "php",
+        "composer",
+        "cargo",
+        "C:\\Users\\David\\Desktop\\Projects and Ideas\\Code\\Antigravity\\ASTra\\.venv\\Scripts\\python.exe",
     ]
     admin_users: list[str] = []
     mfa_secrets: dict[str, str] = {}
+
 
 class FallbackStrategy(BaseModel):
     mode: Literal["ask_user", "auto_escalate"] = "ask_user"
     escalation_model: str = "gpt-4o"
     api_key_env_var: str = "OPENAI_API_KEY"
+
 
 class OrchestrationConfig(BaseModel):
     max_self_heal_attempts: int = 3
@@ -42,26 +53,39 @@ class OrchestrationConfig(BaseModel):
     auto_fix_lint: bool = True  # Auto-fix linter issues when possible
     run_lint_before_test: bool = True  # Run linters before tests
     use_manifest_scripts: bool = True  # Use scripts from package.json/composer.json
-    critic_enabled: bool = True # Enable/Disable critic loop
+    critic_enabled: bool = True  # Enable/Disable critic loop
     critic_loops: int = 5  # Max turns for plan critique/refinement
     test_heuristics: dict[str, str] = {
         "npm": "npm test",
         "composer": "vendor/bin/phpunit",
         "python": "pytest",
-        "cargo": "cargo test"
+        "cargo": "cargo test",
     }
+
 
 class GitConfig(BaseModel):
     auto_pr: bool = True
     branch_prefix: str = "ai-dev-"
     review_required: bool = True
 
+
 class IngestionConfig(BaseModel):
     ignore_patterns: list[str] = [
-        ".env", "node_modules", "*.lock", "dist", "build", ".git", "vendor", "__pycache__"
+        ".env",
+        "node_modules",
+        "*.lock",
+        "dist",
+        "build",
+        ".git",
+        "vendor",
+        "__pycache__",
     ]
     priority_files: list[str] = [
-        "package.json", "composer.json", "tsconfig.json", "README.md", "Makefile"
+        "package.json",
+        "composer.json",
+        "tsconfig.json",
+        "README.md",
+        "Makefile",
     ]
     max_file_size_kb: int = 100
     embedding_model: str = "default"
@@ -69,6 +93,7 @@ class IngestionConfig(BaseModel):
     batch_size: int = 50
     ast_depth: int = 3  # How deep to parse AST (1=signatures only, 2=+docstrings, 3=full)
     safe_branches: list[str] = ["main", "master"]
+
 
 class LLMConfig(BaseModel):
     model: str = "ollama_chat/qwen2.5-coder:7b"
@@ -79,29 +104,35 @@ class LLMConfig(BaseModel):
     coding_model: str | None = None
     critic_model: str | None = None
 
+
 class VectorDBConfig(BaseModel):
     cleanup_threshold_days: int = 90
     persist_path: str = "./data/chromadb"
     backup_count: int = 2
 
+
 class KnowledgeGraphConfig(BaseModel):
     enabled: bool = True
     persist_path: str = "./data/knowledge_graph.graphml"
 
+
 class ProgressConfig(BaseModel):
     verbosity: str = "standard"
     update_interval_percent: int = 10
+
 
 class ContextConfig(BaseModel):
     compression_enabled: bool = False
     compression_model: str = "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank"
     target_token_count: int = 2000
 
+
 class SkillsMPConfig(BaseModel):
     enabled: bool = False
     api_key: str | None = None
     cache_expiry_hours: int = 24
     endpoint: str = "https://skillsmp.com/api/v1"
+
 
 class SchedulerConfig(BaseModel):
     enabled: bool = True
@@ -112,7 +143,16 @@ class SchedulerConfig(BaseModel):
     coalesce: bool = True
 
 
+class WebUIConfig(BaseModel):
+    enabled: bool = False
+    host: str = "0.0.0.0"
+    port: int = 8000
+    api_key: str | None = None
+
+
+
 # --- Main Settings Class ---
+
 
 class Config(BaseSettings):
     """Application configuration."""
@@ -127,12 +167,10 @@ class Config(BaseSettings):
     context: ContextConfig = Field(default_factory=ContextConfig)
     skills_mp: SkillsMPConfig = Field(default_factory=SkillsMPConfig)
     scheduler: SchedulerConfig = Field(default_factory=SchedulerConfig)
+    webui: WebUIConfig = Field(default_factory=WebUIConfig)
 
     model_config = SettingsConfigDict(
-        env_prefix="ASTra_",
-        env_nested_delimiter="__",
-        case_sensitive=False,
-        extra="ignore"
+        env_prefix="ASTra_", env_nested_delimiter="__", case_sensitive=False, extra="ignore"
     )
 
     # --- Backward Compatibility API ---
@@ -165,8 +203,8 @@ class Config(BaseSettings):
 
     @property
     def allowed_users(self) -> list[str]:
-         # Wrap nested list to match legacy interface if property access overrides field
-         return self.orchestration.allowed_users
+        # Wrap nested list to match legacy interface if property access overrides field
+        return self.orchestration.allowed_users
 
     @property
     def max_retries(self) -> int:
@@ -183,6 +221,7 @@ class Config(BaseSettings):
         json_data = {}
         if path_obj.exists():
             import json
+
             try:
                 text = path_obj.read_text(encoding="utf-8")
                 json_data = json.loads(text)
@@ -194,6 +233,7 @@ class Config(BaseSettings):
     def save(self, path: str | Path = "config.json") -> None:
         """Save current configuration to a JSON file."""
         import json
+
         path_obj = Path(path)
         try:
             # model_dump() gives us a serializable dict from Pydantic V2
@@ -204,14 +244,22 @@ class Config(BaseSettings):
             logger.error(f"Failed to save configuration to {path}: {e}")
             raise
 
+
 # Global Accessor
 _config: Config | None = None
+
 
 def get_config() -> Config:
     global _config
     if _config is None:
         _config = Config.load()
     return _config
+
+
+def reset_config() -> None:
+    global _config
+    _config = None
+
 
 def reload_config() -> Config:
     global _config

@@ -1,6 +1,5 @@
 """Tests for Task duration property and TaskQueue."""
 
-
 import pytest
 
 from astra.core.task_queue import Task, TaskQueue, TaskStatus
@@ -18,7 +17,7 @@ class TestTaskDuration:
             user_id="123",
             channel_id="456",
             started_at="2024-01-01T12:00:00+00:00",
-            completed_at="2024-01-01T12:05:30+00:00"  # 5min 30sec later
+            completed_at="2024-01-01T12:05:30+00:00",  # 5min 30sec later
         )
 
         assert task.duration_seconds == 330  # 5*60 + 30
@@ -32,7 +31,7 @@ class TestTaskDuration:
             user_id="123",
             channel_id="456",
             started_at=None,
-            completed_at=None
+            completed_at=None,
         )
 
         assert task.duration_seconds is None
@@ -52,7 +51,7 @@ class TestTaskQueueOperations:
             request="Add login",
             user_id="user1",
             channel_id="channel1",
-            project="my-project"
+            project="my-project",
         )
 
         assert task.id is not None
@@ -109,4 +108,3 @@ class TestTaskQueueOperations:
         history = queue.get_history(limit=10, user_id="user1")
         assert len(history) == 1
         assert history[0].user_id == "user1"
-

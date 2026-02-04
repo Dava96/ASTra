@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class LintTool:
     """Run linters on a project with optional auto-fix.
-    
+
     This tool integrates with the linter registry to run appropriate
     linters based on project language detection.
     """
@@ -26,7 +26,7 @@ class LintTool:
         project_path: str | Path,
         language: str | None = None,
         type_check: bool = False,
-        auto_fix: bool | None = None
+        auto_fix: bool | None = None,
     ) -> list[LintResult]:
         """Run linters for a project (Parallelized)."""
         from astra.tools.linters.registry import detect_linters
@@ -47,7 +47,7 @@ class LintTool:
 
         # 2. Check for missing linter case
         if not linters:
-             return run_lint(project_path, language, type_check, should_fix)
+            return run_lint(project_path, language, type_check, should_fix)
 
         # 3. Run in parallel
         from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -55,12 +55,9 @@ class LintTool:
         results = []
         with ThreadPoolExecutor() as executor:
             future_to_linter = {
-                executor.submit(
-                    l.run,
-                    project_path,
-                    auto_fix=should_fix
-                ): l for l in linters
-                if (not l.is_type_checker or type_check)
+                executor.submit(linter.run, project_path, auto_fix=should_fix): linter
+                for linter in linters
+                if (not linter.is_type_checker or type_check)
             }
 
             for future in as_completed(future_to_linter):
@@ -71,13 +68,15 @@ class LintTool:
                     logger.info(f"{linter.name}: {result.error_count} errors")
                 except Exception as e:
                     logger.error(f"Linter {linter.name} failed: {e}")
-                    results.append(LintResult(
-                        linter=linter.name,
-                        success=False,
-                        error_count=1,
-                        issues=[],
-                        raw_output=str(e)
-                    ))
+                    results.append(
+                        LintResult(
+                            linter=linter.name,
+                            success=False,
+                            error_count=1,
+                            issues=[],
+                            raw_output=str(e),
+                        )
+                    )
 
         return results
 
@@ -92,8 +91,8 @@ class LintTool:
             parts.append(f"\n### {result.linter}\n")
 
             if result.suggestion:
-                 parts.append(f"**Suggestion**: {result.suggestion}\n")
-                 continue
+                parts.append(f"**Suggestion**: {result.suggestion}\n")
+                continue
 
             parts.append(f"- Errors: {result.error_count}\n")
             parts.append(f"- Warnings: {result.warning_count}\n")
@@ -115,4 +114,5 @@ class LintTool:
     def get_available_linters() -> list[str]:
         """Get list of all registered linter names."""
         from astra.tools.linters.registry import get_available_linters
+
         return get_available_linters()

@@ -8,6 +8,7 @@ from astra.ingestion.parser import ASTParser
 
 logger = logging.getLogger(__name__)
 
+
 class SizeEstimator:
     """
     Estimates the ingestion size (node count, vector DB size)
@@ -18,10 +19,7 @@ class SizeEstimator:
         self.parser = ASTParser()
 
     def estimate(
-        self,
-        directory: str | Path,
-        sample_rate: float = 0.05,
-        ast_depth: int = 3
+        self, directory: str | Path, sample_rate: float = 0.05, ast_depth: int = 3
     ) -> dict[str, Any]:
         """
         Run the estimation.
@@ -47,7 +45,10 @@ class SizeEstimator:
 
         for root, dirs, files in os.walk(directory):
             # Skip common ignore dirs
-            if any(p in str(Path(root)) for p in [".git", "__pycache__", "node_modules", ".venv", "env"]):
+            if any(
+                p in str(Path(root))
+                for p in [".git", "__pycache__", "node_modules", ".venv", "env"]
+            ):
                 dirs[:] = []
                 continue
 
@@ -96,10 +97,10 @@ class SizeEstimator:
 
         return {
             "total_files": total_files,
-            "total_size_mb": round(total_size_bytes / (1024*1024), 2),
+            "total_size_mb": round(total_size_bytes / (1024 * 1024), 2),
             "sample_size": sample_size,
             "sample_nodes": total_nodes,
             "projected_nodes": projected_total_nodes,
             "projected_db_size_mb": round(est_db_size_mb, 2),
-            "nodes_per_kb": round(nodes_per_byte * 1024, 2)
+            "nodes_per_kb": round(nodes_per_byte * 1024, 2),
         }

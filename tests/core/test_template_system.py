@@ -21,6 +21,7 @@ MOCK_PACKAGE_JSON_REACT = """
 }
 """
 
+
 @pytest.fixture
 def template_manager(tmp_path):
     # Setup mock templates
@@ -33,6 +34,7 @@ def template_manager(tmp_path):
     (tmp_path / "templates" / "react_rules.md").write_text("react")
     return tm
 
+
 @patch("astra.core.template_manager.get_manifest_files_for_project")
 def test_detect_python_fastapi(mock_manifests, template_manager, tmp_path):
     mock_manifests.return_value = {"pyproject.toml": MOCK_PYPROJECT}
@@ -44,12 +46,10 @@ def test_detect_python_fastapi(mock_manifests, template_manager, tmp_path):
     assert any("fastapi_rules.md" in p for p in paths)
     assert not any("typescript_conventions.md" in p for p in paths)
 
+
 @patch("astra.core.template_manager.get_manifest_files_for_project")
 def test_detect_react_ts(mock_manifests, template_manager, tmp_path):
-    mock_manifests.return_value = {
-        "package.json": MOCK_PACKAGE_JSON_REACT,
-        "tsconfig.json": "{}"
-    }
+    mock_manifests.return_value = {"package.json": MOCK_PACKAGE_JSON_REACT, "tsconfig.json": "{}"}
 
     paths = template_manager.get_context_file_paths(tmp_path)
 
@@ -58,12 +58,11 @@ def test_detect_react_ts(mock_manifests, template_manager, tmp_path):
     assert any("react_rules.md" in p for p in paths)
     assert not any("python_conventions.md" in p for p in paths)
 
+
 def test_aider_tool_build_command():
     tool = AiderTool()
     cmd = tool._build_command(
-        message="fix it",
-        files=["main.py"],
-        context_files=["/tmp/system.md", "/tmp/python.md"]
+        message="fix it", files=["main.py"], context_files=["/tmp/system.md", "/tmp/python.md"]
     )
 
     # Verify structure
@@ -78,13 +77,10 @@ def test_aider_tool_build_command():
     assert cmd[read_indices[0] + 1] == "/tmp/system.md"
     assert cmd[read_indices[1] + 1] == "/tmp/python.md"
 
+
 def test_aider_tool_build_command_no_context():
     tool = AiderTool()
-    cmd = tool._build_command(
-        message="fix it",
-        files=["main.py"],
-        context_files=None
-    )
+    cmd = tool._build_command(message="fix it", files=["main.py"], context_files=None)
 
     assert "--read" not in cmd
     assert "--model" in cmd

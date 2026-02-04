@@ -1,5 +1,4 @@
-"""Linter registry for auto-detection and extension."""
-
+import functools
 import logging
 from pathlib import Path
 
@@ -14,7 +13,7 @@ LINTER_REGISTRY: dict[str, type[BaseLinter]] = {}
 
 def register_linter(cls: type[BaseLinter]) -> type[BaseLinter]:
     """Decorator to register a linter class.
-    
+
     Usage:
         @register_linter
         class RuffLinter(BaseLinter):
@@ -29,13 +28,9 @@ def register_linter(cls: type[BaseLinter]) -> type[BaseLinter]:
     return cls
 
 
-
 def get_available_linters() -> list[str]:
     """Get list of all registered linter names."""
     return list(LINTER_REGISTRY.keys())
-
-
-import functools
 
 
 @functools.lru_cache
@@ -49,7 +44,11 @@ def detect_languages(project_path: str | Path) -> set[str]:
         langs.add("javascript")
         langs.add("typescript")
 
-    if (path / "pyproject.toml").exists() or (path / "setup.py").exists() or (path / "requirements.txt").exists():
+    if (
+        (path / "pyproject.toml").exists()
+        or (path / "setup.py").exists()
+        or (path / "requirements.txt").exists()
+    ):
         langs.add("python")
 
     if (path / "composer.json").exists():
@@ -93,7 +92,6 @@ def detect_linters(project_path: str | Path, language: str | None = None) -> lis
     return detected
 
 
-
 def get_linter(name: str) -> BaseLinter | None:
     """Get a linter instance by name."""
     linter_cls = LINTER_REGISTRY.get(name)
@@ -110,11 +108,12 @@ def get_linters_for_language(language: str) -> list[BaseLinter]:
             linters.append(linter_cls())
     return linters
 
+
 def run_lint(
     project_path: str | Path,
     language: str | None = None,
     type_check: bool = False,
-    auto_fix: bool = False
+    auto_fix: bool = False,
 ) -> list[LintResult]:
     """Run linters on a project."""
     project_path = Path(project_path)
@@ -125,21 +124,25 @@ def run_lint(
     if not linters:
         langs = {language} if language else detect_languages(project_path)
         if "python" in langs:
-            return [LintResult(
-                linter="system",
-                success=False,
-                error_count=1,
-                issues=[],
-                suggestion="Python project detected but no linter found. Recommended: `uv add --dev ruff` or `pip install ruff`."
-            )]
+            return [
+                LintResult(
+                    linter="system",
+                    success=False,
+                    error_count=1,
+                    issues=[],
+                    suggestion="Python project detected but no linter found. Recommended: `uv add --dev ruff` or `pip install ruff`.",
+                )
+            ]
         if "javascript" in langs or "typescript" in langs:
-             return [LintResult(
-                linter="system",
-                success=False,
-                error_count=1,
-                issues=[],
-                suggestion="JS/TS project detected but no linter found. Recommended: `npm install --save-dev eslint`."
-            )]
+            return [
+                LintResult(
+                    linter="system",
+                    success=False,
+                    error_count=1,
+                    issues=[],
+                    suggestion="JS/TS project detected but no linter found. Recommended: `npm install --save-dev eslint`.",
+                )
+            ]
 
         return []
 
@@ -154,11 +157,6 @@ def run_lint(
         logger.info(f"{linter.name}: {result.error_count} errors")
 
     return results
-
-
-def get_available_linters() -> list[str]:
-    """Get list of all registered linter names."""
-    return list(LINTER_REGISTRY.keys())
 
 
 # Import linters to trigger registration

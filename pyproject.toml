@@ -18,7 +18,7 @@ dependencies = [
     "torch>=2.1.0",
     "networkx>=3.2.0",
     "aider-chat>=0.50.0",
-    "duckduckgo-search>=5.0.0",
+    "ddgs>=1.0.0",
     "psutil>=5.9.0",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.12.0",
@@ -30,6 +30,10 @@ dependencies = [
     "playwright>=1.40.0",
     "pyotp>=2.9.0",
     "llmlingua>=0.2.0",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "sse-starlette>=2.0.0",
+    "cron-descriptor>=1.4.0",
 ]
 
 [project.optional-dependencies]
@@ -37,8 +41,11 @@ browser = [
     "playwright>=1.40.0",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[project.scripts]
+astra = "astra.main:app"
+
+[dependency-groups]
+dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "black>=24.0.0",

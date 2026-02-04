@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class ConsoleGateway(Gateway):
     """Gateway for terminal interaction.
-    
+
     This gateway is used for local CLI development. Since it runs on the same
     machine as the server, all users are considered authorized.
     """
@@ -52,16 +52,34 @@ class ConsoleGateway(Gateway):
         interaction_ref: Any,
         content: str = "",
         file_path: str | None = None,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Send a followup (print to console)."""
         print(f"\n[Followup] 🤖 ASTra:\n{content}")
         if file_path:
             print(f"[File attached: {file_path}]")
 
-    def register_command(self, name: str, handler: Any, description: str = "") -> None:
+    def register_command_group(self, name: str, description: str = "") -> None:
+        """Register a command group (no-op for CLI mode)."""
+        pass
+
+    def register_command(
+        self,
+        name: str,
+        handler: Any,
+        description: str = "",
+        params: list[Any] | None = None,
+        group: str | None = None,
+        requires_auth: bool = False,
+        requires_admin: bool = False,
+        requires_mfa: bool = False,
+    ) -> None:
         """Register command (no-op for CLI mode)."""
         pass
+
+    async def broadcast(self, message: str) -> None:
+        """Broadcast a message to console."""
+        print(f"\n[BROADCAST] {message}\n")
 
     def is_user_authorized(self, user_id: str) -> bool:
         """CLI user is always authorized (local access = full access)."""

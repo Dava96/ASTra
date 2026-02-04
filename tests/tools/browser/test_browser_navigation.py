@@ -97,7 +97,9 @@ class TestBrowserNavigation:
         # It will try A11y, fail, then fallback to DOM.
 
         selector = "#btn"
-        result = await browser.execute("click", url=url, selector=selector, mode="hybrid") # explicit hybrid
+        result = await browser.execute(
+            "click", url=url, selector=selector, mode="hybrid"
+        )  # explicit hybrid
         assert "✅ click on '#btn' (DOM)" in result
 
         # Now try something that looks like A11y but fails, fallback to DOM?

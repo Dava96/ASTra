@@ -47,10 +47,7 @@ class RemoteTemplateProvider:
                 # params["sortBy"] = "stars" # Optional optimization
 
             response = requests.get(
-                f"{self._base_url}{endpoint}",
-                params=params,
-                headers=headers,
-                timeout=5
+                f"{self._base_url}{endpoint}", params=params, headers=headers, timeout=5
             )
             response.raise_for_status()
             data = response.json()
@@ -85,9 +82,7 @@ class RemoteTemplateProvider:
             # Note: API Doc didn't explicitly list GET /skills/{id}, but it is standard.
             # We assume it returns the skill object which contains 'content' or similar.
             response = requests.get(
-                f"{self._base_url}/skills/{skill_id}",
-                headers=headers,
-                timeout=5
+                f"{self._base_url}/skills/{skill_id}", headers=headers, timeout=5
             )
             response.raise_for_status()
 

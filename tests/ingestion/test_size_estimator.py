@@ -1,6 +1,5 @@
 """Tests for SizeEstimator."""
 
-
 import pytest
 
 from astra.ingestion.size_estimator import SizeEstimator
@@ -9,6 +8,7 @@ from astra.ingestion.size_estimator import SizeEstimator
 @pytest.fixture
 def estimator():
     return SizeEstimator()
+
 
 def test_estimate_basic(estimator, tmp_path):
     # Create dummy structure
@@ -23,6 +23,7 @@ def test_estimate_basic(estimator, tmp_path):
     assert result["total_size_mb"] >= 0
     assert result["projected_nodes"] > 0
     assert result["projected_db_size_mb"] >= 0
+
 
 def test_estimate_nonexistent(estimator):
     result = estimator.estimate("/nonexistent/path")

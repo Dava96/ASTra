@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 # Use the actual module path for patching
-GATEWAY_MODULE = 'astra.adapters.gateways.discord.gateway'
+GATEWAY_MODULE = "astra.adapters.gateways.discord.gateway"
 
 
 class TestGatewayInterfaces:
@@ -20,7 +20,7 @@ class TestGatewayInterfaces:
             args={"request": "https://github.com/user/repo"},
             user_id="123456",
             channel_id="789012",
-            raw_interaction=MagicMock()
+            raw_interaction=MagicMock(),
         )
 
         assert cmd.name == "checkout"
@@ -32,14 +32,11 @@ class TestGatewayInterfaces:
         from astra.interfaces.gateway import Message
 
         msg = Message(
-            content="Hello, world!",
-            channel_id="123456",
-            ephemeral=True,
-            file_path="/tmp/log.txt"
+            content="Hello, world!", channel_id="123456", ephemeral=True, file_path="/tmp/log.txt"
         )
 
         assert msg.content == "Hello, world!"
-        assert msg.ephemeral == True
+        assert msg.ephemeral
         assert msg.file_path == "/tmp/log.txt"
 
     def test_message_defaults(self):
@@ -48,7 +45,7 @@ class TestGatewayInterfaces:
 
         msg = Message(content="Test", channel_id="123")
 
-        assert msg.ephemeral == False
+        assert not msg.ephemeral
         assert msg.file_path is None
 
 
@@ -64,36 +61,40 @@ class TestDiscordGatewayMocked:
 
     @pytest.fixture
     def gateway(self, mock_config):
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client'), \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=mock_config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=mock_config),
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
+
             return DiscordGateway(mock_config)
 
     def test_is_user_authorized_allowed(self, gateway):
         """Test authorized user."""
-        assert gateway.is_user_authorized("123456") == True
+        assert gateway.is_user_authorized("123456")
 
     def test_is_user_authorized_not_allowed(self, gateway):
         """Test unauthorized user."""
-        assert gateway.is_user_authorized("999999") == False
+        assert not gateway.is_user_authorized("999999")
 
     def test_is_user_authorized_empty_list(self, mock_config):
         """Test when allowlist is empty."""
         mock_config.allowed_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client'), \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=mock_config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=mock_config),
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
+
             gateway = DiscordGateway(mock_config)
 
             # Empty list means no one authorized (needs setup)
-            assert gateway.is_user_authorized("123456") == False
+            assert not gateway.is_user_authorized("123456")
 
 
 class TestMessageFormatting:
@@ -105,15 +106,17 @@ class TestMessageFormatting:
         config.allowed_users = ["123456"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client') as MockClient, \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client") as MockClient,
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
             client = MockClient.return_value
             client.get_channel = MagicMock()
 
             from astra.adapters.gateways.discord.gateway import DiscordGateway
+
             gateway = DiscordGateway(config)
 
             yield gateway, client
@@ -125,11 +128,12 @@ class TestMessageFormatting:
         config.allowed_users = ["123"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client') as MockClient, \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
             from astra.interfaces.gateway import Message
 
@@ -151,12 +155,13 @@ class TestMessageFormatting:
         config.allowed_users = ["123"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client') as MockClient, \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.discord.File') as MockFile, \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.discord.File"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
             from astra.interfaces.gateway import Message
 
@@ -173,6 +178,67 @@ class TestMessageFormatting:
             mock_channel.send.assert_called()
 
 
+    @pytest.mark.asyncio
+    async def test_on_message_mention_by_id(self):
+        """Test that mentions are detected by ID even if objects differ."""
+        config = MagicMock()
+        config.allowed_users = ["123"]
+        config.orchestration.security.admin_users = []
+
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord") as mock_discord,
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
+            from astra.adapters.gateways.discord.gateway import DiscordGateway
+
+            # Setup mocks
+            mock_discord.Intents.default.return_value = MagicMock()
+            mock_discord.DMChannel = MagicMock
+
+            gateway = DiscordGateway(config)
+
+            # Setup chat handler
+            mock_handler = AsyncMock(return_value="Response")
+            gateway.set_chat_handler(mock_handler)
+
+            # Setup self user
+            mock_user = MagicMock()
+            mock_user.id = 999
+            gateway._client.user = mock_user
+
+            # Get on_message handler
+            # In test_discord_gateway.py, we might not have exposed on_message purely via Gateway init in this class context easily
+            # But let's try to extract it from client event mocks.
+            # Wait, the client is mocked via patch inside the context.
+            # We need to grab the `event` call.
+
+            on_message_func = gateway._client.event.call_args[0][0]
+
+            # Test Mention with different object but same ID
+            message = MagicMock()
+            message.author.id = 123456
+            message.content = "<@999> Hello"
+            message.channel = MagicMock() # Not DM
+
+            mentioned_user = MagicMock()
+            mentioned_user.id = 999
+            message.mentions = [mentioned_user]
+
+            # Mock async methods
+            message.reply = AsyncMock()
+            message.channel.send = AsyncMock()
+
+            # Fix typing context manager
+            message.channel.typing.return_value.__aenter__.return_value = None
+            message.channel.typing.return_value.__aexit__.return_value = None
+
+            await on_message_func(message)
+
+            mock_handler.assert_called()
+
+
 class TestProgressUpdates:
     """Test progress bar generation."""
 
@@ -183,11 +249,12 @@ class TestProgressUpdates:
         config.allowed_users = ["123"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client') as MockClient, \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
 
             gateway = DiscordGateway(config)
@@ -203,13 +270,16 @@ class TestProgressUpdates:
             assert "Halfway done" in call_args
             assert "█" in call_args  # Progress bar character
 
-    @pytest.mark.parametrize("percent,expected_filled", [
-        (0, 0),
-        (25, 5),
-        (50, 10),
-        (75, 15),
-        (100, 20),
-    ])
+    @pytest.mark.parametrize(
+        "percent,expected_filled",
+        [
+            (0, 0),
+            (25, 5),
+            (50, 10),
+            (75, 15),
+            (100, 20),
+        ],
+    )
     def test_progress_bar_lengths(self, percent, expected_filled):
         """Test progress bar has correct number of filled segments."""
         # Progress bar uses 20 characters total
@@ -227,13 +297,15 @@ class TestConfirmation:
         config.allowed_users = ["123"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client'), \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config), \
-             patch(f'{GATEWAY_MODULE}.ConfirmationView') as MockView:
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+            patch(f"{GATEWAY_MODULE}.ConfirmationView") as MockView,
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
+
             gateway = DiscordGateway(config)
 
             # Setup mock channel
@@ -242,12 +314,12 @@ class TestConfirmation:
 
             # Setup mock view
             mock_view_instance = MockView.return_value
-            mock_view_instance.wait = AsyncMock() # Returns immediately
-            mock_view_instance.value = None # No button clicked
+            mock_view_instance.wait = AsyncMock()  # Returns immediately
+            mock_view_instance.value = None  # No button clicked
 
             result = await gateway.request_confirmation("123456", "Confirm?")
 
-            assert result == False
+            assert not result
             mock_channel.send.assert_called_once()
 
 
@@ -260,17 +332,20 @@ class TestEdgeCases:
         config.allowed_users = ["123"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {}, clear=True), \
-             patch(f'{GATEWAY_MODULE}.discord.Client'), \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config):
-
+        with (
+            patch.dict("os.environ", {}, clear=True),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
             # Clear DISCORD_TOKEN
             import os
-            if 'DISCORD_TOKEN' in os.environ:
-                del os.environ['DISCORD_TOKEN']
+
+            if "DISCORD_TOKEN" in os.environ:
+                del os.environ["DISCORD_TOKEN"]
 
             from astra.adapters.gateways.discord.gateway import DiscordGateway
+
             gateway = DiscordGateway(config)
 
             # Token is None when not set
@@ -283,11 +358,12 @@ class TestEdgeCases:
         config.allowed_users = ["123"]
         config.orchestration.security.admin_users = []
 
-        with patch.dict('os.environ', {'DISCORD_TOKEN': 'test_token'}), \
-             patch(f'{GATEWAY_MODULE}.discord.Client'), \
-             patch(f'{GATEWAY_MODULE}.app_commands.CommandTree'), \
-             patch(f'{GATEWAY_MODULE}.get_config', return_value=config):
-
+        with (
+            patch.dict("os.environ", {"DISCORD_TOKEN": "test_token"}),
+            patch(f"{GATEWAY_MODULE}.discord.Client"),
+            patch(f"{GATEWAY_MODULE}.app_commands.CommandTree"),
+            patch(f"{GATEWAY_MODULE}.get_config", return_value=config),
+        ):
             from astra.adapters.gateways.discord.gateway import DiscordGateway
             from astra.interfaces.gateway import Message
 

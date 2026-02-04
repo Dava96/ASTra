@@ -1,6 +1,7 @@
 """Main orchestrator implementing the Plan-Act-Reflect loop."""
 
 import asyncio
+import json
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
@@ -18,9 +19,11 @@ from astra.ingestion.knowledge_graph import KnowledgeGraph
 from astra.ingestion.parser import ASTParser
 from astra.interfaces.gateway import Gateway, Message
 from astra.tools.aider_tool import AiderTool
+from astra.tools.browser import BrowserTool
 from astra.tools.file_ops import FileOps
 from astra.tools.git_ops import GitHubVCS
 from astra.tools.knowledge import KnowledgeTool
+from astra.tools.search import SearchTool
 from astra.tools.shell import ShellExecutor
 
 logger = logging.getLogger(__name__)
@@ -28,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class OrchestratorPhase(Enum):
     """Current phase of task execution."""
+
     ANALYZING = "analyzing"
     PLANNING = "planning"
     EXECUTING = "executing"
@@ -38,6 +42,7 @@ class OrchestratorPhase(Enum):
 @dataclass
 class TaskContext:
     """Context for a task execution."""
+
     task: Task
     project_path: str
     collection_name: str
@@ -55,13 +60,14 @@ class Orchestrator:
         self,
         gateway: Gateway,
         config: Config | None = None,
-        tool_registry: ToolRegistry | None = None
+        tool_registry: ToolRegistry | None = None,
+        task_queue: TaskQueue | None = None,
     ):
         self._gateway = gateway
         self._config = config or get_config()
 
         # Initialize components
-        self._queue = TaskQueue()
+        self._queue = task_queue or TaskQueue()
         self._llm = LiteLLMClient()
         self._vector_store = ChromaDBStore()
         self._parser = ASTParser()
@@ -75,8 +81,7 @@ class Orchestrator:
         # Setup Tool Registry
         self._tools = tool_registry or ToolRegistry()
         # Register default tools
-        from astra.tools.browser import BrowserTool
-        from astra.tools.search import SearchTool
+
         self._tools.register(SearchTool())
         self._tools.register(KnowledgeTool())
         self._tools.register(BrowserTool())
@@ -85,15 +90,18 @@ class Orchestrator:
         self._tools.register(self._vcs)
         self._tools.register(self._shell)
         from astra.tools.pr_review import PRReviewTool
+
         self._tools.register(PRReviewTool(knowledge_graph=self._knowledge_graph, vcs=self._vcs))
 
         # Register Scheduler Tool
         from astra.tools.scheduler.tool import CronTool
+
         self._tools.register(CronTool())
 
         # Register Memory Tool
         from astra.memory.store import ChromaMemoryStore
         from astra.tools.memory.tool import MemoryTool
+
         self._memory_store = ChromaMemoryStore()
         self._tools.register(MemoryTool(store=self._memory_store))
 
@@ -104,6 +112,21 @@ class Orchestrator:
         self._running = False
         self._current_context: TaskContext | None = None
         self._active_project: str | None = None
+
+    async def chat(self, prompt: str, user_id: str, channel_id: str) -> str:
+        """Submit a chat task to the queue."""
+        from astra.core.task_queue import TaskType
+
+        # Create and queue task
+        self._queue.add(
+            task_type=TaskType.CHAT.value,
+            request=prompt,
+            user_id=user_id,
+            channel_id=channel_id,
+        )
+        # We don't send a status here to avoid double-toasting.
+        # The gateway might show a typing indicator.
+        return ""
 
     async def start(self) -> None:
         """Start the orchestration loop."""
@@ -130,9 +153,16 @@ class Orchestrator:
 
     async def _process_task(self, task: Task) -> None:
         """Process a single task through the full loop."""
+        from astra.core.task_queue import TaskType
+
         logger.info(f"Processing task {task.id}: {task.request[:50]}...")
 
         try:
+            # Handle CHAT tasks separately
+            if task.type == TaskType.CHAT.value:
+                await self._process_chat_task(task)
+                return
+
             # Setup context
             context = await self._setup_context(task)
             self._current_context = context
@@ -160,16 +190,21 @@ class Orchestrator:
 
                         # Stop here and wait for approval
                         task.status = TaskStatus.WAITING_APPROVAL
-                        self._queue.update(task) # Persist status change
+                        self._queue.update(task)  # Persist status change
+
+                        # Ensure plan file exists before sending
+                        # Ensure plan file exists before sending
+                        astra_dir = self._ensure_astra_dir(context.project_path)
+                        plan_file_path = str(astra_dir / plan["filename"])
 
                         await self._send_status(
                             task.channel_id,
                             f"📋 **Plan Ready!** (Task {task.id})\n\n"
-                            f"Reference: `{plan['filename']}`\n\n"
                             f"**Goal**: {plan['goal']}\n\n"
-                            "Use `/approve` to execute or `/revise` to adjust."
+                            "Use `/approve` to execute or `/revise` to adjust.",
+                            file_path=plan_file_path
                         )
-                        return # Exit loop, wait for user
+                        return  # Exit loop, wait for user
 
                     # Resume execution with existing plan
                     plan = context.task.result["implementation_plan"]
@@ -182,7 +217,9 @@ class Orchestrator:
 
                     # Execute phase
                     context.phase = OrchestratorPhase.EXECUTING
-                    await self._send_status(task.channel_id, f"🛠️ Executing plan ({context.attempts}/{max_attempts})...")
+                    await self._send_status(
+                        task.channel_id, f"🛠️ Executing plan ({context.attempts}/{max_attempts})..."
+                    )
                     await self._execute(context, plan)
 
                     # Test phase
@@ -198,15 +235,10 @@ class Orchestrator:
                         # Merge with plan info
                         result.update(task.result)
 
-                        self._queue.complete(
-                            task,
-                            success=True,
-                            result=result
-                        )
+                        self._queue.complete(task, success=True, result=result)
 
                         await self._send_status(
-                            task.channel_id,
-                            f"✅ Task complete! PR: {result.get('pr_url', 'N/A')}"
+                            task.channel_id, f"✅ Task complete! PR: {result.get('pr_url', 'N/A')}"
                         )
                         return
 
@@ -216,8 +248,7 @@ class Orchestrator:
 
                     if context.attempts < max_attempts:
                         await self._send_status(
-                            task.channel_id,
-                            f"⚠️ Attempt {context.attempts} failed. Retrying..."
+                            task.channel_id, f"⚠️ Attempt {context.attempts} failed. Retrying..."
                         )
 
             # All attempts exhausted
@@ -243,7 +274,9 @@ class Orchestrator:
         project_path = f"./repos/{project}"
 
         # Check if branch exists
-        res = await self._shell.run_async(["git", "branch", "--list", branch_name], cwd=project_path)
+        res = await self._shell.run_async(
+            ["git", "branch", "--list", branch_name], cwd=project_path
+        )
         if branch_name not in res.stdout:
             await self._vcs.create_branch(project_path, branch_name)
         else:
@@ -251,49 +284,90 @@ class Orchestrator:
 
         # Check/Generate Architecture Doc
         from astra.core.architecture import ArchitectureGenerator
-        arch_gen = ArchitectureGenerator(llm=self._llm)
-        await arch_gen.generate_if_missing(project_path)
 
+        arch_gen = ArchitectureGenerator(llm=self._llm)
+        # Use .astra directory for architecture doc
+        astra_dir = self._ensure_astra_dir(project_path)
+        arch_path = astra_dir / "ARCHITECTURE.md"
+
+        # Backward compatibility: check root first, move if exists?
+        # For now, just generate if missing in .astra or root
+        root_arch = Path(project_path) / "ARCHITECTURE.md"
+
+        if not root_arch.exists() and not arch_path.exists():
+             await arch_gen.generate_if_missing(project_path)
+
+        # For now, let's just add the helper method and update the plan path.
         return TaskContext(
             task=task,
             project_path=project_path,
             collection_name=project.replace("/", "_").replace("-", "_"),
-            branch_name=branch_name
+            branch_name=branch_name,
         )
 
     async def _plan(self, context: TaskContext) -> dict[str, Any]:
         """Generate a plan for the task using the planning model with tool support and critic loop."""
+        user_request = context.task.request
         planning_llm = self._llm.for_planning()
-        # 4. Critic Loop (Optional)
+
+        # 1. Gather Context
+        context_str = await self._context_gatherer.gather(
+            user_request, context.collection_name, context.project_path
+        )
+
+        # 2. Generate Initial Plan
+        plan_result = await self._generate_initial_plan(
+            planning_llm, user_request, context_str, self._tools.get_definitions()
+        )
+        current_plan = plan_result["content"]
+
+        # 3. Critic Loop (Optional)
         critic_history = []
-        if self._config.orchestration.critic_enabled:
+        from astra.interfaces.llm import ChatMessage
+
+        if self._config.get("orchestration", "critic_enabled", default=False):
             critic_llm = self._llm.for_critic()
-            max_critic_loops = self._config.orchestration.critic_loops
+            max_critic_loops = self._config.get("orchestration", "critic_loops", default=2)
 
             for i in range(max_critic_loops):
-                logger.info(f"Critic Loop {i+1}/{max_critic_loops}")
+                logger.info(f"Critic Loop {i + 1}/{max_critic_loops}")
+                await self._send_status(
+                    context.task.channel_id, f"🤔 Critic Loop {i + 1}/{max_critic_loops}..."
+                )
 
                 # Critic Reviews Plan
                 critic_prompt = self._templates.render(
                     "critic_review",
                     plan=current_plan,
-                    request=user_request
+                    request=user_request,
+                    context=context_str
                 )
 
-                critic_response = await critic_llm.chat([
-                    ChatMessage(role="system", content="You are a critical senior architect. Review the plan rigorously."),
-                    ChatMessage(role="user", content=critic_prompt)
-                ])
+                critic_response = await critic_llm.chat(
+                    [
+                        ChatMessage(
+                            role="system",
+                            content="You are a critical senior architect. Review the plan rigorously.",
+                        ),
+                        ChatMessage(role="user", content=critic_prompt),
+                    ]
+                )
 
                 critique = critic_response.content
-                critic_history.append(f"## Critique {i+1}\n{critique}")
+                critic_history.append(f"## Critique {i + 1}\n{critique}")
 
                 if "APPROVE" in critique and "REQUEST_CHANGES" not in critique:
                     logger.info("Critic approved the plan.")
+                    await self._send_status(
+                        context.task.channel_id, "✅ Critic approved the plan."
+                    )
                     break
 
                 # Planner Refines Plan
                 logger.info("Refining plan based on critique...")
+                await self._send_status(
+                    context.task.channel_id, "🔄 Refining plan based on critique..."
+                )
                 refine_prompt = (
                     f"The plan has been critiqued:\n\n{critique}\n\n"
                     f"**Step 1: Reflection**\n"
@@ -303,22 +377,33 @@ class Orchestrator:
                     f"Return the complete updated markdown plan."
                 )
 
-                refine_response = await planning_llm.chat([
-                    ChatMessage(role="system", content="You are a senior technical architect. Refine the plan based on feedback."),
-                    ChatMessage(role="user", content=f"Current Plan:\n{current_plan}"),
-                    ChatMessage(role="user", content=refine_prompt)
-                ])
+                refine_response = await planning_llm.chat(
+                    [
+                        ChatMessage(
+                            role="system",
+                            content="You are a senior technical architect. Refine the plan based on feedback.",
+                        ),
+                        ChatMessage(role="user", content=f"Current Plan:\n{current_plan}"),
+                        ChatMessage(role="user", content=refine_prompt),
+                    ]
+                )
 
                 current_plan = refine_response.content
         else:
             logger.info("Critic loop disabled by configuration.")
 
         # Save Final Plan
+        # Save Final Plan
         plan_filename = f"implementation_plan_{context.task.id}.md"
-        plan_path = Path(context.project_path) / plan_filename
+        astra_dir = self._ensure_astra_dir(context.project_path)
+        plan_path = astra_dir / plan_filename
 
         # update plan content with critique history for transparency
-        final_content = current_plan + "\n\n# Critique History\n" + "\n".join(critic_history)
+        final_history = ""
+        if critic_history:
+            final_history = "\n\n# Critique History\n" + "\n".join(critic_history)
+
+        final_content = current_plan + final_history
 
         plan_path.write_text(final_content, encoding="utf-8")
 
@@ -326,33 +411,33 @@ class Orchestrator:
         goal = "See plan details"
         for line in current_plan.splitlines():
             if line.startswith("# ") or line.startswith("Goal:"):
-                goal = line.replace("#", "").strip()
+                goal = line.replace("#", "").replace("Goal:", "").strip()
                 break
 
         return {
             "content": final_content,
             "filename": plan_filename,
             "goal": goal,
-            "context_used": len(retrieved_context),
-            "tokens": plan_result["tokens"] # Approx
+            "context_used": len(context_str),
+            "tokens": plan_result["tokens"],  # Approx
         }
 
     async def _generate_initial_plan(self, llm, request, context_str, tools) -> dict:
-        """Helper to run the initial planning agent loop."""
-        prompt = self._templates.render(
-            "planning_feature",
-            request=request,
-            context=context_str
-        )
+        """Helper to run the initial planning agent loop with tool execution."""
+        prompt = self._templates.render("planning_feature", request=request, context=context_str)
 
         from astra.interfaces.llm import ChatMessage
+
         messages = [
-            ChatMessage(role="system", content="You are a senior technical architect. Use available tools to gather information if needed, then provide a detailed implementation plan."),
-            ChatMessage(role="user", content=prompt)
+            ChatMessage(
+                role="system",
+                content="You are a senior technical architect. Use available tools to gather information if needed, then provide a detailed implementation plan.",
+            ),
+            ChatMessage(role="user", content=prompt),
         ]
 
         # Agent Loop
-        max_turns = 5
+        max_turns = 10
         total_tokens = 0
 
         for _ in range(max_turns):
@@ -360,36 +445,69 @@ class Orchestrator:
             total_tokens += response.total_tokens
 
             if response.tool_calls:
-                messages.append(ChatMessage(role="assistant", content=response.content, tool_calls=response.tool_calls))
-                # Execute Tools (Simplified for brevity, reusing logic would be better but this is inside Orchestrator)
-                # ... avoiding full duplication, assume standard tool execution ...
-                # For this refactor, I will just return the response content if it assumes no tools or handle basics
-                # But to properly refactor, I should stick to the existing loop structure.
-                # Let's assume for the "initial" plan we just take the first full output for now to reduce complexity in this specific refactor step
-                # OR properly implement the tool loop here.
+                messages.append(
+                    ChatMessage(
+                        role="assistant", content=response.content, tool_calls=response.tool_calls
+                    )
+                )
 
-                # To be safe and correct, let's just break and take content if present, or continue if purely tool call
-                # This is a simplification. Ideally _plan logic should be reusable.
-                pass
+                for tool_call in response.tool_calls:
+                    tool_name = tool_call["function"]["name"]
+                    try:
+                        tool_args = json.loads(tool_call["function"]["arguments"])
+                    except json.JSONDecodeError:
+                        tool_args = {}
+
+                    tool = self._tools.get(tool_name)
+                    if tool:
+                        logger.info(f"Executing tool during planning: {tool_name}")
+                        try:
+                            result = await tool.execute(**tool_args)
+                            messages.append(
+                                ChatMessage(
+                                    role="tool", content=str(result), tool_call_id=tool_call["id"]
+                                )
+                            )
+                        except Exception as e:
+                            logger.error(f"Planning tool execution error: {e}")
+                            messages.append(
+                                ChatMessage(
+                                    role="tool", content=f"Error: {e}", tool_call_id=tool_call["id"]
+                                )
+                            )
+                    else:
+                        messages.append(
+                            ChatMessage(
+                                role="tool",
+                                content=f"Tool {tool_name} not found.",
+                                tool_call_id=tool_call["id"],
+                            )
+                        )
             else:
-                 return {"content": response.content, "tokens": total_tokens}
+                # If no tool calls, this is the final plan
+                if not response.content:
+                    return {
+                        "content": "Plan generation failed to produce content.",
+                        "tokens": total_tokens,
+                    }
+                return {"content": response.content, "tokens": total_tokens}
 
-        return {"content": "Plan generation loop exhausted.", "tokens": total_tokens}
+        return {"content": "Plan generation loop exhausted max turns.", "tokens": total_tokens}
 
     async def revise_plan(self, task_id: str, feedback: str) -> None:
         """Revise an existing plan based on feedback."""
-        task = self._queue.get_task(task_id) # Need to add get_task to queue
+        task = self._queue.get_task(task_id)
         if not task:
             raise ValueError("Task not found")
 
-        # ... Implementation logic for revision ...
-        # For MVP, we'll re-run planning with feedback appended
-        task.request += f"\n\nRefinement: {feedback}"
+        # Properly integrate feedback into the task request for re-planning
+        task.request += f"\n\n### User Feedback on Previous Plan\n{feedback}"
 
-        # Reset task status to QUEUED so it gets picked up again
-        task.status = TaskStatus.QUEUED
-        task.result = {} # Clear previous plan
-        self._queue.update(task)
+        # Clear previous plan but keep other metadata if useful
+        if task.result:
+            task.result.pop("implementation_plan", None)
+
+        self._queue.requeue(task.id)
 
         await self._send_status(task.channel_id, f"📝 Plan revision queued based on: '{feedback}'")
 
@@ -399,10 +517,7 @@ class Orchestrator:
         if not task or task.status != TaskStatus.WAITING_APPROVAL:
             raise ValueError("Task not suitable for resumption")
 
-        task.status = TaskStatus.QUEUED # Re-queue to run execution block
-        # Note: logic in _process_task handles the resume because implementation_plan is in result
-        self._queue.update(task)
-        self._queue._queue.put(task) # Push back to queue
+        self._queue.requeue(task.id)
 
         await self._send_status(task.channel_id, "🚀 Plan approved! Queuing for execution...")
 
@@ -420,21 +535,20 @@ class Orchestrator:
 
         # Resolve context files (may trigger interactive acquisition)
         context_files = self._templates.get_context_file_paths(
-            context.project_path,
-            channel_id=context.task.channel_id
+            context.project_path, channel_id=context.task.channel_id
         )
 
         # Use AiderTool for code editing
         result = await self._aider.run_async(
             message=instruction,
             cwd=context.project_path,
-            files=None, # Explicitly none to rely on command line args or aider's own logic?
-                        # Wait, original code passed None for files unless provided.
-                        # _execute doesn't seem to have a 'files' arg from context?
-                        # Ah, context.changes_made is output. Input files?
-                        # The original code passed nothing for files.
+            files=None,  # Explicitly none to rely on command line args or aider's own logic?
+            # Wait, original code passed None for files unless provided.
+            # _execute doesn't seem to have a 'files' arg from context?
+            # Ah, context.changes_made is output. Input files?
+            # The original code passed nothing for files.
             context_files=context_files,
-            progress_callback=lambda msg: asyncio.create_task(progress_callback(msg))
+            progress_callback=lambda msg: asyncio.create_task(progress_callback(msg)),
         )
 
         if not result.success:
@@ -455,13 +569,15 @@ class Orchestrator:
 
         if not test_cmd:
             logger.warning("No test command found. Skipping tests.")
-            await self._send_status(context.task.channel_id, "⚠️ No tests configured. Skipping validation.")
+            await self._send_status(
+                context.task.channel_id, "⚠️ No tests configured. Skipping validation."
+            )
             return True
 
         result = await self._shell.run_string_async(
             test_cmd,
             cwd=context.project_path,
-            timeout=self._config.get("orchestration", "test_timeout_seconds", default=300)
+            timeout=self._config.get("orchestration", "test_timeout_seconds", default=300),
         )
 
         return result.success
@@ -474,6 +590,7 @@ class Orchestrator:
         pkg_json = path / "package.json"
         if pkg_json.exists():
             import json
+
             try:
                 pkg = json.loads(pkg_json.read_text())
                 if "test" in pkg.get("scripts", {}):
@@ -511,9 +628,7 @@ class Orchestrator:
         # Create PR
         pr_body = self._generate_pr_body(context)
         pr_result = self._vcs.create_pr(
-            context.project_path,
-            title=context.task.request[:100],
-            body=pr_body
+            context.project_path, title=context.task.request[:100], body=pr_body
         )
 
         if not pr_result.success:
@@ -525,10 +640,8 @@ class Orchestrator:
             "branch": context.branch_name,
             "changes": context.changes_made,
             "commit": commit_result.commit_hash,
-            "token_usage": self._llm.get_usage().__dict__
+            "token_usage": self._llm.get_usage().__dict__,
         }
-
-
 
     def _generate_pr_body(self, context: TaskContext) -> str:
         """Generate PR body from template."""
@@ -546,7 +659,7 @@ class Orchestrator:
             changes=changes_list or "No files changed",
             task_id=context.task.id,
             user=context.task.user_id,
-            version="0.1.0"
+            version="0.1.0",
         )
 
     async def _handle_failure(self, context: TaskContext) -> None:
@@ -558,13 +671,15 @@ class Orchestrator:
                 context.task.channel_id,
                 f"❌ Task failed after {context.attempts} attempts.\n\n"
                 f"Errors:\n" + "\n".join(context.errors[-3:]) + "\n\n"
-                f"Escalate to cloud model ({self._config.get('orchestration', 'fallback_strategy', 'escalation_model')})?"
+                f"Escalate to cloud model ({self._config.get('orchestration', 'fallback_strategy', 'escalation_model')})?",
             )
 
             if should_escalate:
                 # Fallback to cloud model
                 fallback_model = self._config.orchestration.fallback_model or "openai/gpt-4o"
-                await self._send_status(context.task.channel_id, f"☁️ Escalating to cloud model: `{fallback_model}`...")
+                await self._send_status(
+                    context.task.channel_id, f"☁️ Escalating to cloud model: `{fallback_model}`..."
+                )
 
                 # Update LLM Client
                 # We need to update the config object locally to reflect the change
@@ -576,6 +691,7 @@ class Orchestrator:
                 # Re-initialize LLM Client to pick up new config/provider settings
                 # Assuming LLMClient handles provider logic based on model string
                 from astra.adapters.llm_client import LiteLLMClient
+
                 self._llm = LiteLLMClient()
 
                 # Reset attempts and plan
@@ -590,15 +706,14 @@ class Orchestrator:
         self._queue.complete(
             context.task,
             success=False,
-            error=f"Failed after {context.attempts} attempts: {context.errors[-1] if context.errors else 'Unknown error'}"
+            error=f"Failed after {context.attempts} attempts: {context.errors[-1] if context.errors else 'Unknown error'}",
         )
 
-    async def _send_status(self, channel_id: str, message: str) -> None:
-        """Send a status update to Discord."""
-        await self._gateway.send_message(Message(
-            content=message,
-            channel_id=channel_id
-        ))
+    async def _send_status(self, channel_id: str, message: str, file_path: str | None = None) -> None:
+        """Send a status update to the gateway."""
+        await self._gateway.send_message(
+            Message(content=message, channel_id=channel_id, file_path=file_path)
+        )
 
     def set_active_project(self, project: str) -> None:
         """Set the active project and update component contexts."""
@@ -613,3 +728,54 @@ class Orchestrator:
     def get_active_project(self) -> str | None:
         """Get the active project."""
         return self._active_project
+
+    async def _process_chat_task(self, task: Task) -> None:
+        """Process a chat task."""
+        from astra.interfaces.llm import ChatMessage
+
+        # Send typing indicator/status
+        # In this queued mode, we should update status so user knows it's picked up
+        # await self._send_status(task.channel_id, "Thinking...")
+
+        messages = [
+            ChatMessage(
+                role="system",
+                content="You are ASTra, an intelligent coding assistant. Answer the user's questions helpfully and concisely. You can explain code, answer technical questions, or just chat.",
+            ),
+            ChatMessage(role="user", content=task.request),
+        ]
+
+        try:
+            # We can use the default LLM or a specific one
+            response = await self._llm.chat(messages)
+
+            # Send response directly
+            await self._send_status(task.channel_id, response.content)
+
+            # Complete task
+            self._queue.complete(task, success=True, result={"response": response.content})
+
+        except Exception as e:
+            logger.error(f"Chat task failed: {e}")
+            await self._send_status(task.channel_id, "❌ I'm having trouble thinking right now.")
+            self._queue.complete(task, success=False, error=str(e))
+
+    def _ensure_astra_dir(self, project_path: str) -> Path:
+        """Ensure .astra directory exists and is gitignored."""
+        path = Path(project_path) / ".astra"
+        path.mkdir(exist_ok=True)
+
+        # Update .gitignore
+        gitignore = Path(project_path) / ".gitignore"
+        if gitignore.exists():
+            content = gitignore.read_text(encoding="utf-8")
+            if ".astra/" not in content and ".astra" not in content:
+                # Append to gitignore
+                with gitignore.open("a", encoding="utf-8") as f:
+                    f.write("\n# ASTra generated files\n.astra/\n")
+        else:
+            # Create .gitignore
+            gitignore.write_text("# ASTra generated files\n.astra/\n", encoding="utf-8")
+
+        return path
+

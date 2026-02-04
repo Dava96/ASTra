@@ -5,7 +5,7 @@ from typing import Any
 
 from astra.core.remote_provider import RemoteTemplateProvider
 from astra.ingestion.parser import get_manifest_files_for_project
-from astra.interfaces.gateway import Gateway
+from astra.interfaces.gateway import Gateway, Message
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,9 @@ class TemplateManager:
         # Ensure directory exists
         self._create_defaults()
 
-    def get_context_file_paths(self, project_path: str | Path, channel_id: str | None = None) -> list[str]:
+    def get_context_file_paths(
+        self, project_path: str | Path, channel_id: str | None = None
+    ) -> list[str]:
         """Detect project type and return relevant context file paths."""
         context_files = []
         project_path = Path(project_path)
@@ -39,7 +41,9 @@ class TemplateManager:
         try:
             manifests = get_manifest_files_for_project(project_path)
 
-            has_python = any(f in manifests for f in ["pyproject.toml", "requirements.txt", "setup.py"])
+            has_python = any(
+                f in manifests for f in ["pyproject.toml", "requirements.txt", "setup.py"]
+            )
             has_js_ts = any(f in manifests for f in ["package.json", "tsconfig.json"])
             has_rust = "Cargo.toml" in manifests
 
@@ -52,9 +56,11 @@ class TemplateManager:
                     # Async fire-and-forget acquisition proposal
                     try:
                         loop = asyncio.get_running_loop()
-                        loop.create_task(self._propose_template_acquisition(base_name, search_query, channel_id))
+                        loop.create_task(
+                            self._propose_template_acquisition(base_name, search_query, channel_id)
+                        )
                     except RuntimeError:
-                         pass
+                        pass
 
             # python
             if has_python:
@@ -72,7 +78,7 @@ class TemplateManager:
                     check_and_add("typescript_conventions.md", "typescript conventions")
 
                 if "package.json" in manifests and "react" in manifests["package.json"].lower():
-                     check_and_add("react_rules.md", "react best practices")
+                    check_and_add("react_rules.md", "react best practices")
 
             if has_rust:
                 check_and_add("rust_conventions.md", "rust language conventions")
@@ -82,31 +88,33 @@ class TemplateManager:
 
         return context_files
 
-    async def _propose_template_acquisition(self, filename: str, search_query: str, channel_id: str):
+    async def _propose_template_acquisition(
+        self, filename: str, search_query: str, channel_id: str
+    ):
         """Interactive flow to acquire a missing template."""
         if not self._gateway:
             return
 
         try:
             await self._gateway.send_message(
-                 message=str(f"ℹ️ Missing required template: `{filename}`. Searching SkillsMP..."),
-                 channel_id=channel_id
+                Message(
+                    content=str(f"ℹ️ Missing required template: `{filename}`. Searching SkillsMP..."),
+                    channel_id=channel_id,
+                )
             )
 
             results = self._remote.search(search_query, limit=3)
             if not results:
                 await self._gateway.send_message(
-                    message="❌ No relevant skills found.",
-                    channel_id=channel_id
+                    Message(content="❌ No relevant skills found.", channel_id=channel_id)
                 )
                 return
 
             # Format results for user selection
-            options = []
             msg = f"Found {len(results)} potential templates for `{filename}`:\n"
             for i, res in enumerate(results):
-                desc = res.get('description', 'No description')[:100]
-                msg += f"{i+1}. **{res['name']}** - {desc}\n"
+                desc = res.get("description", "No description")[:100]
+                msg += f"{i + 1}. **{res['name']}** - {desc}\n"
 
             msg += "\n*Reply with the number (1-3) to inspect and install, or 'cancel'.*"
 
@@ -119,32 +127,37 @@ class TemplateManager:
             top_result = results[0]
             should_inspect = await self._gateway.request_confirmation(
                 channel_id,
-                f"Found skill: **{top_result['name']}**\n{top_result.get('description')}\n\nInspect and install?"
+                f"Found skill: **{top_result['name']}**\n{top_result.get('description')}\n\nInspect and install?",
             )
 
             if not should_inspect:
                 return
 
             # Fetch and Show (Sandbox)
-            content = self._remote.fetch_content(top_result['id'])
+            content = self._remote.fetch_content(top_result["id"])
             if not content:
-                await self._gateway.send_message(message="❌ Failed to fetch content.", channel_id=channel_id)
+                await self._gateway.send_message(
+                    Message(content="❌ Failed to fetch content.", channel_id=channel_id)
+                )
                 return
 
             # Show preview
             preview = f"## Preview: {filename}\n```markdown\n{content[:500]}...\n```\n(Truncated)"
-            await self._gateway.send_message(message=preview, channel_id=channel_id)
+            await self._gateway.send_message(
+                Message(content=preview, channel_id=channel_id)
+            )
 
             is_safe = await self._gateway.request_confirmation(
-                channel_id,
-                "⚠️ **Security Check**: Do you approve this content for installation?"
+                channel_id, "⚠️ **Security Check**: Do you approve this content for installation?"
             )
 
             if is_safe:
                 self.update_template(filename.replace(".md", ""), content)
                 await self._gateway.send_message(
-                    message=f"✅ Installed `{filename}`. Rerun the task to apply.",
-                    channel_id=channel_id
+                    Message(
+                        content=f"✅ Installed `{filename}`. Rerun the task to apply.",
+                        channel_id=channel_id,
+                    )
                 )
 
         except Exception as e:
@@ -195,12 +208,6 @@ class TemplateManager:
     def reset_cache(self) -> None:
         """Clear the memory cache."""
         self._cache.clear()
-
-    def _create_defaults(self) -> None:
-        """Create default templates if missing."""
-        self._template_dir.mkdir(parents=True, exist_ok=True)
-        # ... (defaults created in previous step)
-
 
     def _create_defaults(self) -> None:
         """Create default templates if missing."""
@@ -262,55 +269,4 @@ class TemplateManager:
         # Pull Request Template
         pr_path = self._template_dir / "pr_description.md"
         if not pr_path.exists():
-            pr_path.write_text(
-                "## Summary\n"
-                "{{summary}}\n\n"
-                "## Changes\n"
-                "{{changes}}"
-            )
-
-    def get_template(self, name: str) -> str:
-        """Get a template by name (cached)."""
-        if name in self._cache:
-            return self._cache[name]
-
-        # Try mapping common names to filenames
-        filename = name if name.endswith(".md") else f"{name}.md"
-        path = self._template_dir / filename
-
-        if path.exists():
-            content = path.read_text(encoding="utf-8")
-            self._cache[name] = content
-            return content
-
-        raise FileNotFoundError(f"Template '{name}' not found at {path}")
-
-    def render(self, name: str, **kwargs: Any) -> str:
-        """Load and render a template with variables."""
-        template = self.get_template(name)
-
-        # Simple string replacement for now (lighter than jinja2)
-        # We can upgrade to jinja2 if complexity grows
-        content = template
-        for key, value in kwargs.items():
-            placeholder = f"{{{{{key}}}}}"
-            if placeholder in content:
-                content = content.replace(placeholder, str(value))
-
-        return content
-
-    def update_template(self, name: str, content: str) -> None:
-        """Update a template file."""
-        filename = name if name.endswith(".md") else f"{name}.md"
-        path = self._template_dir / filename
-        path.write_text(content, encoding="utf-8")
-        self._cache[name] = content
-        logger.info(f"Updated template: {name}")
-
-    def list_templates(self) -> list[str]:
-        """List available templates."""
-        return [f.name for f in self._template_dir.glob("*.md")]
-
-    def reset_cache(self) -> None:
-        """Clear the memory cache."""
-        self._cache.clear()
+            pr_path.write_text("## Summary\n{{summary}}\n\n## Changes\n{{changes}}")

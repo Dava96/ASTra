@@ -7,7 +7,7 @@ from astra.tools.diagnostic.models import TestResult
 
 class OutputParser(ABC):
     """Base class for output parsers.
-    
+
     Subclasses must define:
     - name: Unique parser identifier
     - patterns: List of strings to detect this parser's format

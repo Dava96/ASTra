@@ -1,6 +1,5 @@
 """Tests for the AST parser."""
 
-
 import pytest
 
 from astra.ingestion.parser import ASTParser, get_language_for_file
@@ -8,7 +7,7 @@ from astra.ingestion.parser import ASTParser, get_language_for_file
 # Mark for integration tests requiring tree-sitter
 pytest_integration = pytest.mark.skipif(
     False,  # Enabled now that tree-sitter-language-pack is compatible
-    reason="Integration test - requires tree-sitter-language-pack compatibility"
+    reason="Integration test - requires tree-sitter-language-pack compatibility",
 )
 
 
@@ -43,19 +42,19 @@ class TestASTParser:
 
     @pytest.fixture
     def temp_ts_file(self, tmp_path):
-        code = '''
+        code = """
 export function greet(name: string): string {
     return `Hello, ${name}!`;
 }
 
 export class User {
     constructor(public name: string) {}
-    
+
     sayHello() {
         return greet(this.name);
     }
 }
-'''
+"""
         file = tmp_path / "example.ts"
         file.write_text(code)
         return file
@@ -70,7 +69,7 @@ def greet(name: str) -> str:
 class User:
     def __init__(self, name: str):
         self.name = name
-    
+
     def say_hello(self) -> str:
         return greet(self.name)
 '''
@@ -130,7 +129,9 @@ class TestDirectoryParsing:
         # Create a mini project structure
         (tmp_path / "src").mkdir()
         (tmp_path / "src" / "index.ts").write_text("export const VERSION = '1.0.0';")
-        (tmp_path / "src" / "utils.ts").write_text("export function add(a: number, b: number) { return a + b; }")
+        (tmp_path / "src" / "utils.ts").write_text(
+            "export function add(a: number, b: number) { return a + b; }"
+        )
         (tmp_path / "node_modules").mkdir()
         (tmp_path / "node_modules" / "lib.ts").write_text("export const LIB = true;")
         return tmp_path
@@ -143,10 +144,7 @@ class TestDirectoryParsing:
         assert len(nodes) >= 1
 
     def test_parse_directory_with_ignore(self, parser, project_dir):
-        nodes = list(parser.parse_directory(
-            project_dir,
-            ignore_patterns=["node_modules"]
-        ))
+        nodes = list(parser.parse_directory(project_dir, ignore_patterns=["node_modules"]))
 
         # Check that node_modules files are excluded
         nm_nodes = [n for n in nodes if "node_modules" in n.file_path]
@@ -169,4 +167,3 @@ class TestDirectoryParsing:
         paths = [n.file_path for n in nodes]
         assert any("l1" in str(p) and "l2" not in str(p) for p in paths)
         assert not any("l2" in str(p) for p in paths)
-

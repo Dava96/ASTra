@@ -27,9 +27,11 @@ def get_navigator(name: str) -> BaseNavigator | None:
         return nav_cls()
     return None
 
+
 def get_navigator_names() -> list[str]:
     """Get list of registered navigator names."""
     return list(NAVIGATOR_REGISTRY.keys())
+
 
 # Import implementations to trigger registration
 # This must be at the bottom to avoid circular imports

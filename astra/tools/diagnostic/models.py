@@ -7,6 +7,7 @@ from typing import Any
 @dataclass
 class ParsedError:
     """Structured representation of an error."""
+
     error_type: str
     file: str | None = None
     line: int | None = None
@@ -36,14 +37,15 @@ class ParsedError:
             "traceback": self._smart_truncate(self.traceback) if self.traceback else "",
             "code_snippet": self.code_snippet,
             "suggestion": self.suggestion,
-            "related_files": self.related_files
+            "related_files": self.related_files,
         }
 
 
 @dataclass
 class TestResult:
     """Structured test run result."""
-    __test__ = False # Prevent pytest from collecting this as a test class
+
+    __test__ = False  # Prevent pytest from collecting this as a test class
     framework: str
     total: int = 0
     passed: int = 0
@@ -52,6 +54,7 @@ class TestResult:
     errors: int = 0
     duration_seconds: float = 0
     failures: list[ParsedError] = field(default_factory=list)
+    suggestion: str | None = None  # Suggestion if test runner is missing
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -63,9 +66,6 @@ class TestResult:
             "errors": self.errors,
             "duration_seconds": self.duration_seconds,
             "failures": [f.to_dict() for f in self.failures],
-            "failures": [f.to_dict() for f in self.failures],
             "success": self.failed == 0 and self.errors == 0,
-            "suggestion": self.suggestion
+            "suggestion": self.suggestion,
         }
-
-    suggestion: str | None = None  # Suggestion if test runner is missing

@@ -8,7 +8,7 @@ def build_help_embed() -> discord.Embed:
     embed = discord.Embed(
         title="🤖 ASTra Commands",
         description="Autonomous AI coding assistant",
-        color=discord.Color.blue()
+        color=discord.Color.blue(),
     )
     embed.add_field(
         name="📦 Task Commands",
@@ -18,7 +18,7 @@ def build_help_embed() -> discord.Embed:
             "**/quick** `<file>` `<change>` - Quick single-file edit\n"
             "**/web** `<query>` - Search the web"
         ),
-        inline=False
+        inline=False,
     )
     embed.add_field(
         name="📂 Project Commands",
@@ -30,7 +30,7 @@ def build_help_embed() -> discord.Embed:
             "**/history** - View recent tasks\n"
             "**/docker** - Check Docker status"
         ),
-        inline=False
+        inline=False,
     )
     embed.add_field(
         name="⚙️ Configuration & Tools",
@@ -41,7 +41,7 @@ def build_help_embed() -> discord.Embed:
             "**/cron list/schedule** - Manage cron jobs\n"
             "**/auth add/remove/list** - Manage users (admin)"
         ),
-        inline=False
+        inline=False,
     )
     embed.set_footer(text="Use /config list to see all configuration options")
     return embed
@@ -49,18 +49,13 @@ def build_help_embed() -> discord.Embed:
 
 def build_config_embed(config) -> discord.Embed:
     """Build the configuration overview embed."""
-    embed = discord.Embed(
-        title="⚙️ Configuration Options",
-        color=discord.Color.green()
-    )
+    embed = discord.Embed(title="⚙️ Configuration Options", color=discord.Color.green())
 
     # LLM settings
     planning = config.llm.planning_model or "not set"
     coding = config.llm.coding_model or "same as planning"
     embed.add_field(
-        name="🧠 LLM",
-        value=f"**Planning:** `{planning}`\n**Coding:** `{coding}`",
-        inline=False
+        name="🧠 LLM", value=f"**Planning:** `{planning}`\n**Coding:** `{coding}`", inline=False
     )
 
     # Git settings
@@ -72,7 +67,7 @@ def build_config_embed(config) -> discord.Embed:
             f"**Branch Prefix:** `{git.branch_prefix}`\n"
             f"**Review Required:** `{git.review_required}`"
         ),
-        inline=False
+        inline=False,
     )
 
     # Security settings
@@ -83,7 +78,7 @@ def build_config_embed(config) -> discord.Embed:
             f"**Auto Install Packages:** `{sec.auto_install_packages}`\n"
             f"**Shell Permission Required:** `{sec.require_permission_for_shell}`"
         ),
-        inline=False
+        inline=False,
     )
 
     return embed
@@ -91,30 +86,21 @@ def build_config_embed(config) -> discord.Embed:
 
 def build_status_embed(status: dict) -> discord.Embed:
     """Build task status embed."""
-    embed = discord.Embed(
-        title="📊 Task Status",
-        color=discord.Color.blue()
-    )
+    embed = discord.Embed(title="📊 Task Status", color=discord.Color.blue())
 
     if status.get("current_task"):
         task = status["current_task"]
         embed.add_field(
             name="🔄 Current Task",
             value=f"**{task.get('name', 'Unknown')}**\n{task.get('status', 'Working...')}",
-            inline=False
+            inline=False,
         )
     else:
-        embed.add_field(
-            name="Status",
-            value="✅ No active tasks",
-            inline=False
-        )
+        embed.add_field(name="Status", value="✅ No active tasks", inline=False)
 
     if status.get("queue_length", 0) > 0:
         embed.add_field(
-            name="📋 Queue",
-            value=f"{status['queue_length']} tasks waiting",
-            inline=True
+            name="📋 Queue", value=f"{status['queue_length']} tasks waiting", inline=True
         )
 
     return embed

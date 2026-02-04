@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AiderResult:
     """Result from an Aider execution."""
+
     success: bool
     output: str
     error: str | None = None
@@ -36,27 +37,23 @@ class AiderTool(BaseTool):
     parameters = {
         "type": "object",
         "properties": {
-            "message": {
-                "type": "string",
-                "description": "Description of the changes to make"
-            },
+            "message": {"type": "string", "description": "Description of the changes to make"},
             "files": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": "List of specific files to focus on"
-            }
+                "description": "List of specific files to focus on",
+            },
         },
-        "required": ["message"]
+        "required": ["message"],
     }
 
     def __init__(
-        self,
-        model: str | None = None,
-        api_key_env: str | None = None,
-        vcs: VCS | None = None
+        self, model: str | None = None, api_key_env: str | None = None, vcs: VCS | None = None
     ):
         config = get_config()
-        self._model = model or config.get("orchestration", "model", default="ollama/qwen2.5-coder:7b")
+        self._model = model or config.get(
+            "orchestration", "model", default="ollama/qwen2.5-coder:7b"
+        )
         # Get the API key env var from nested config
         fallback_config = config.get("orchestration", "fallback_strategy", default={})
         if isinstance(fallback_config, dict):
@@ -86,7 +83,7 @@ class AiderTool(BaseTool):
             "success": result.success,
             "output": result.output[:2000],  # Cap return output for the tool response
             "error": result.error,
-            "modified": result.files_modified
+            "modified": result.files_modified,
         }
 
     def _build_command(
@@ -95,13 +92,17 @@ class AiderTool(BaseTool):
         files: list[str] | None = None,
         context_files: list[str] | None = None,
         auto_commits: bool = False,
-        yes_always: bool = True
+        yes_always: bool = True,
     ) -> list[str]:
         """Build the aider command line."""
         cmd = [
-            sys.executable, "-m", "aider",
-            "--model", self._model,
-            "--message", message,
+            sys.executable,
+            "-m",
+            "aider",
+            "--model",
+            self._model,
+            "--message",
+            message,
         ]
 
         if not auto_commits:
@@ -126,13 +127,17 @@ class AiderTool(BaseTool):
         env = os.environ.copy()
 
         # Ensure API key is available if configured (must be a string)
-        if self._api_key_env and isinstance(self._api_key_env, str) and self._api_key_env in os.environ:
+        if (
+            self._api_key_env
+            and isinstance(self._api_key_env, str)
+            and self._api_key_env in os.environ
+        ):
             env[self._api_key_env] = os.environ[self._api_key_env]
 
         # Inject Ollama Host if present in config
         config = get_config()
         if config.llm.host:
-             env["OLLAMA_API_BASE"] = config.llm.host
+            env["OLLAMA_API_BASE"] = config.llm.host
 
         # Disable interactive prompts
         env["AIDER_YES"] = "true"
@@ -144,24 +149,22 @@ class AiderTool(BaseTool):
         # Only relevant for Ollama models
         if "ollama" not in self._model.lower():
             return
-            
+
         config = get_config()
         if not config.llm.context_limit:
             return
 
         settings_path = os.path.join(cwd, ".aider.model.settings.yml")
-        
+
         # We need to use the exact model string passed to aider
-        # If using ollama_chat/ prefix, exclude it for the 'name' field in settings? 
+        # If using ollama_chat/ prefix, exclude it for the 'name' field in settings?
         # Aider docs say: "name: ollama/..." so we likely match what we pass.
         # But if we pass "ollama_chat/model", the settings item name should probably match that.
-        
+
         content = (
-            f"- name: {self._model}\n"
-            f"  extra_params:\n"
-            f"    num_ctx: {config.llm.context_limit}\n"
+            f"- name: {self._model}\n  extra_params:\n    num_ctx: {config.llm.context_limit}\n"
         )
-        
+
         try:
             with open(settings_path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -175,7 +178,7 @@ class AiderTool(BaseTool):
         cwd: str,
         files: list[str] | None = None,
         auto_commits: bool = False,
-        timeout: int | None = None
+        timeout: int | None = None,
     ) -> AiderResult:
         """Run Aider synchronously and return result."""
         self._ensure_model_settings(cwd)
@@ -186,7 +189,7 @@ class AiderTool(BaseTool):
         # Use ShellExecutor logic for security check
         allowed, error_msg = self._shell._is_allowed(cmd)
         if not allowed:
-             return AiderResult(success=False, output="", error=error_msg or "Blocked")
+            return AiderResult(success=False, output="", error=error_msg or "Blocked")
 
         result = self._shell.run(cmd, cwd=cwd, env=env, timeout=timeout)
 
@@ -198,7 +201,7 @@ class AiderTool(BaseTool):
             output=result.stdout,
             error=result.stderr if not success else None,
             files_modified=files_modified,
-            tokens_used=self._parse_token_usage(result.stdout)
+            tokens_used=self._parse_token_usage(result.stdout),
         )
 
     async def run_async(
@@ -209,7 +212,7 @@ class AiderTool(BaseTool):
         context_files: list[str] | None = None,
         auto_commits: bool = False,
         timeout: int | None = None,
-        progress_callback: Callable[[str], None] | None = None
+        progress_callback: Callable[[str], None] | None = None,
     ) -> AiderResult:
         """Run Aider asynchronously with optional progress streaming and memory safety."""
         MAX_OUTPUT_BYTES = 10 * 1024 * 1024  # 10MB limit
@@ -219,6 +222,7 @@ class AiderTool(BaseTool):
         # Resolve context files if not provided
         if context_files is None:
             from astra.core.template_manager import TemplateManager
+
             tm = TemplateManager()
             context_files = tm.get_context_file_paths(cwd)
 
@@ -235,14 +239,14 @@ class AiderTool(BaseTool):
             # Security check using ShellExecutor
             allowed, error_msg = self._shell._is_allowed(cmd)
             if not allowed:
-                 return AiderResult(success=False, output="", error=error_msg or "Blocked")
+                return AiderResult(success=False, output="", error=error_msg or "Blocked")
 
             process = await asyncio.create_subprocess_exec(
                 *cmd,
                 cwd=cwd,
                 env=env,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
             )
 
             stdout_lines = []
@@ -253,34 +257,39 @@ class AiderTool(BaseTool):
                 nonlocal total_bytes
                 while True:
                     if total_bytes >= MAX_OUTPUT_BYTES:
-                         # Append specific warning once
-                         if not lines or lines[-1] != "[... Output Truncated ...]":
-                             lines.append("[... Output Truncated ...]")
-                         # Drain remaining silently to avoid blocking pipe
-                         while await stream.readline(): pass
-                         break
+                        # Append specific warning once
+                        if not lines or lines[-1] != "[... Output Truncated ...]":
+                            lines.append("[... Output Truncated ...]")
+                        # Drain remaining silently to avoid blocking pipe
+                        while await stream.readline():
+                            pass
+                        break
 
                     line = await stream.readline()
                     if not line:
                         break
-                    decoded = line.decode('utf-8', errors='replace').rstrip()
+                    decoded = line.decode("utf-8", errors="replace").rstrip()
                     lines.append(decoded)
                     total_bytes += len(line)
 
                     # Send progress updates
-                    if progress_callback and not is_stderr:
-                        # Filter for meaningful progress lines
-                        if any(marker in decoded for marker in ['Applying', 'Writing', 'Tokens:', '>']):
-                            progress_callback(decoded[:100])
+                    if (
+                        progress_callback
+                        and not is_stderr
+                        and any(
+                            marker in decoded for marker in ["Applying", "Writing", "Tokens:", ">"]
+                        )
+                    ):
+                        progress_callback(decoded[:100])
 
             # Read both streams concurrently with timeout
             try:
                 await asyncio.wait_for(
                     asyncio.gather(
                         read_stream(process.stdout, stdout_lines),
-                        read_stream(process.stderr, stderr_lines, is_stderr=True)
+                        read_stream(process.stderr, stderr_lines, is_stderr=True),
                     ),
-                    timeout=timeout
+                    timeout=timeout,
                 )
                 await process.wait()
             except TimeoutError:
@@ -289,7 +298,7 @@ class AiderTool(BaseTool):
                 return AiderResult(
                     success=False,
                     output="\n".join(stdout_lines),
-                    error=f"Timeout after {timeout} seconds"
+                    error=f"Timeout after {timeout} seconds",
                 )
 
             stdout = "\n".join(stdout_lines)
@@ -301,22 +310,15 @@ class AiderTool(BaseTool):
                 output=stdout,
                 error=stderr if not success else None,
                 files_modified=self._parse_modified_files(stdout),
-                tokens_used=self._parse_token_usage(stdout)
+                tokens_used=self._parse_token_usage(stdout),
             )
 
         except Exception as e:
             logger.exception("Aider async execution failed")
-            return AiderResult(
-                success=False,
-                output="",
-                error=str(e)
-            )
+            return AiderResult(success=False, output="", error=str(e))
 
     async def stream_output(
-        self,
-        message: str,
-        cwd: str,
-        files: list[str] | None = None
+        self, message: str, cwd: str, files: list[str] | None = None
     ) -> AsyncGenerator[str, None]:
         """Stream Aider output line by line."""
         cmd = self._build_command(message, files)
@@ -325,36 +327,32 @@ class AiderTool(BaseTool):
         # Security check using ShellExecutor
         allowed, error_msg = self._shell._is_allowed(cmd)
         if not allowed:
-             yield f"Error: {error_msg or 'Blocked'}"
-             return
+            yield f"Error: {error_msg or 'Blocked'}"
+            return
 
         process = await asyncio.create_subprocess_exec(
-            *cmd,
-            cwd=cwd,
-            env=env,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT
+            *cmd, cwd=cwd, env=env, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
         )
 
         while True:
             line = await process.stdout.readline()
             if not line:
                 break
-            yield line.decode('utf-8', errors='replace').rstrip()
+            yield line.decode("utf-8", errors="replace").rstrip()
 
         await process.wait()
 
     def _parse_modified_files(self, output: str) -> list[str]:
         """Parse Aider output to extract modified files."""
         files = []
-        for line in output.split('\n'):
+        for line in output.split("\n"):
             # Aider outputs lines like "Applying edits to src/file.py"
-            if line.startswith('Applying edits to '):
-                file_path = line.replace('Applying edits to ', '').strip()
+            if line.startswith("Applying edits to "):
+                file_path = line.replace("Applying edits to ", "").strip()
                 files.append(file_path)
             # Or "Writing src/file.py"
-            elif line.startswith('Writing '):
-                file_path = line.replace('Writing ', '').strip()
+            elif line.startswith("Writing "):
+                file_path = line.replace("Writing ", "").strip()
                 files.append(file_path)
         return files
 
@@ -364,7 +362,7 @@ class AiderTool(BaseTool):
         match = re.search(r"Tokens:\s+([\d,]+)\s+sent", output)
         if match:
             try:
-                return int(match.group(1).replace(',', ''))
+                return int(match.group(1).replace(",", ""))
             except ValueError:
                 pass
         return None
@@ -376,7 +374,7 @@ class AiderTool(BaseTool):
                 [sys.executable, "-m", "aider", "--version"],
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             return result.returncode == 0
         except Exception:

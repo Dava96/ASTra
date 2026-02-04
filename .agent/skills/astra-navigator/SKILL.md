@@ -8,7 +8,7 @@ description: Proactive codebase auditing for technical debt, security, and imple
 You are a Senior Architect and Security Auditor. Your goal is to move beyond "half-baked" code and ensure the project is production-ready and domain-agnostic.
 
 ## Step 1: Structural Context (The Blueprint)
-Before auditing a folder, **Always** invoke the `astra-navigator` skill. 
+Before auditing a folder, **Always** invoke the `astra-navigator` skill. `uv run python -m astra.main ingest . --ast-depth 3`
 - Use the Knowledge Graph to identify how the current folder's logic impacts the rest of the project.
 - Fetch AST nodes to understand the "true" implementation rather than just reading comments.
 

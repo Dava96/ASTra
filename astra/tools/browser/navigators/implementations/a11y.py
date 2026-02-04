@@ -8,7 +8,9 @@ from astra.tools.browser.navigators.base import BaseNavigator, NavigationResult
 def _register_a11y(cls):
     """Delayed registration to avoid circular import."""
     from astra.tools.browser.navigators.registry import register_navigator
+
     return register_navigator(cls)
+
 
 @_register_a11y
 class A11yNavigator(BaseNavigator):
@@ -19,7 +21,7 @@ class A11yNavigator(BaseNavigator):
 
     async def find_element(self, selector: str, **kwargs):
         """Find element using role and name.
-        
+
         Selector format: "role:name" (e.g. "button:Submit")
         """
         if ":" not in selector:
@@ -59,9 +61,11 @@ class A11yNavigator(BaseNavigator):
                 await element.fill(text)
             elif action == "get_text":
                 text = await element.inner_text()
-                return NavigationResult(success=True, element_found=True, action_performed=action, data={"text": text})
+                return NavigationResult(
+                    success=True, element_found=True, action_performed=action, data={"text": text}
+                )
             else:
-                 return NavigationResult(success=False, error_message=f"Unknown action: {action}")
+                return NavigationResult(success=False, error_message=f"Unknown action: {action}")
 
             return NavigationResult(success=True, element_found=True, action_performed=action)
 

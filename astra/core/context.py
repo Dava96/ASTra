@@ -1,5 +1,6 @@
 """Context gathering for RAG and Knowledge Graph."""
 
+import contextlib
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -40,7 +41,12 @@ class ContextGatherer:
 
         async def get_architecture():
             try:
-                arch_path = Path(project_path) / "ARCHITECTURE.md"
+                # Check .astra/ARCHITECTURE.md first
+                arch_path = Path(project_path) / ".astra" / "ARCHITECTURE.md"
+                if not arch_path.exists():
+                    # Fallback to root
+                    arch_path = Path(project_path) / "ARCHITECTURE.md"
+
                 if arch_path.exists():
                     arch_content = arch_path.read_text(encoding="utf-8")
                     return f"### Architecture & Guidelines:\n{arch_content}"
@@ -52,10 +58,12 @@ class ContextGatherer:
             try:
                 results = self._vector_store.query(collection, query, n_results=10)
                 if results:
-                    vector_ctx = "\n".join([
-                        f"// File: {r.node.file_path}:{r.node.start_line}\n{r.node.content}"
-                        for r in results
-                    ])
+                    vector_ctx = "\n".join(
+                        [
+                            f"// File: {r.node.file_path}:{r.node.start_line}\n{r.node.content}"
+                            for r in results
+                        ]
+                    )
                     return vector_ctx, results
             except Exception as e:
                 logger.warning(f"Vector search failed: {e}")
@@ -63,9 +71,7 @@ class ContextGatherer:
 
         # Execute independent tasks in parallel
         manifest_res, arch_res, (vector_str, vector_results) = await asyncio.gather(
-            get_manifests(),
-            get_architecture(),
-            get_vector_search()
+            get_manifests(), get_architecture(), get_vector_search()
         )
 
         # Combine results with Context Window Guard
@@ -101,10 +107,10 @@ class ContextGatherer:
                     # Run KG queries in parallel
                     deps, impact = await asyncio.gather(
                         kg_tool.execute("dependencies", target=top_file),
-                        kg_tool.execute("impact", target=top_file)
+                        kg_tool.execute("impact", target=top_file),
                     )
                     kg_check = f"### Knowledge Graph Analysis for {top_file}:\n{deps}\n{impact}"
-                     # Priority 3: KG Analysis (High Value)
+                    # Priority 3: KG Analysis (High Value)
                     if current_chars + len(kg_check) <= MAX_CONTEXT_CHARS:
                         kg_context = kg_check
             except Exception as e:
@@ -117,9 +123,10 @@ class ContextGatherer:
         # Priority 4: Vector Search Details (Lowest Priority - can be truncated or compressed)
         if vector_str:
             remain = MAX_CONTEXT_CHARS - current_chars
-            if remain > 100: # Minimum useful chunk
+            if remain > 100:  # Minimum useful chunk
                 # Try compression first if enabled
                 from astra.core.compression import ContextCompressor
+
                 compressor = ContextCompressor()
 
                 # Check if we are over the "safe" limit for vector data
@@ -129,10 +136,10 @@ class ContextGatherer:
 
                 # Only compress if it's significantly larger than target (save CPU otherwise)
                 if len(vector_str) > remain:
-                    try:
-                        vector_str = compressor.compress(vector_str, target_token_count=target_tokens)
-                    except Exception:
-                        pass # Fallback to truncation
+                    with contextlib.suppress(Exception):
+                        vector_str = compressor.compress(
+                            vector_str, target_token_count=target_tokens
+                        )
 
                 header = "### Relevant Code Snippets (Vector Search"
                 full_vector_part = f"{header}):\n{vector_str}"
@@ -144,6 +151,8 @@ class ContextGatherer:
                     suffix = "\n...(truncated)"
                     chunk_size = remain - 100
                     if chunk_size > 0:
-                         context_parts.append(f"{header} - Truncated):\n{vector_str[:chunk_size]}{suffix}")
+                        context_parts.append(
+                            f"{header} - Truncated):\n{vector_str[:chunk_size]}{suffix}"
+                        )
 
         return "\n\n".join(context_parts)

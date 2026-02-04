@@ -9,6 +9,7 @@ from tree_sitter_language_pack import get_language, get_parser
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ASTNode:
     id: str
@@ -20,6 +21,7 @@ class ASTNode:
     end_line: int
     language: str
     metadata: dict[str, Any] = field(default_factory=dict)
+
 
 # Mapping of file extensions to tree-sitter languages
 EXTENSION_TO_LANGUAGE = {
@@ -54,13 +56,40 @@ LANGUAGE_MANIFEST_FILES = {
 # Node types to extract as significant code items (fallback manual walk)
 EXTRACTABLE_NODES = {
     "python": ["class_definition", "function_definition", "decorated_definition"],
-    "javascript": ["class_declaration", "function_declaration", "method_definition", "variable_declarator"],
-    "typescript": ["class_declaration", "function_declaration", "method_definition", "interface_declaration", "type_alias_declaration"],
-    "tsx": ["class_declaration", "function_declaration", "method_definition", "interface_declaration", "type_alias_declaration"],
+    "javascript": [
+        "class_declaration",
+        "function_declaration",
+        "method_definition",
+        "variable_declarator",
+    ],
+    "typescript": [
+        "class_declaration",
+        "function_declaration",
+        "method_definition",
+        "interface_declaration",
+        "type_alias_declaration",
+    ],
+    "tsx": [
+        "class_declaration",
+        "function_declaration",
+        "method_definition",
+        "interface_declaration",
+        "type_alias_declaration",
+    ],
     "rust": ["struct_item", "enum_item", "function_item", "impl_item", "trait_item"],
     "go": ["type_declaration", "function_declaration", "method_declaration"],
-    "java": ["class_declaration", "interface_declaration", "method_declaration", "enum_declaration"],
-    "php": ["class_declaration", "function_declaration", "method_declaration", "interface_declaration"],
+    "java": [
+        "class_declaration",
+        "interface_declaration",
+        "method_declaration",
+        "enum_declaration",
+    ],
+    "php": [
+        "class_declaration",
+        "function_declaration",
+        "method_declaration",
+        "interface_declaration",
+    ],
     "ruby": ["class", "method", "module"],
 }
 
@@ -82,7 +111,7 @@ LANGUAGE_QUERIES = {
             (import_statement) @node
             (import_from_statement) @node
             (assignment left: (identifier) @name) @node
-        """
+        """,
     },
     "javascript": {
         1: """
@@ -93,7 +122,7 @@ LANGUAGE_QUERIES = {
         3: """
             (import_statement) @node
             (variable_declarator name: (identifier) @name) @node
-        """
+        """,
     },
     "typescript": {
         1: """
@@ -106,7 +135,7 @@ LANGUAGE_QUERIES = {
         3: """
             (import_statement) @node
             (variable_declarator name: (identifier) @name) @node
-        """
+        """,
     },
     "tsx": {
         1: """
@@ -119,7 +148,7 @@ LANGUAGE_QUERIES = {
         3: """
             (import_statement) @node
             (variable_declarator name: (identifier) @name) @node
-        """
+        """,
     },
     "rust": {
         1: """
@@ -132,7 +161,7 @@ LANGUAGE_QUERIES = {
         3: """
             (use_declaration) @node
             (let_declaration pattern: (identifier) @name) @node
-        """
+        """,
     },
     "go": {
         1: """
@@ -144,7 +173,7 @@ LANGUAGE_QUERIES = {
             (import_declaration) @node
             (var_declaration (var_spec name: (identifier) @name)) @node
             (short_var_declaration left: (expression_list (identifier) @name)) @node
-        """
+        """,
     },
 }
 
@@ -281,9 +310,12 @@ class ASTParser:
                 return None
         return self._queries[cache_key]
 
-    def parse_file(self, filepath: str | Path, relative_to: str | Path | None = None, ast_depth: int = 3) -> list[ASTNode]:
+    def parse_file(
+        self, filepath: str | Path, relative_to: str | Path | None = None, ast_depth: int = 3
+    ) -> list[ASTNode]:
         """Parse a file and extract AST nodes."""
         import traceback
+
         filepath = Path(filepath)
         language = get_language_for_file(filepath)
         if not language:
@@ -350,7 +382,7 @@ class ASTParser:
                         node_matches.append((current_node, current_caps))
             except Exception as e:
                 logger.debug(f"Query extraction failed for {filepath}: {e}")
-                query = None # Fallback to manual walk
+                query = None  # Fallback to manual walk
 
         if not query:
             # Fallback for languages without queries or if query failed
@@ -363,6 +395,7 @@ class ASTParser:
                     node_matches.append((node, {}))
                 for child in node.children:
                     walk(child, depth + 1)
+
             walk(tree.root_node)
 
         for node_cap, caps in node_matches:
@@ -381,7 +414,7 @@ class ASTParser:
                     start_line=node_cap.start_point[0] + 1,
                     end_line=node_cap.end_point[0] + 1,
                     language=language,
-                    metadata={"column": node_cap.start_point[1]}
+                    metadata={"column": node_cap.start_point[1]},
                 )
                 nodes.append(ast_node)
             except Exception:
@@ -398,10 +431,11 @@ class ASTParser:
         max_depth: int | None = None,
         ast_depth: int = 3,
         max_file_size_kb: int = 100,
-        progress_callback: Callable[[int, int, int], None] | None = None
+        progress_callback: Callable[[int, int, int], None] | None = None,
     ) -> Generator[ASTNode, None, None]:
         """Parse all files in a directory, yielding nodes."""
         import os
+
         directory = Path(directory)
         ignore_patterns = ignore_patterns or []
 
@@ -414,18 +448,23 @@ class ASTParser:
                 try:
                     depth = len(root_path.relative_to(directory).parts)
                     if depth > max_depth:
-                        dirs[:] = [] # Prevent walking deeper
+                        dirs[:] = []  # Prevent walking deeper
                         continue
                 except ValueError:
                     pass
 
-            if any(p in str(root_path) for p in [".git", "__pycache__", "node_modules", ".venv", "env"]):
+            if any(
+                p in str(root_path) for p in [".git", "__pycache__", "node_modules", ".venv", "env"]
+            ):
                 dirs[:] = []
                 continue
 
             for file in files:
                 file_path = root_path / file
-                if get_language_for_file(file_path) and file_path.stat().st_size <= max_file_size_kb * 1024:
+                if (
+                    get_language_for_file(file_path)
+                    and file_path.stat().st_size <= max_file_size_kb * 1024
+                ):
                     valid_files.append(file_path)
 
         total_files = len(valid_files)

@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # --- Singleton accessor is deprecated but kept for backward compatibility helper ---
 _SERVICE_INSTANCE = None
 
+
 def get_scheduler_service() -> "SchedulerService":
     """Get or create the global scheduler service instance."""
     global _SERVICE_INSTANCE
@@ -28,23 +29,26 @@ def get_scheduler_service() -> "SchedulerService":
         _SERVICE_INSTANCE = SchedulerService(get_config())
     return _SERVICE_INSTANCE
 
+
 class SchedulerService:
     """Service to manage APScheduler instance with resource awareness."""
 
     def __init__(self, config: Config):
         self._config = config
         self._scheduler_config = config.scheduler
-        self._db_path = f"sqlite:///{self._scheduler_config.db_path}" if not self._scheduler_config.db_path.startswith("sqlite:///") else self._scheduler_config.db_path
+        self._db_path = (
+            f"sqlite:///{self._scheduler_config.db_path}"
+            if not self._scheduler_config.db_path.startswith("sqlite:///")
+            else self._scheduler_config.db_path
+        )
 
-        self._job_stores = {
-            "default": SQLAlchemyJobStore(url=self._db_path)
-        }
+        self._job_stores = {"default": SQLAlchemyJobStore(url=self._db_path)}
 
         # Configure scheduler with coalescing and grace time defaults
         job_defaults = {
-            'coalesce': self._scheduler_config.coalesce,
-            'max_instances': 1,
-            'misfire_grace_time': self._scheduler_config.misfire_grace_time
+            "coalesce": self._scheduler_config.coalesce,
+            "max_instances": 1,
+            "misfire_grace_time": self._scheduler_config.misfire_grace_time,
         }
 
         self._scheduler = AsyncIOScheduler(jobstores=self._job_stores, job_defaults=job_defaults)
@@ -98,8 +102,10 @@ class SchedulerService:
         # Update status cache
         self._job_status_cache[job_id] = {
             "status": status,
-            "last_run": event.scheduled_run_time.isoformat() if event.scheduled_run_time else "manual_or_unknown",
-            "error": str(event.exception) if event.exception else None
+            "last_run": event.scheduled_run_time.isoformat()
+            if event.scheduled_run_time
+            else "manual_or_unknown",
+            "error": str(event.exception) if event.exception else None,
         }
 
         # Auto-Disable Logic: Check consecutive failures if needed
@@ -113,22 +119,31 @@ class SchedulerService:
         cron_expression: str,
         project_path: str,
         description: str = "",
-        job_id: str | None = None
+        job_id: str | None = None,
     ) -> str:
         """Schedule a shell command job."""
-        if not self._started and self._scheduler_config.enabled:
+        if self._scheduler_config.enabled and not self._started:
             self.start()
 
         trigger = CronTrigger.from_crontab(cron_expression)
+
+        # Store cron expression in kwargs for retrieval
+        job_kwargs = {"cron_expression": cron_expression}
 
         job = self._scheduler.add_job(
             execute_job_wrapper,
             trigger=trigger,
             id=job_id,
-            args=[command, project_path, self._scheduler_config.resource_guard_enabled, self._scheduler_config.max_memory_percent],
+            args=[
+                command,
+                project_path,
+                self._scheduler_config.resource_guard_enabled,
+                self._scheduler_config.max_memory_percent,
+            ],
+            kwargs=job_kwargs,
             name=description or command,
             replace_existing=True,
-            jobstore="default"
+            jobstore="default",
         )
 
         # Update cache
@@ -141,10 +156,6 @@ class SchedulerService:
 
     def list_jobs(self, project_path: str) -> list[dict[str, Any]]:
         """List active jobs for the given project using O(1) lookup cache."""
-        # Use cache if available, else fallback (e.g. if cache desync suspected, though we try to keep it sync)
-        # For robustness, if cache is empty but scheduler has jobs, maybe rebuild?
-        # But here we trust the cache for speed.
-
         target_ids = self._project_jobs_cache.get(project_path, set())
         jobs = []
 
@@ -153,15 +164,21 @@ class SchedulerService:
                 status_info = self._job_status_cache.get(job.id, {"status": "pending"})
                 next_run = job.next_run_time.isoformat() if job.next_run_time else "Paused"
 
-                jobs.append({
-                    "id": job.id,
-                    "name": job.name,
-                    "command": job.args[0],
-                    "next_run": next_run,
-                    "project": job.args[1],
-                    "last_status": status_info["status"],
-                    "last_error": status_info.get("error")
-                })
+                # Retrieve stored cron expression
+                cron_expression = job.kwargs.get("cron_expression", "") if job.kwargs else ""
+
+                jobs.append(
+                    {
+                        "id": job.id,
+                        "name": job.name,
+                        "command": job.args[0],
+                        "next_run": next_run,
+                        "cron_expression": cron_expression,
+                        "project": job.args[1],
+                        "last_status": status_info["status"],
+                        "last_error": status_info.get("error"),
+                    }
+                )
         return jobs
 
     def cancel_job(self, job_id: str) -> bool:
@@ -215,13 +232,22 @@ class SchedulerService:
             "status": "healthy" if self._started and db_ok else "degraded",
             "running": self._started,
             "jobs_count": count,
-            "resource_guard": "enabled" if self._scheduler_config.resource_guard_enabled else "disabled",
-            "db_connected": db_ok
+            "resource_guard": "enabled"
+            if self._scheduler_config.resource_guard_enabled
+            else "disabled",
+            "db_connected": db_ok,
         }
 
-async def execute_job_wrapper(command: str, project_path: str, resource_guard: bool = True, max_memory_percent: int = 90):
+
+async def execute_job_wrapper(
+    command: str,
+    project_path: str,
+    resource_guard: bool = True,
+    max_memory_percent: int = 90,
+    **kwargs: Any,
+):
     """Wrapper to execute a job with resource guards.
-    
+
     This function must be picklable and available in the module scope.
     """
     # --- Resource Guard ---
@@ -234,6 +260,7 @@ async def execute_job_wrapper(command: str, project_path: str, resource_guard: b
 
     logger.info(f"Executing scheduled job: {command} in {project_path}")
     return await _async_execute(command, project_path)
+
 
 async def _async_execute(command: str, project_path: str):
     """Execute the command using the ShellTool."""

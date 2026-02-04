@@ -49,9 +49,7 @@ class TestPRReviewTool:
         mock_kg.get_dependents.return_value = ["file2.py", "file3.py"]
 
         result = await pr_tool.execute(
-            pr_number=42,
-            repo="test/repo",
-            changed_files=["src/main.py"]
+            pr_number=42, repo="test/repo", changed_files=["src/main.py"]
         )
 
         assert result["pr_number"] == 42
@@ -62,14 +60,10 @@ class TestPRReviewTool:
     async def test_high_impact_detection(self, pr_tool, mock_kg):
         """Test detection of high-impact files."""
         # File with many dependents
-        mock_kg.get_dependents.return_value = [
-            f"dependent_{i}.py" for i in range(10)
-        ]
+        mock_kg.get_dependents.return_value = [f"dependent_{i}.py" for i in range(10)]
 
         result = await pr_tool.execute(
-            pr_number=1,
-            repo="test/repo",
-            changed_files=["core/utils.py"]
+            pr_number=1, repo="test/repo", changed_files=["core/utils.py"]
         )
 
         assert len(result["risks"]) > 0
@@ -79,9 +73,7 @@ class TestPRReviewTool:
     async def test_dependency_change_recommendation(self, pr_tool):
         """Test recommendation when dependency files change."""
         result = await pr_tool.execute(
-            pr_number=1,
-            repo="test/repo",
-            changed_files=["package.json", "src/app.js"]
+            pr_number=1, repo="test/repo", changed_files=["package.json", "src/app.js"]
         )
 
         assert any("Dependency changes" in r for r in result["recommendations"])
@@ -91,11 +83,7 @@ class TestPRReviewTool:
         """Test review works without Knowledge Graph."""
         tool = PRReviewTool(knowledge_graph=None, vcs=None)
 
-        result = await tool.execute(
-            pr_number=1,
-            repo="test/repo",
-            changed_files=["file.py"]
-        )
+        result = await tool.execute(pr_number=1, repo="test/repo", changed_files=["file.py"])
 
         assert result["summary"]
         assert result["impact_analysis"]["changed_files"] == 1

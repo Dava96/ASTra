@@ -1,5 +1,6 @@
 import logging
 import shutil
+import subprocess
 import time
 from collections.abc import Callable
 from datetime import datetime, timedelta
@@ -12,10 +13,13 @@ from astra.config import get_config
 
 logger = logging.getLogger(__name__)
 
+
 def ttl_cache(seconds: int):
     """Simple TTL cache decorator."""
+
     def decorator(func: Callable):
         cache = {}
+
         async def wrapper(*args, **kwargs):
             now = time.time()
             # Use args as part of the key if needed, or just the function name for simple checks
@@ -28,6 +32,7 @@ def ttl_cache(seconds: int):
             # Note: Health checks are currently synchronous in this class
             # but we'll wrap them for potential future async or just use directly
             import asyncio
+
             if asyncio.iscoroutinefunction(func):
                 result = await func(*args, **kwargs)
             else:
@@ -35,8 +40,11 @@ def ttl_cache(seconds: int):
 
             cache[key] = (now, result)
             return result
+
         return wrapper
+
     return decorator
+
 
 class Monitor:
     """Monitors system health and resource usage with O(1) caching."""
@@ -46,12 +54,17 @@ class Monitor:
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(Monitor, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls._instance._initialized = False
         return cls._instance
 
+    @classmethod
+    def clear_cache(cls):
+        """Clear the shared cache."""
+        cls._cache.clear()
+
     def __init__(self):
-        if getattr(self, '_initialized', False):
+        if getattr(self, "_initialized", False):
             return
         self._config = get_config()
         self._repos_path = Path("./repos")
@@ -76,19 +89,20 @@ class Monitor:
         """Check if disk usage is within acceptable limits (Cached 1m)."""
         cache_key = f"disk_usage_{threshold_gb}"
         cached = self._get_from_cache(cache_key, 60)
-        if cached: return cached
+        if cached:
+            return cached
 
         usage = shutil.disk_usage(".")
-        free_gb = usage.free / (1024 ** 3)
+        free_gb = usage.free / (1024**3)
 
         if free_gb < threshold_gb:
-            res = False, f"⚠️ Low disk space: {free_gb:.1f}GB free (threshold: {threshold_gb}GB)"
+            res = False, f"⚠️ Low disk space: {float(free_gb):.1f}GB free (threshold: {threshold_gb}GB)"
         else:
             percent = (usage.used / usage.total) * 100
             bar_len = 20
             filled_len = int(bar_len * percent / 100)
             bar = "|" * filled_len + "." * (bar_len - filled_len)
-            res = True, f"Disk: [{bar}] {percent:.1f}% ({free_gb:.1f}GB free)"
+            res = True, f"Disk: [{bar}] {float(percent):.1f}% ({float(free_gb):.1f}GB free)"
 
         self._save_to_cache(cache_key, res)
         return res
@@ -97,7 +111,8 @@ class Monitor:
         """Check total size of cloned repositories (Cached 5m)."""
         cache_key = f"repos_size_{max_size_gb}"
         cached = self._get_from_cache(cache_key, 300)
-        if cached: return cached
+        if cached:
+            return cached
 
         if not self._repos_path.exists():
             res = True, "No repos directory"
@@ -106,7 +121,7 @@ class Monitor:
                 total_bytes = sum(
                     f.stat().st_size for f in self._repos_path.rglob("*") if f.is_file()
                 )
-                total_gb = total_bytes / (1024 ** 3)
+                total_gb = total_bytes / (1024**3)
                 if total_gb > max_size_gb:
                     res = False, f"⚠️ Repos directory large: {total_gb:.2f}GB (max: {max_size_gb}GB)"
                 else:
@@ -121,7 +136,8 @@ class Monitor:
         """Check if knowledge graph is stale (Cached 10m)."""
         cache_key = f"graph_staleness_{max_age_hours}"
         cached = self._get_from_cache(cache_key, 600)
-        if cached: return cached
+        if cached:
+            return cached
 
         if not self._graph_path.exists():
             res = True, "No knowledge graph"
@@ -130,7 +146,10 @@ class Monitor:
                 mtime = datetime.fromtimestamp(self._graph_path.stat().st_mtime)
                 age = datetime.now() - mtime
                 if age > timedelta(hours=max_age_hours):
-                    res = False, f"⚠️ Knowledge graph stale: last updated {age.days}d {age.seconds // 3600}h ago"
+                    res = (
+                        False,
+                        f"⚠️ Knowledge graph stale: last updated {age.days}d {age.seconds // 3600}h ago",
+                    )
                 else:
                     res = True, f"Graph: Updated {age.seconds // 60}m ago"
             except Exception:
@@ -143,7 +162,8 @@ class Monitor:
         """Check system memory usage (Cached 30s)."""
         cache_key = f"memory_{max_percent}"
         cached = self._get_from_cache(cache_key, 30)
-        if cached: return cached
+        if cached:
+            return cached
 
         mem = psutil.virtual_memory()
         if mem.percent > max_percent:
@@ -161,14 +181,16 @@ class Monitor:
         """Check Docker container status (Cached 1m)."""
         cache_key = f"docker_{container_name}"
         cached = self._get_from_cache(cache_key, 60)
-        if cached: return cached
+        if cached:
+            return cached
 
         try:
-            import subprocess
             # Use a faster check if possible
             result = subprocess.run(
                 ["docker", "ps", "--filter", f"name={container_name}", "--format", "{{.Status}}"],
-                capture_output=True, text=True, timeout=2
+                capture_output=True,
+                text=True,
+                timeout=2,
             )
             if result.returncode == 0 and result.stdout.strip():
                 res = True, f"Docker: {result.stdout.strip()}"
@@ -187,7 +209,7 @@ class Monitor:
             "repos": self.check_repos_size(),
             "graph": self.check_graph_staleness(),
             "memory": self.check_memory(),
-            "docker": self.check_docker_container()
+            "docker": self.check_docker_container(),
         }
 
     def get_alerts(self) -> list[str]:

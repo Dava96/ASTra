@@ -25,7 +25,7 @@ class BatchingVectorStoreMixin(VectorStore):
         self,
         collection: str,
         nodes: list[ASTNode],
-        progress_callback: Callable[[int, int, int], None] | None = None
+        progress_callback: Callable[[int, int, int], None] | None = None,
     ) -> None:
         """Add AST nodes to a collection with batching."""
         if not nodes:
@@ -45,7 +45,7 @@ class BatchingVectorStoreMixin(VectorStore):
                 "file_path": n.file_path,
                 "start_line": n.start_line,
                 "end_line": n.end_line,
-                "language": n.language
+                "language": n.language,
             }
             # Merge custom metadata (e.g. tags)
             if n.metadata:
@@ -60,7 +60,7 @@ class BatchingVectorStoreMixin(VectorStore):
         ids: list[str],
         documents: list[str],
         metadatas: list[dict[str, Any]] | None = None,
-        progress_callback: Callable[[int, int, int], None] | None = None
+        progress_callback: Callable[[int, int, int], None] | None = None,
     ) -> None:
         """Add generic documents to a collection with batching and deduplication."""
         if not ids:
@@ -87,7 +87,7 @@ class BatchingVectorStoreMixin(VectorStore):
 
             # Calculate Hashes
             doc_hashes = []
-            for doc, meta in zip(batch_docs, batch_metas):
+            for doc, meta in zip(batch_docs, batch_metas, strict=True):
                 # OPTIMIZATION: Use pre-calculated hash if available
                 if meta and "content_hash" in meta:
                     doc_hashes.append(meta["content_hash"])
@@ -102,7 +102,9 @@ class BatchingVectorStoreMixin(VectorStore):
             to_upsert_docs = []
             to_upsert_metas = []
 
-            for j, (doc_id, doc, meta, doc_hash) in enumerate(zip(batch_ids, batch_docs, batch_metas, doc_hashes)):
+            for _, (doc_id, doc, meta, doc_hash) in enumerate(
+                zip(batch_ids, batch_docs, batch_metas, doc_hashes, strict=True)
+            ):
                 # Update metadata with hash so it persists
                 meta["content_hash"] = doc_hash
 
@@ -126,7 +128,9 @@ class BatchingVectorStoreMixin(VectorStore):
             embeddings = self._embed(to_upsert_docs)
 
             # Upsert to handle duplicates
-            self._upsert_batch(collection, to_upsert_ids, embeddings, to_upsert_docs, to_upsert_metas)
+            self._upsert_batch(
+                collection, to_upsert_ids, embeddings, to_upsert_docs, to_upsert_metas
+            )
 
             if progress_callback:
                 percent = min(100, int(end_idx / total * 100))
@@ -145,7 +149,7 @@ class BatchingVectorStoreMixin(VectorStore):
         ids: list[str],
         embeddings: list[list[float]],
         documents: list[str],
-        metadatas: list[dict]
+        metadatas: list[dict],
     ) -> None:
         """Abstract method to perform the actual upsert."""
         raise NotImplementedError("Subclasses must implement _upsert_batch")

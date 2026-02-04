@@ -8,6 +8,7 @@ from astra.tools.scheduler.service import get_scheduler_service
 
 logger = logging.getLogger(__name__)
 
+
 class CronTool(BaseTool):
     """Tool for scheduling automated cron jobs."""
 
@@ -19,30 +20,24 @@ class CronTool(BaseTool):
             "action": {
                 "type": "string",
                 "enum": ["schedule", "list", "cancel", "run_now", "health"],
-                "description": "Action to perform"
+                "description": "Action to perform",
             },
             "cron": {
                 "type": "string",
-                "description": "Cron expression (e.g., '0 0 * * *') for 'schedule' action"
+                "description": "Cron expression (e.g., '0 0 * * *') for 'schedule' action",
             },
             "command": {
                 "type": "string",
-                "description": "Shell command to execute for 'schedule' action"
+                "description": "Shell command to execute for 'schedule' action",
             },
-            "description": {
-                "type": "string",
-                "description": "Description of the job"
-            },
-            "job_id": {
-                "type": "string",
-                "description": "Job ID for 'cancel' or 'run_now' action"
-            },
+            "description": {"type": "string", "description": "Description of the job"},
+            "job_id": {"type": "string", "description": "Job ID for 'cancel' or 'run_now' action"},
             "project_path": {
                 "type": "string",
-                "description": "Project root path (optional, defaults to current working dir)"
-            }
+                "description": "Project root path (optional, defaults to current working dir)",
+            },
         },
-        "required": ["action"]
+        "required": ["action"],
     }
 
     def __init__(self):
@@ -76,10 +71,7 @@ class CronTool(BaseTool):
 
         try:
             job_id = self._service.schedule_job(
-                command=command,
-                cron_expression=cron,
-                project_path=project_path,
-                description=desc
+                command=command, cron_expression=cron, project_path=project_path, description=desc
             )
             return f"✅ Scheduled job '{command}' (ID: {job_id}) at '{cron}'"
         except Exception as e:
@@ -92,14 +84,59 @@ class CronTool(BaseTool):
         if not jobs:
             return "No active cron jobs found for this project."
 
-        lines = ["📅 Active Cron Jobs:"]
+        try:
+            from cron_descriptor import get_description
+        except ImportError:
+            def get_description(cron):
+                return "Install 'cron-descriptor' for human-readable descriptions"
+
+        lines = ["📅 **Active Cron Jobs**"]
         for job in jobs:
-            status_icon = "🟢" if job.get("last_status") == "success" else "🔴" if job.get("last_status") == "failed" else "⚪"
-            lines.append(f"- [{job['id']}] {job['name']} {status_icon}")
+            status_icon = (
+                "🟢"
+                if job.get("last_status") == "success"
+                else "🔴"
+                if job.get("last_status") == "failed"
+                else "⚪"
+            )
+
+        lines = ["📅 **Active Cron Jobs**"]
+        for job in jobs:
+            status_icon = (
+                "🟢"
+                if job.get("last_status") == "success"
+                else "🔴"
+                if job.get("last_status") == "failed"
+                else "⚪"
+            )
+
+            # Get description
+            cron_expr = job.get("cron_expression", "")
+            try:
+                if cron_expr:
+                    desc = get_description(cron_expr)
+                else:
+                    desc = "Schedule available but expression missing"
+            except Exception:
+                desc = "Invalid cron expression"
+
+            # Format:
+            # - **ID: <id>** | <name> <icon>
+            #   Schedule: "<desc>" (`<cron>`)
+            #   Command: `<cmd>`
+            #   Next: <next>
+
+            lines.append(f"- **ID: {job['id']}** | {job['name']} {status_icon}")
+            if cron_expr:
+                 lines.append(f"  Schedule: \"{desc}\" (`{cron_expr}`)")
+            else:
+                 lines.append(f"  Schedule: {job.get('next_run', 'Unknown')}")
+
             lines.append(f"  Command: `{job['command']}`")
             lines.append(f"  Next Run: {job['next_run']}")
+
             if job.get("last_status") == "failed":
-                 lines.append(f"  Last Error: {job.get('last_error')}")
+                lines.append(f"  Last Error: {job.get('last_error')}")
 
         return "\n".join(lines)
 

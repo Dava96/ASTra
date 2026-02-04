@@ -1,4 +1,3 @@
-
 from unittest.mock import patch
 
 from astra.tools import diagnostic
@@ -16,6 +15,7 @@ def test_diagnostic_shim_exports():
     assert hasattr(diagnostic, "auto_detect_parser")
     assert hasattr(diagnostic, "DiagnosticTool")
     assert hasattr(diagnostic, "PARSER_REGISTRY")
+
 
 def test_legacy_parse_functions():
     """Test legacy parsing shim functions."""

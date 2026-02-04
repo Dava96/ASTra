@@ -7,6 +7,7 @@ from astra.interfaces.vector_store import ASTNode
 
 logger = logging.getLogger(__name__)
 
+
 class DependencyResolver:
     """Resolves dependencies (imports) between files."""
 
@@ -45,7 +46,10 @@ class DependencyResolver:
         self.index_files(nodes)
 
         for node in nodes:
-            if node.language == "python" and node.type in ["import_statement", "import_from_statement"]:
+            if node.language == "python" and node.type in [
+                "import_statement",
+                "import_from_statement",
+            ]:
                 deps = self._resolve_python_import(node)
                 for target in deps:
                     dependencies.append((node.file_path, target))
@@ -79,7 +83,11 @@ class DependencyResolver:
 
                 # Resolve base module (from dots and path)
                 level = len(dots) if dots else 0
-                resolved_base = self._resolve_relative_module(node.file_path, module_path, level) if dots else module_path
+                resolved_base = (
+                    self._resolve_relative_module(node.file_path, module_path, level)
+                    if dots
+                    else module_path
+                )
 
                 if resolved_base:
                     modules_to_check.append(resolved_base)
@@ -90,10 +98,10 @@ class DependencyResolver:
                 for name in names:
                     if resolved_base:
                         modules_to_check.append(f"{resolved_base}.{name}")
-                    elif dots: # from . import name
+                    elif dots:  # from . import name
                         actual_base = self._resolve_relative_module(node.file_path, "", level)
                         if actual_base:
-                             modules_to_check.append(f"{actual_base}.{name}")
+                            modules_to_check.append(f"{actual_base}.{name}")
 
         elif node.type == "import_statement":
             # import a.b, c.d as e
@@ -118,7 +126,9 @@ class DependencyResolver:
 
         return list(set(targets))
 
-    def _resolve_relative_module(self, current_file: str, module_path: str, level: int) -> str | None:
+    def _resolve_relative_module(
+        self, current_file: str, module_path: str, level: int
+    ) -> str | None:
         """Resolve a relative module path (e.g. ..utils) base on current file."""
         # Normalize current file path
         f_norm = current_file.replace("\\", "/")
@@ -130,7 +140,7 @@ class DependencyResolver:
         # .. -> astra
 
         if len(path_parts) <= level:
-            return None # Outside root
+            return None  # Outside root
 
         # Parent directory components
         base_parts = path_parts[:-(level)]

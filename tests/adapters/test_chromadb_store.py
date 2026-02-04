@@ -8,6 +8,7 @@ from astra.interfaces.vector_store import ASTNode, QueryResult
 
 # === Fixtures ===
 
+
 @pytest.fixture
 def sample_nodes():
     """Create sample AST nodes for testing."""
@@ -20,7 +21,7 @@ def sample_nodes():
             file_path="src/utils.ts",
             start_line=1,
             end_line=3,
-            language="typescript"
+            language="typescript",
         ),
         ASTNode(
             id="node2",
@@ -30,7 +31,7 @@ def sample_nodes():
             file_path="src/services/user.ts",
             start_line=1,
             end_line=10,
-            language="typescript"
+            language="typescript",
         ),
         ASTNode(
             id="node3",
@@ -40,8 +41,8 @@ def sample_nodes():
             file_path="src/auth.ts",
             start_line=5,
             end_line=15,
-            language="typescript"
-        )
+            language="typescript",
+        ),
     ]
 
 
@@ -52,24 +53,27 @@ class TestChromaDBStoreWithMocks:
     def mocked_store(self):
         """Create store with mocked ChromaDB client and embedding model."""
         # Patch the CLASSES directly because imports are now local/lazy
-        with patch('chromadb.PersistentClient') as mock_client_cls, \
-             patch('sentence_transformers.SentenceTransformer') as mock_st, \
-             patch('astra.config.get_config') as mock_config, \
-             patch('pathlib.Path') as mock_path:
-
-
+        with (
+            patch("chromadb.PersistentClient") as mock_client_cls,
+            patch("sentence_transformers.SentenceTransformer") as mock_st,
+            patch("astra.config.get_config") as mock_config,
+            patch("pathlib.Path") as mock_path,
+        ):
             # Clear cache to avoid test pollution
             from astra.adapters.chromadb_store import ChromaDBStore
+
             ChromaDBStore._model_cache.clear()
 
             # Setup config mock
             # Setup config mock
             config = MagicMock()
-            config.get = MagicMock(side_effect=lambda *args, default=None: {
-                ("vectordb", "persist_path"): "./test_data/chromadb",
-                ("ingestion", "embedding_model"): "default",
-                ("ingestion", "batch_size"): 10
-            }.get(args, default))
+            config.get = MagicMock(
+                side_effect=lambda *args, default=None: {
+                    ("vectordb", "persist_path"): "./test_data/chromadb",
+                    ("ingestion", "embedding_model"): "default",
+                    ("ingestion", "batch_size"): 10,
+                }.get(args, default)
+            )
             mock_config.return_value = config
 
             # Setup path mock
@@ -92,20 +96,21 @@ class TestChromaDBStoreWithMocks:
             mock_client_cls.return_value = client
 
             from astra.adapters.chromadb_store import ChromaDBStore
+
             store = ChromaDBStore()
 
             yield {
-                'store': store,
-                'client': client,
-                'collection': collection,
-                'embedder': embedder,
-                'config': config
+                "store": store,
+                "client": client,
+                "collection": collection,
+                "embedder": embedder,
+                "config": config,
             }
 
     def test_create_collection(self, mocked_store):
         """Test collection creation."""
-        store = mocked_store['store']
-        client = mocked_store['client']
+        store = mocked_store["store"]
+        client = mocked_store["client"]
 
         store.create_collection("test_project")
 
@@ -113,8 +118,8 @@ class TestChromaDBStoreWithMocks:
 
     def test_delete_collection(self, mocked_store):
         """Test collection deletion."""
-        store = mocked_store['store']
-        client = mocked_store['client']
+        store = mocked_store["store"]
+        client = mocked_store["client"]
 
         store.delete_collection("test_project")
 
@@ -122,7 +127,7 @@ class TestChromaDBStoreWithMocks:
 
     def test_list_collections(self, mocked_store):
         """Test listing collections."""
-        store = mocked_store['store']
+        store = mocked_store["store"]
 
         result = store.list_collections()
 
@@ -130,8 +135,8 @@ class TestChromaDBStoreWithMocks:
 
     def test_add_nodes_batches_correctly(self, mocked_store, sample_nodes):
         """Test that nodes are added in batches."""
-        store = mocked_store['store']
-        collection = mocked_store['collection']
+        store = mocked_store["store"]
+        collection = mocked_store["collection"]
 
         # Add 3 nodes with batch size of 10 (should be 1 batch)
         store.add_nodes("test", sample_nodes)
@@ -141,8 +146,8 @@ class TestChromaDBStoreWithMocks:
 
     def test_add_nodes_empty_list(self, mocked_store):
         """Test adding empty node list doesn't crash."""
-        store = mocked_store['store']
-        collection = mocked_store['collection']
+        store = mocked_store["store"]
+        collection = mocked_store["collection"]
 
         store.add_nodes("test", [])
 
@@ -151,9 +156,9 @@ class TestChromaDBStoreWithMocks:
 
     def test_add_documents(self, mocked_store):
         """Test adding generic documents."""
-        store = mocked_store['store']
-        collection = mocked_store['collection']
-        embedder = mocked_store['embedder']
+        store = mocked_store["store"]
+        collection = mocked_store["collection"]
+        embedder = mocked_store["embedder"]
 
         ids = ["doc1", "doc2"]
         documents = ["content1", "content2"]
@@ -170,14 +175,15 @@ class TestChromaDBStoreWithMocks:
             ids=ids,
             embeddings=[[0.1, 0.2, 0.3], [0.1, 0.2, 0.3]],
             documents=documents,
-            metadatas=metadatas
+            metadatas=metadatas,
         )
 
     def test_cleanup_stale_collections(self, mocked_store):
         """Test cleaning up stale collections."""
         from datetime import UTC, datetime, timedelta
-        store = mocked_store['store']
-        client = mocked_store['client']
+
+        store = mocked_store["store"]
+        client = mocked_store["client"]
 
         # Mock collections with different access times
         col_fresh = MagicMock()
@@ -198,18 +204,34 @@ class TestChromaDBStoreWithMocks:
 
     def test_query_returns_results(self, mocked_store):
         """Test querying returns formatted results."""
-        store = mocked_store['store']
-        collection = mocked_store['collection']
+        store = mocked_store["store"]
+        collection = mocked_store["collection"]
 
         # Setup query results
         collection.query.return_value = {
             "ids": [["node1", "node2"]],
             "documents": [["content1", "content2"]],
-            "metadatas": [[
-                {"type": "function", "name": "greet", "file_path": "src/utils.ts", "start_line": 1, "end_line": 3, "language": "typescript"},
-                {"type": "class", "name": "User", "file_path": "src/user.ts", "start_line": 1, "end_line": 10, "language": "typescript"}
-            ]],
-            "distances": [[0.1, 0.3]]
+            "metadatas": [
+                [
+                    {
+                        "type": "function",
+                        "name": "greet",
+                        "file_path": "src/utils.ts",
+                        "start_line": 1,
+                        "end_line": 3,
+                        "language": "typescript",
+                    },
+                    {
+                        "type": "class",
+                        "name": "User",
+                        "file_path": "src/user.ts",
+                        "start_line": 1,
+                        "end_line": 10,
+                        "language": "typescript",
+                    },
+                ]
+            ],
+            "distances": [[0.1, 0.3]],
         }
 
         results = store.query("test_collection", "find greeting function")
@@ -221,14 +243,14 @@ class TestChromaDBStoreWithMocks:
 
     def test_query_empty_results(self, mocked_store):
         """Test querying with no results."""
-        store = mocked_store['store']
-        collection = mocked_store['collection']
+        store = mocked_store["store"]
+        collection = mocked_store["collection"]
 
         collection.query.return_value = {
             "ids": [[]],
             "documents": [[]],
             "metadatas": [[]],
-            "distances": [[]]
+            "distances": [[]],
         }
 
         results = store.query("test", "nonexistent query")
@@ -237,8 +259,8 @@ class TestChromaDBStoreWithMocks:
 
     def test_clear_collection_recreates(self, mocked_store):
         """Test clearing a collection."""
-        store = mocked_store['store']
-        client = mocked_store['client']
+        store = mocked_store["store"]
+        client = mocked_store["client"]
 
         store.clear_collection("test")
 
@@ -249,31 +271,39 @@ class TestChromaDBStoreWithMocks:
 class TestEmbeddingModelSelection:
     """Test embedding model selection logic."""
 
-    @pytest.mark.parametrize("model_name,expected_model", [
-        ("default", "all-MiniLM-L6-v2"),
-        ("codebert", "microsoft/codebert-base"),
-        ("mpnet", "all-mpnet-base-v2"),
-        ("custom/model", "custom/model"),  # Unknown model passes through
-    ])
+    @pytest.mark.parametrize(
+        "model_name,expected_model",
+        [
+            ("default", "all-MiniLM-L6-v2"),
+            ("codebert", "microsoft/codebert-base"),
+            ("mpnet", "all-mpnet-base-v2"),
+            ("custom/model", "custom/model"),  # Unknown model passes through
+        ],
+    )
     def test_model_selection(self, model_name, expected_model):
         """Test correct model is selected based on config."""
-        with patch('chromadb.PersistentClient'), \
-             patch('sentence_transformers.SentenceTransformer') as mock_st, \
-             patch('astra.config.get_config') as mock_config, \
-             patch('pathlib.Path'):
-
+        with (
+            patch("chromadb.PersistentClient"),
+            patch("sentence_transformers.SentenceTransformer") as mock_st,
+            patch("astra.config.get_config") as mock_config,
+            patch("pathlib.Path"),
+        ):
             from astra.adapters.chromadb_store import ChromaDBStore
+
             ChromaDBStore._model_cache.clear()
 
             config = MagicMock()
-            config.get = MagicMock(side_effect=lambda *args, default=None: {
-                ("ingestion", "embedding_model"): model_name
-            }.get(args, default))
+            config.get = MagicMock(
+                side_effect=lambda *args, default=None: {
+                    ("ingestion", "embedding_model"): model_name
+                }.get(args, default)
+            )
             mock_config.return_value = config
 
             mock_st.return_value = MagicMock()
 
             from astra.adapters.chromadb_store import ChromaDBStore
+
             store = ChromaDBStore(embedding_model=model_name)
 
             # Explicitly trigger lazy loading
@@ -297,7 +327,7 @@ class TestChromaDBEdgeCases:
             file_path="src/big.ts",
             start_line=1,
             end_line=1000,
-            language="typescript"
+            language="typescript",
         )
 
         # Node should be created without issues
@@ -313,7 +343,7 @@ class TestChromaDBEdgeCases:
             file_path="src/国際化.ts",
             start_line=1,
             end_line=3,
-            language="typescript"
+            language="typescript",
         )
 
         assert "日本語" in unicode_node.name
@@ -329,7 +359,7 @@ class TestChromaDBEdgeCases:
             file_path="src/[components]/login-form.tsx",
             start_line=1,
             end_line=1,
-            language="tsx"
+            language="tsx",
         )
 
         assert "[components]" in node.file_path
@@ -341,11 +371,12 @@ class TestQueryFiltering:
     @pytest.fixture
     def store_with_query(self):
         """Create store setup for query testing."""
-        with patch('chromadb.PersistentClient') as mock_client_cls, \
-             patch('sentence_transformers.SentenceTransformer') as mock_st, \
-             patch('astra.config.get_config') as mock_config, \
-             patch('pathlib.Path'):
-
+        with (
+            patch("chromadb.PersistentClient") as mock_client_cls,
+            patch("sentence_transformers.SentenceTransformer") as mock_st,
+            patch("astra.config.get_config") as mock_config,
+            patch("pathlib.Path"),
+        ):
             config = MagicMock()
             config.get = MagicMock(return_value=None)
             mock_config.return_value = config
@@ -358,40 +389,39 @@ class TestQueryFiltering:
 
             client = MagicMock()
             collection = MagicMock()
-            collection.query.return_value = {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
+            collection.query.return_value = {
+                "ids": [[]],
+                "documents": [[]],
+                "metadatas": [[]],
+                "distances": [[]],
+            }
             client.get_or_create_collection.return_value = collection
             mock_client_cls.return_value = client
 
             from astra.adapters.chromadb_store import ChromaDBStore
+
             store = ChromaDBStore()
 
-            yield {
-                'store': store,
-                'collection': collection
-            }
+            yield {"store": store, "collection": collection}
 
     @pytest.mark.parametrize("n_results", [1, 5, 10, 50, 100])
     def test_query_result_limits(self, store_with_query, n_results):
         """Test query respects n_results parameter."""
-        store = store_with_query['store']
-        collection = store_with_query['collection']
+        store = store_with_query["store"]
+        collection = store_with_query["collection"]
 
         store.query("test", "search query", n_results=n_results)
 
         # Verify n_results was passed to collection.query
         call_kwargs = collection.query.call_args[1]
-        assert call_kwargs['n_results'] == n_results
+        assert call_kwargs["n_results"] == n_results
 
     def test_query_with_filter(self, store_with_query):
         """Test query with metadata filter."""
-        store = store_with_query['store']
-        collection = store_with_query['collection']
+        store = store_with_query["store"]
+        collection = store_with_query["collection"]
 
-        store.query(
-            "test",
-            "search query",
-            filter_metadata={"language": "typescript"}
-        )
+        store.query("test", "search query", filter_metadata={"language": "typescript"})
 
         call_kwargs = collection.query.call_args[1]
-        assert call_kwargs['where'] == {"language": "typescript"}
+        assert call_kwargs["where"] == {"language": "typescript"}

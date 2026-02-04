@@ -28,7 +28,7 @@ class ShellCommandTool(BaseTool):
         command = self._command_template
         for key, value in kwargs.items():
             # Basic sanitization for substituted values (prevent naive injection)
-            safe_value = str(value).replace(';', '').replace('&', '').replace('|', '')
+            safe_value = str(value).replace(";", "").replace("&", "").replace("|", "")
             command = command.replace(f"{{{key}}}", safe_value)
 
         # Use ShellExecutor for execution (enforces allowlist)
@@ -37,9 +37,9 @@ class ShellCommandTool(BaseTool):
         result = await self._shell.run_string_async(command)
 
         if result.success:
-             return result.stdout or "Command completed successfully"
+            return result.stdout or "Command completed successfully"
         else:
-             return f"Error (exit {result.return_code}):\n{result.stderr or result.message or 'Unknown error'}"
+            return f"Error (exit {result.return_code}):\n{result.stderr or result.message or 'Unknown error'}"
 
 
 class CustomToolLoader:
@@ -100,18 +100,15 @@ class CustomToolLoader:
             return None
 
         # Build schema
-        params_schema = {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
+        params_schema = {"type": "object", "properties": {}, "required": []}
 
         if "parameters" in spec and isinstance(spec["parameters"], dict):
             for param_name, param_spec in spec["parameters"].items():
-                if not isinstance(param_spec, dict): continue
+                if not isinstance(param_spec, dict):
+                    continue
                 params_schema["properties"][param_name] = {
                     "type": param_spec.get("type", "string"),
-                    "description": param_spec.get("description", "")
+                    "description": param_spec.get("description", ""),
                 }
                 if param_spec.get("required", False):
                     params_schema["required"].append(param_name)
@@ -120,7 +117,7 @@ class CustomToolLoader:
             name=spec["name"],
             description=spec["description"],
             command=spec["command"],
-            parameters=params_schema
+            parameters=params_schema,
         )
 
     def validate_tool_definition(self, yaml_content: str) -> list[str]:
@@ -148,9 +145,11 @@ class CustomToolLoader:
 # Singleton instance
 _loader = CustomToolLoader()
 
+
 def load_custom_tools(tools_dir: str | Path) -> list[Tool]:
     """Public API for loading tools."""
     return _loader.load_tools(tools_dir)
+
 
 def validate_tool_file(path: str | Path) -> list[str]:
     """Validate a specific tool file."""
@@ -159,6 +158,7 @@ def validate_tool_file(path: str | Path) -> list[str]:
         return _loader.validate_tool_definition(content)
     except Exception as e:
         return [str(e)]
+
 
 # Default location for custom tools
 DEFAULT_CUSTOM_TOOLS_DIR = Path("./tools/custom")

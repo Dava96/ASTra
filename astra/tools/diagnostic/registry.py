@@ -13,7 +13,7 @@ PARSER_REGISTRY: dict[str, type[OutputParser]] = {}
 
 def register_parser(cls: type[OutputParser]) -> type[OutputParser]:
     """Decorator to register a parser class.
-    
+
     Usage:
         @register_parser
         class MyParser(OutputParser):
@@ -38,7 +38,7 @@ def get_parser(name: str) -> OutputParser | None:
 
 def auto_detect_parser(output: str, hints: list[str] | None = None) -> OutputParser | None:
     """Auto-detect the appropriate parser for the given output.
-    
+
     Performance:
         - Only scans the first and last 2KB of output (O(1)).
         - Returns early on first match.
@@ -73,14 +73,16 @@ def auto_detect_parser(output: str, hints: list[str] | None = None) -> OutputPar
     return None
 
 
-def parse_test_output(output: str, framework: str | None = None, hints: list[str] | None = None) -> TestResult:
+def parse_test_output(
+    output: str, framework: str | None = None, hints: list[str] | None = None
+) -> TestResult:
     """Parse test output using auto-detection or specified framework.
-    
+
     Args:
         output: Raw test output string
         framework: Optional framework name to force usage
         hints: Optional list of framework names to prioritize during auto-detection
-        
+
     Returns:
         TestResult with parsed information
     """

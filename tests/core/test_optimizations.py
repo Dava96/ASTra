@@ -1,4 +1,3 @@
-
 import asyncio
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -19,14 +18,14 @@ async def test_context_gatherer_parallelism():
 
     # Instant concurrency check
     async def slow_manifest(*args):
-        await asyncio.sleep(0) # Yield but don't wait
+        await asyncio.sleep(0)  # Yield but don't wait
         return {"file": "content"}
 
     async def slow_kg(*args, **kwargs):
-        await asyncio.sleep(0) # Yield but don't wait
+        await asyncio.sleep(0)  # Yield but don't wait
         return "kg_result"
 
-    with patch("astra.core.context.get_manifest_files_for_project", side_effect=slow_manifest) as mock_manifest:
+    with patch("astra.core.context.get_manifest_files_for_project", side_effect=slow_manifest):
         # Mock vector store query
         mock_result = MagicMock()
         mock_result.node.file_path = "test.py"
@@ -41,6 +40,7 @@ async def test_context_gatherer_parallelism():
         # Should run instantly now
         await cg.gather("query", "coll", ".")
         # If no exceptions, it works.
+
 
 def test_task_queue_persistence_threading(tmp_path):
     """Verify TaskQueue save persists file (synchronously in test)."""
@@ -66,6 +66,7 @@ def test_task_queue_persistence_threading(tmp_path):
         content = json.loads(persist_file.read_text())
         assert len(content["queued"]) == 1
         assert content["queued"][0]["request"] == "req"
+
 
 def test_monitor_caching(tmp_path):
     """Verify check_repos_size uses cache."""

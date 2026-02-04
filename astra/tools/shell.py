@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ShellResult:
     """Result of a shell command execution."""
+
     success: bool
     stdout: str
     stderr: str
@@ -31,26 +32,20 @@ class ShellExecutor(BaseTool):
     """Execute shell commands with allowlist enforcement and async support."""
 
     name = "shell_execute"
-    description = "Execute shell commands within the project environment. Requires command allowlisting."
+    description = (
+        "Execute shell commands within the project environment. Requires command allowlisting."
+    )
     parameters = {
         "type": "object",
         "properties": {
-            "command": {
-                "type": "string",
-                "description": "The shell command to execute"
-            },
-            "cwd": {
-                "type": "string",
-                "description": "Current working directory for the command"
-            }
+            "command": {"type": "string", "description": "The shell command to execute"},
+            "cwd": {"type": "string", "description": "Current working directory for the command"},
         },
-        "required": ["command"]
+        "required": ["command"],
     }
 
     def __init__(
-        self,
-        on_blocked: Callable[[str, list[str]], None] | None = None,
-        timeout: int = 300
+        self, on_blocked: Callable[[str, list[str]], None] | None = None, timeout: int = 300
     ):
         self._config = get_config()
         self._on_blocked = on_blocked
@@ -66,7 +61,10 @@ class ShellExecutor(BaseTool):
             logger.warning(f"BLOCKED: {binary} not in allowlist. Command: {' '.join(command)}")
             if self._on_blocked:
                 self._on_blocked(binary, command)
-            return False, f"Command '{binary}' is not permitted. Add via `/config allowlist add {binary}` to permit."
+            return (
+                False,
+                f"Command '{binary}' is not permitted. Add via `/config allowlist add {binary}` to permit.",
+            )
 
         return True, None
 
@@ -75,7 +73,7 @@ class ShellExecutor(BaseTool):
         command: list[str],
         cwd: str | None = None,
         env: dict[str, str] | None = None,
-        timeout: int | None = None
+        timeout: int | None = None,
     ) -> ShellResult:
         """Execute a shell command synchronously (Blocking)."""
         allowed, error_msg = self._is_allowed(command)
@@ -87,7 +85,7 @@ class ShellExecutor(BaseTool):
                 return_code=-1,
                 command=command,
                 blocked=True,
-                message=error_msg
+                message=error_msg,
             )
 
         effective_timeout = timeout or self._timeout
@@ -95,19 +93,14 @@ class ShellExecutor(BaseTool):
 
         try:
             result = subprocess.run(
-                command,
-                cwd=cwd,
-                env=env,
-                capture_output=True,
-                text=True,
-                timeout=effective_timeout
+                command, cwd=cwd, env=env, capture_output=True, text=True, timeout=effective_timeout
             )
             return ShellResult(
                 success=result.returncode == 0,
                 stdout=result.stdout,
                 stderr=result.stderr,
                 return_code=result.returncode,
-                command=command
+                command=command,
             )
         except subprocess.TimeoutExpired:
             return ShellResult(
@@ -116,15 +109,11 @@ class ShellExecutor(BaseTool):
                 stderr=f"Command timed out after {effective_timeout}s",
                 return_code=-1,
                 command=command,
-                message="Consider increasing timeout."
+                message="Consider increasing timeout.",
             )
         except Exception as e:
             return ShellResult(
-                success=False,
-                stdout="",
-                stderr=str(e),
-                return_code=-1,
-                command=command
+                success=False, stdout="", stderr=str(e), return_code=-1, command=command
             )
 
     async def run_async(
@@ -132,7 +121,7 @@ class ShellExecutor(BaseTool):
         command: list[str],
         cwd: str | None = None,
         env: dict[str, str] | None = None,
-        timeout: int | None = None
+        timeout: int | None = None,
     ) -> ShellResult:
         """Execute a shell command asynchronously (Non-blocking) with output capping."""
         allowed, error_msg = self._is_allowed(command)
@@ -144,7 +133,7 @@ class ShellExecutor(BaseTool):
                 return_code=-1,
                 command=command,
                 blocked=True,
-                message=error_msg
+                message=error_msg,
             )
 
         effective_timeout = timeout or self._timeout
@@ -158,7 +147,7 @@ class ShellExecutor(BaseTool):
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=cwd,
-                env=env or os.environ.copy()
+                env=env or os.environ.copy(),
             )
 
             stdout_lines = []
@@ -169,16 +158,17 @@ class ShellExecutor(BaseTool):
                 nonlocal total_bytes
                 while True:
                     if total_bytes >= MAX_OUTPUT_BYTES:
-                         if not lines or lines[-1] != "[... Output Truncated ...]":
-                             lines.append("[... Output Truncated ...]")
-                         # Drain remaining silently
-                         while await stream.readline(): pass
-                         break
+                        if not lines or lines[-1] != "[... Output Truncated ...]":
+                            lines.append("[... Output Truncated ...]")
+                        # Drain remaining silently
+                        while await stream.readline():
+                            pass
+                        break
 
                     line = await stream.readline()
                     if not line:
                         break
-                    decoded = line.decode('utf-8', errors='replace').rstrip()
+                    decoded = line.decode("utf-8", errors="replace").rstrip()
                     lines.append(decoded)
                     total_bytes += len(line)
 
@@ -186,9 +176,9 @@ class ShellExecutor(BaseTool):
                 await asyncio.wait_for(
                     asyncio.gather(
                         read_stream(process.stdout, stdout_lines),
-                        read_stream(process.stderr, stderr_lines)
+                        read_stream(process.stderr, stderr_lines),
                     ),
-                    timeout=effective_timeout
+                    timeout=effective_timeout,
                 )
                 await process.wait()
             except TimeoutError:
@@ -202,7 +192,7 @@ class ShellExecutor(BaseTool):
                     stdout="\n".join(stdout_lines),
                     stderr=f"Command timed out after {effective_timeout}s",
                     return_code=-1,
-                    command=command
+                    command=command,
                 )
 
             return ShellResult(
@@ -210,17 +200,13 @@ class ShellExecutor(BaseTool):
                 stdout="\n".join(stdout_lines),
                 stderr="\n".join(stderr_lines),
                 return_code=process.returncode or 0,
-                command=command
+                command=command,
             )
 
         except Exception as e:
             logger.error(f"Async execution failed: {e}")
             return ShellResult(
-                success=False,
-                stdout="",
-                stderr=str(e),
-                return_code=-1,
-                command=command
+                success=False, stdout="", stderr=str(e), return_code=-1, command=command
             )
 
     def run_string(self, command_string: str, **kwargs) -> ShellResult:
@@ -248,5 +234,5 @@ class ShellExecutor(BaseTool):
             "stderr": result.stderr,
             "code": result.return_code,
             "blocked": result.blocked,
-            "message": result.message
+            "message": result.message,
         }

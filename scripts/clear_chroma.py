@@ -11,6 +11,7 @@ def clear_collection(name):
     except Exception as e:
         print(f"ℹ️ Could not delete collection '{name}': {e}")
 
+
 if __name__ == "__main__":
     name = sys.argv[1] if len(sys.argv) > 1 else "ASTra"
     clear_collection(name)

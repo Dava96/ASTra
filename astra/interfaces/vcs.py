@@ -7,6 +7,7 @@ from enum import Enum
 
 class PRStatus(Enum):
     """Pull request status."""
+
     OPEN = "open"
     MERGED = "merged"
     CLOSED = "closed"
@@ -16,6 +17,7 @@ class PRStatus(Enum):
 @dataclass
 class CloneResult:
     """Result of a clone operation."""
+
     success: bool
     path: str
     error: str | None = None
@@ -24,6 +26,7 @@ class CloneResult:
 @dataclass
 class BranchResult:
     """Result of a branch operation."""
+
     success: bool
     branch_name: str
     error: str | None = None
@@ -32,6 +35,7 @@ class BranchResult:
 @dataclass
 class CommitResult:
     """Result of a commit operation."""
+
     success: bool
     commit_hash: str | None = None
     error: str | None = None
@@ -40,6 +44,7 @@ class CommitResult:
 @dataclass
 class PRResult:
     """Result of a PR creation."""
+
     success: bool
     pr_url: str | None = None
     pr_number: int | None = None
@@ -49,6 +54,7 @@ class PRResult:
 @dataclass
 class MergeResult:
     """Result of a merge operation."""
+
     success: bool
     merge_commit: str | None = None
     has_conflicts: bool = False
@@ -86,12 +92,7 @@ class VCS(ABC):
 
     @abstractmethod
     def create_pr(
-        self,
-        repo_path: str,
-        title: str,
-        body: str,
-        base: str = "main",
-        head: str | None = None
+        self, repo_path: str, title: str, body: str, base: str = "main", head: str | None = None
     ) -> PRResult:
         """Create a pull request."""
         pass
@@ -108,11 +109,7 @@ class VCS(ABC):
 
     @abstractmethod
     def merge(
-        self,
-        repo_path: str,
-        source_branch: str,
-        target_branch: str = "main",
-        no_ff: bool = True
+        self, repo_path: str, source_branch: str, target_branch: str = "main", no_ff: bool = True
     ) -> "MergeResult":
         """Merge source branch into target branch."""
         pass

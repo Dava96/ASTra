@@ -1,22 +1,26 @@
-
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from astra.adapters.chromadb_store import ChromaDBStore
 from astra.adapters.gateways.discord.gateway import DiscordGateway
 from astra.interfaces.gateway import Message
 
 # === Discord Gateway Tests ===
 
+
 @pytest.mark.asyncio
 async def test_discord_gateway_all_paths(tmp_path):
     """Surgically test DiscordGateway paths by mocking instance attributes."""
-    with patch("astra.adapters.gateways.discord.gateway.get_config"), \
-         patch("astra.adapters.gateways.discord.gateway.os.getenv", return_value="TOKEN"):
-
+    with (
+        patch("astra.adapters.gateways.discord.gateway.get_config"),
+        patch("astra.adapters.gateways.discord.gateway.os.getenv", return_value="TOKEN"),
+    ):
         # Instantiate with minimal noise
-        with patch("astra.adapters.gateways.discord.gateway.discord.Client"), \
-             patch("astra.adapters.gateways.discord.gateway.app_commands.CommandTree"):
+        with (
+            patch("astra.adapters.gateways.discord.gateway.discord.Client"),
+            patch("astra.adapters.gateways.discord.gateway.app_commands.CommandTree"),
+        ):
             gateway = DiscordGateway()
 
         # Replace attributes with robust mocks
@@ -64,18 +68,24 @@ async def test_discord_gateway_all_paths(tmp_path):
 
         # We must mock ConfirmationView because the real one waits for timeout
         mock_view_instance = MagicMock()
-        mock_view_instance.wait = AsyncMock() # wait() is async
+        mock_view_instance.wait = AsyncMock()  # wait() is async
         mock_view_instance.value = True
 
-        with patch("astra.adapters.gateways.discord.gateway.ConfirmationView", return_value=mock_view_instance):
+        with patch(
+            "astra.adapters.gateways.discord.gateway.ConfirmationView",
+            return_value=mock_view_instance,
+        ):
             assert await gateway.request_confirmation("1", "ok") is True
+
 
 @pytest.mark.asyncio
 async def test_discord_followup_and_auth():
     """Test following and auth paths."""
-    with patch("astra.adapters.gateways.discord.gateway.get_config"), \
-         patch("astra.adapters.gateways.discord.gateway.discord.Client"), \
-         patch("astra.adapters.gateways.discord.gateway.app_commands.CommandTree"):
+    with (
+        patch("astra.adapters.gateways.discord.gateway.get_config"),
+        patch("astra.adapters.gateways.discord.gateway.discord.Client"),
+        patch("astra.adapters.gateways.discord.gateway.app_commands.CommandTree"),
+    ):
         gateway = DiscordGateway()
 
         # Followup
@@ -89,8 +99,8 @@ async def test_discord_followup_and_auth():
         gateway.is_admin("1")
         gateway._auth.is_admin.assert_called()
 
+
 # === ChromaDB Tests ===
-from astra.adapters.chromadb_store import ChromaDBStore
 
 
 class FakeCollection:
@@ -98,14 +108,24 @@ class FakeCollection:
         self.name = name
         self._count = count
         self.metadata = {"last_accessed": last_accessed} if last_accessed else {}
+
     def count(self):
         return self._count
+
     def upsert(self, **kwargs):
         pass
+
     def query(self, **kwargs):
-        return {"ids": [["id1"]], "documents": [["doc"]], "metadatas": [[{"type":"f"}]], "distances": [[0.1]]}
+        return {
+            "ids": [["id1"]],
+            "documents": [["doc"]],
+            "metadatas": [[{"type": "f"}]],
+            "distances": [[0.1]],
+        }
+
     def delete(self, **kwargs):
         pass
+
 
 def test_chromadb_lifecycle_robust(tmp_path):
     """Test ChromaDBStore using FakeCollection for predictable behavior."""
@@ -130,4 +150,4 @@ def test_chromadb_lifecycle_robust(tmp_path):
 
         # Test errors in clear
         MockClient.return_value.delete_collection.side_effect = Exception("fail")
-        store.clear_collection("old") # Should log error
+        store.clear_collection("old")  # Should log error

@@ -8,7 +8,6 @@ from astra.tools.lint import (
     LintIssue,
     LintResult,
     LintTool,
-    detect_language,
     parse_eslint_output,
     parse_mypy_output,
     parse_ruff_output,
@@ -90,11 +89,9 @@ class TestLintResult:
         result = LintResult(
             linter="ruff",
             success=False,
-            issues=[
-                LintIssue(file="test.py", line=10, code="E501", message="too long")
-            ],
+            issues=[LintIssue(file="test.py", line=10, code="E501", message="too long")],
             error_count=1,
-            warning_count=0
+            warning_count=0,
         )
 
         data = result.to_dict()
@@ -118,14 +115,7 @@ class TestLintTool:
         assert tool._auto_fix is True
 
     def test_format_results(self, tool):
-        results = [
-            LintResult(
-                linter="ruff",
-                success=True,
-                error_count=0,
-                warning_count=2
-            )
-        ]
+        results = [LintResult(linter="ruff", success=True, error_count=0, warning_count=2)]
 
         formatted = tool.format_results(results)
 

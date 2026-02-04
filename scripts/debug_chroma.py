@@ -18,14 +18,13 @@ def test_init():
     try:
         # 1. Silencing the loggers explicitly
         for logger_name in ["chromadb.telemetry", "posthog"]:
-            l = logging.getLogger(logger_name)
-            l.setLevel(logging.CRITICAL)
-            l.propagate = False
+            temp_logger = logging.getLogger(logger_name)
+            temp_logger.setLevel(logging.CRITICAL)
+            temp_logger.propagate = False
 
         # 2. Initialize client with telemetry disabled
         client = chromadb.PersistentClient(
-            path="./data/chromadb",
-            settings=Settings(anonymized_telemetry=False)
+            path="./data/chromadb", settings=Settings(anonymized_telemetry=False)
         )
         print("Client initialized successfully.")
 
@@ -36,7 +35,9 @@ def test_init():
     except Exception as e:
         print(f"Initialization failed: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     test_init()

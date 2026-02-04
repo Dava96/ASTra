@@ -10,7 +10,9 @@ from astra.handlers.command_handlers import CommandHandler
 def test_command_handler_mapping():
     """Verify all built-in commands in DiscordGateway have handlers in CommandHandler."""
     # 1. Get command handler methods
-    handler_methods = [name for name, _ in inspect.getmembers(CommandHandler, predicate=inspect.isfunction)]
+    handler_methods = [
+        name for name, _ in inspect.getmembers(CommandHandler, predicate=inspect.isfunction)
+    ]
 
     # 2. Extract expected handler pattern from DiscordGateway.register_built_in_commands parameters
     sig = inspect.signature(DiscordGateway.register_built_in_commands)
@@ -23,9 +25,11 @@ def test_command_handler_mapping():
 
     # Check if each command has a corresponding handle_xxx method in CommandHandler
     for arg in command_args:
-        cmd_name = arg[3:] # remove "on_"
+        cmd_name = arg[3:]  # remove "on_"
         expected_handler = f"handle_{cmd_name}"
-        assert expected_handler in handler_methods, f"CommandHandler missing {expected_handler} for {arg}"
+        assert expected_handler in handler_methods, (
+            f"CommandHandler missing {expected_handler} for {arg}"
+        )
 
 
 def test_main_registration_completeness():
@@ -40,11 +44,12 @@ def test_main_registration_completeness():
     registered_handlers = set()
 
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call):
-            if isinstance(node.func, ast.Attribute) and node.func.attr == "register_built_in_commands":
-                registration_found = True
-                for keyword in node.keywords:
-                    registered_handlers.add(keyword.arg)
+        if isinstance(node, ast.Call) and (
+            isinstance(node.func, ast.Attribute) and node.func.attr == "register_built_in_commands"
+        ):
+            registration_found = True
+            for keyword in node.keywords:
+                registered_handlers.add(keyword.arg)
 
     assert registration_found, "Could not find gateway.register_built_in_commands call in main.py"
 
@@ -59,22 +64,24 @@ def test_main_registration_completeness():
 
 
 def test_gateway_slash_commands_match_registration():
-    """Verify all slash commands defined in DiscordGateway are covered by registration args."""
-    # Commands are now in the commands module
-    with open("astra/adapters/gateways/discord/commands.py", encoding="utf-8") as f:
+    """Verify all slash commands defined in CORE commands are covered by registration args."""
+    # Commands are now in astra/core/commands.py
+    with open("astra/core/commands.py", encoding="utf-8") as f:
         content = f.read()
         tree = ast.parse(content)
 
     command_names = set()
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call):
-            # Check for @tree.command
-            if isinstance(node.func, ast.Attribute) and node.func.attr == "command":
-                # The first argument to the decorator is the command name
-                if node.keywords:
-                    for kw in node.keywords:
-                        if kw.arg == "name" and isinstance(kw.value, ast.Constant):
-                            command_names.add(kw.value.value)
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "register_command"
+            and node.keywords
+        ):
+            # Look for name arg
+            for kw in node.keywords:
+                if kw.arg == "name" and isinstance(kw.value, ast.Constant):
+                    command_names.add(kw.value.value)
 
     # Some commands are groups or special, but basic ones should match on_xxx args
     sig = inspect.signature(DiscordGateway.register_built_in_commands)
@@ -83,5 +90,5 @@ def test_gateway_slash_commands_match_registration():
     # Basic commands like feature, fix, quick, status, etc.
     essential_commands = {"feature", "fix", "quick", "status", "cancel", "last", "checkout"}
     for cmd in essential_commands:
-        assert cmd in command_names, f"Essential slash command /{cmd} not found in commands.py"
+        assert cmd in command_names, f"Essential slash command /{cmd} not found in core/commands.py"
         assert cmd in on_args, f"Essential command {cmd} missing from registration interface"

@@ -23,7 +23,7 @@ class LiteLLMClient(LLM):
         model: str | None = None,
         api_base: str | None = None,
         fallback_model: str | None = None,
-        purpose: str = "planning"
+        purpose: str = "planning",
     ):
         config = get_config()
 
@@ -75,7 +75,7 @@ class LiteLLMClient(LLM):
         messages: list[ChatMessage],
         temperature: float = 0.0,
         max_tokens: int | None = None,
-        tools: list[dict] | None = None
+        tools: list[dict] | None = None,
     ) -> LLMResponse:
         """Send a chat completion request."""
         formatted = self._format_messages(messages)
@@ -87,7 +87,7 @@ class LiteLLMClient(LLM):
                 temperature=temperature,
                 max_tokens=max_tokens,
                 api_base=self._api_base,
-                tools=tools
+                tools=tools,
             )
 
             # Extract tool calls if present
@@ -98,10 +98,7 @@ class LiteLLMClient(LLM):
                     {
                         "id": tc.id,
                         "type": tc.type,
-                        "function": {
-                            "name": tc.function.name,
-                            "arguments": tc.function.arguments
-                        }
+                        "function": {"name": tc.function.name, "arguments": tc.function.arguments},
                     }
                     for tc in msg.tool_calls
                 ]
@@ -113,11 +110,13 @@ class LiteLLMClient(LLM):
                 total_tokens=response.usage.total_tokens,
                 model=self._model,
                 finish_reason=response.choices[0].finish_reason,
-                tool_calls=tool_calls
+                tool_calls=tool_calls,
             )
 
             self._usage.add(result)
-            logger.debug(f"LLM call: {result.prompt_tokens}p + {result.completion_tokens}c = {result.total_tokens}t")
+            logger.debug(
+                f"LLM call: {result.prompt_tokens}p + {result.completion_tokens}c = {result.total_tokens}t"
+            )
 
             return result
 
@@ -126,9 +125,7 @@ class LiteLLMClient(LLM):
             raise
 
     async def chat_stream(
-        self,
-        messages: list[ChatMessage],
-        temperature: float = 0.0
+        self, messages: list[ChatMessage], temperature: float = 0.0
     ) -> AsyncGenerator[str, None]:
         """Stream a chat completion response."""
         formatted = self._format_messages(messages)
@@ -139,7 +136,7 @@ class LiteLLMClient(LLM):
                 messages=formatted,
                 temperature=temperature,
                 api_base=self._api_base,
-                stream=True
+                stream=True,
             )
 
             async for chunk in response:
@@ -175,10 +172,7 @@ class LiteLLMClient(LLM):
         self._usage = TokenUsage()
 
     async def chat_with_fallback(
-        self,
-        messages: list[ChatMessage],
-        temperature: float = 0.0,
-        max_tokens: int | None = None
+        self, messages: list[ChatMessage], temperature: float = 0.0, max_tokens: int | None = None
     ) -> LLMResponse:
         """Try primary model, fall back to cloud if it fails."""
         try:

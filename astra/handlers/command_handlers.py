@@ -13,10 +13,18 @@ from astra.interfaces.gateway import Command, Gateway
 
 logger = logging.getLogger(__name__)
 
+
 class CommandHandler:
     """Handles execution of slash commands by delegating to specialized handlers."""
 
-    def __init__(self, gateway: Gateway, orchestrator: Orchestrator, queue: TaskQueue, config: Config, clock: Clock = None):
+    def __init__(
+        self,
+        gateway: Gateway,
+        orchestrator: Orchestrator,
+        queue: TaskQueue,
+        config: Config,
+        clock: Clock = None,
+    ):
         self.gateway = gateway
         self.orchestrator = orchestrator
         self.queue = queue
@@ -90,4 +98,3 @@ class CommandHandler:
 
     async def handle_cleanup(self, cmd: Command):
         await self.system.handle_cleanup(cmd)
-

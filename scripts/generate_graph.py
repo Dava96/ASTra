@@ -1,4 +1,3 @@
-
 import logging
 import sys
 from pathlib import Path
@@ -12,6 +11,7 @@ from astra.ingestion.parser import ASTParser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def main():
     project_root = Path(__file__).parent.parent
@@ -35,9 +35,18 @@ def main():
 
     nodes_iterator = parser.parse_directory(
         directory=project_root,
-        ignore_patterns=[".venv", "__pycache__", ".git", "node_modules", "data", "htmlcov", "tmp", ".gemini"],
+        ignore_patterns=[
+            ".venv",
+            "__pycache__",
+            ".git",
+            "node_modules",
+            "data",
+            "htmlcov",
+            "tmp",
+            ".gemini",
+        ],
         max_file_size_kb=500,
-        progress_callback=print_progress
+        progress_callback=print_progress,
     )
 
     nodes = list(nodes_iterator)
@@ -61,6 +70,7 @@ def main():
     print(f"Functions: {stats['functions']}")
     print(f"Classes: {stats['classes']}")
     print(f"Graph saved to: {kg._persist_path}")
+
 
 if __name__ == "__main__":
     main()

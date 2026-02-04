@@ -23,8 +23,13 @@ class Safeguard:
         self._max_memory_percent = self._config.get("safety", "max_memory_percent", default=90.0)
 
         # O(1) Caching
-        self._cache_repo: dict[str, tuple[float, tuple[bool, str]]] = {} # url -> (ts, result)
+        self._cache_repo: dict[str, tuple[float, tuple[bool, str]]] = {}  # url -> (ts, result)
         self._cache_sys: tuple[float, tuple[bool, str]] | None = None
+
+    def clear_cache(self):
+        """Clear the internal caches."""
+        self._cache_repo.clear()
+        self._cache_sys = None
 
     def check_repo_size(self, repo_url: str) -> tuple[bool, str]:
         """Check if a GitHub repository is within size limits."""
@@ -42,7 +47,8 @@ class Safeguard:
         if repo_url in self._cache_repo:
             ts, res = self._cache_repo[repo_url]
             import time
-            if time.time() - ts < 1800: # 30 min cache
+
+            if time.time() - ts < 1800:  # 30 min cache
                 return res
 
         # Call GitHub API
@@ -51,6 +57,7 @@ class Safeguard:
 
         # Add token if available for higher rate limits
         import os
+
         token = os.getenv("GITHUB_TOKEN")
         if token:
             headers["Authorization"] = f"token {token}"
@@ -63,7 +70,10 @@ class Safeguard:
                 size_mb = size_kb / 1024
 
                 if size_mb > self._max_repo_size_mb:
-                    res = False, f"Repository size ({size_mb:.1f}MB) exceeds limit ({self._max_repo_size_mb}MB)"
+                    res = (
+                        False,
+                        f"Repository size ({size_mb:.1f}MB) exceeds limit ({self._max_repo_size_mb}MB)",
+                    )
                 else:
                     res = True, f"Size: {size_mb:.1f}MB"
 
@@ -77,12 +87,14 @@ class Safeguard:
             res = True, "Skipped check (Connection error)"
 
         import time
+
         self._cache_repo[repo_url] = (time.time(), res)
         return res
 
     def check_system_resources(self) -> tuple[bool, str]:
         """Check if system has enough resources (Cached 1m)."""
         import time
+
         if self._cache_sys:
             ts, res = self._cache_sys
             if time.time() - ts < 60:

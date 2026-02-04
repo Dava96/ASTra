@@ -24,44 +24,45 @@ class FileOps(BaseTool):
             "operation": {
                 "type": "string",
                 "enum": ["read", "write", "delete", "copy", "move", "exists", "list"],
-                "description": "The file operation to perform"
+                "description": "The file operation to perform",
             },
-            "path": {
-                "type": "string",
-                "description": "Source file or directory path"
-            },
+            "path": {"type": "string", "description": "Source file or directory path"},
             "content": {
                 "type": "string",
-                "description": "Content to write (for 'write' operation)"
+                "description": "Content to write (for 'write' operation)",
             },
             "destination": {
                 "type": "string",
-                "description": "Destination path (for 'copy' or 'move' operations)"
+                "description": "Destination path (for 'copy' or 'move' operations)",
             },
             "append": {
                 "type": "boolean",
-                "description": "Append to file instead of overwriting (for 'write' operation)"
-            }
+                "description": "Append to file instead of overwriting (for 'write' operation)",
+            },
         },
-        "required": ["operation", "path"]
+        "required": ["operation", "path"],
     }
 
     def __init__(self, backup_enabled: bool = True):
         self._backup_enabled = backup_enabled
         self._config = get_config()
-        self._root_dir = Path(os.getcwd()).resolve() # Default to CWD, can be overridden by config if needed
+        self._root_dir = Path(
+            os.getcwd()
+        ).resolve()  # Default to CWD, can be overridden by config if needed
         # Check if confinement is enabled in config
-        self._confinement_enabled = self._config.get("tools", "confinement", "enforce_root", default=True)
+        self._confinement_enabled = self._config.get(
+            "tools", "confinement", "enforce_root", default=True
+        )
 
     def _validate_path(self, path: str | Path) -> Path:
         """Validate that path is within the project root."""
         abs_path = Path(path).resolve()
 
-        if self._confinement_enabled:
-            # We must be careful about case sensitivity on Windows, but resolve() handles normalization.
-            if not str(abs_path).lower().startswith(str(self._root_dir).lower()):
-                 # Allow temp dirs or specific exceptions if needed, but strict for now
-                 raise ValueError(f"Path '{path}' is outside project root '{self._root_dir}'")
+        if self._confinement_enabled and not str(abs_path).lower().startswith(
+            str(self._root_dir).lower()
+        ):
+            # Allow temp dirs or specific exceptions if needed, but strict for now
+            raise ValueError(f"Path '{path}' is outside project root '{self._root_dir}'")
 
         return abs_path
 
@@ -81,12 +82,14 @@ class FileOps(BaseTool):
                 return "✅ File deleted successfully." if success else "❌ Failed to delete file."
             elif operation == "copy":
                 dest = kwargs.get("destination")
-                if not dest: return "❌ Destination required for copy."
+                if not dest:
+                    return "❌ Destination required for copy."
                 success = self.copy(path, dest)
                 return f"✅ Copied to {dest}." if success else "❌ Failed to copy."
             elif operation == "move":
                 dest = kwargs.get("destination")
-                if not dest: return "❌ Destination required for move."
+                if not dest:
+                    return "❌ Destination required for move."
                 success = self.move(path, dest)
                 return f"✅ Moved to {dest}." if success else "❌ Failed to move."
             elif operation == "exists":
@@ -116,14 +119,18 @@ class FileOps(BaseTool):
 
             # Check size
             if path.stat().st_size > max_size:
-                raise ValueError(f"File size ({path.stat().st_size}) exceeds limit ({max_size} bytes)")
+                raise ValueError(
+                    f"File size ({path.stat().st_size}) exceeds limit ({max_size} bytes)"
+                )
 
             return path.read_text(encoding="utf-8")
         except Exception as e:
             logger.error(f"Failed to read {file_path}: {e}")
             return None
 
-    def write(self, file_path: str | Path, content: str, backup: bool = True, append: bool = False) -> bool:
+    def write(
+        self, file_path: str | Path, content: str, backup: bool = True, append: bool = False
+    ) -> bool:
         """Write content to file with optional backup and append mode."""
         try:
             path = self._validate_path(file_path)
@@ -208,13 +215,13 @@ class FileOps(BaseTool):
         directory: str | Path,
         pattern: str = "*",
         recursive: bool = True,
-        max_depth: int | None = None
+        max_depth: int | None = None,
     ) -> Generator[Path, None, None]:
         """List files in a directory."""
         dir_path = self._validate_path(directory)
 
         if not dir_path.is_dir():
-             return
+            return
 
         if max_depth is not None:
             # Manual traversal for depth control
@@ -247,6 +254,6 @@ class FileOps(BaseTool):
                 logger.info(f"Restored {file_path} from backup")
                 return True
         except Exception as e:
-             logger.error(f"Failed to restore {file_path}: {e}")
+            logger.error(f"Failed to restore {file_path}: {e}")
 
         return False

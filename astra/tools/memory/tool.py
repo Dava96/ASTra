@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 _RECALL_CACHE: dict[str, Any] = {}
 _MAX_CACHE_SIZE = 100
 
+
 class MemoryTool(BaseTool):
     """Tool for managing working memory (facts, decisions, context)."""
 
@@ -31,35 +32,29 @@ class MemoryTool(BaseTool):
             "action": {
                 "type": "string",
                 "enum": ["remember", "recall", "forget", "list", "update", "clear"],
-                "description": "Action to perform"
+                "description": "Action to perform",
             },
             "content": {
                 "type": "string",
-                "description": "Content to remember (for 'remember'/'update' action)"
+                "description": "Content to remember (for 'remember'/'update' action)",
             },
-            "query": {
-                "type": "string",
-                "description": "Search query (for 'recall' action)"
-            },
+            "query": {"type": "string", "description": "Search query (for 'recall' action)"},
             "memory_id": {
                 "type": "string",
-                "description": "ID of memory (for 'forget'/'update' action)"
+                "description": "ID of memory (for 'forget'/'update' action)",
             },
-            "tags": {
-                "type": "string",
-                "description": "Comma-separated tags (optional metdata)"
-            },
+            "tags": {"type": "string", "description": "Comma-separated tags (optional metdata)"},
             "project_name": {
                 "type": "string",
-                "description": "Active project name (used for scoping memory)"
+                "description": "Active project name (used for scoping memory)",
             },
             "format": {
                 "type": "string",
                 "enum": ["markdown", "json", "dict"],
-                "description": "Output format trigger (default: markdown)"
-            }
+                "description": "Output format trigger (default: markdown)",
+            },
         },
-        "required": ["action"]
+        "required": ["action"],
     }
 
     def __init__(self, store: ChromaDBStore | None = None):
@@ -76,7 +71,9 @@ class MemoryTool(BaseTool):
     async def execute(self, action: str, **kwargs: Any) -> Any:
         project_name = kwargs.get("project_name") or "default"
         collection_name = f"{project_name}_memory"
-        fmt = kwargs.get("format", "dict") # Defaulting to dict behavior internally, likely invoked as markdown by users
+        fmt = kwargs.get(
+            "format", "dict"
+        )  # Defaulting to dict behavior internally, likely invoked as markdown by users
 
         try:
             result: MemoryOperationResult
@@ -89,7 +86,9 @@ class MemoryTool(BaseTool):
                 result = await self._forget(collection_name, kwargs)
             elif action == "list":
                 # List is recall with wildcard/empty query
-                query = kwargs.get("query") or " " # Space triggers 'all' conceptually in vector search sometimes or we handle logic
+                query = (
+                    kwargs.get("query") or " "
+                )  # Space triggers 'all' conceptually in vector search sometimes or we handle logic
                 result = await self._recall(collection_name, {**kwargs, "query": query})
                 result.action = "list"
             elif action == "update":
@@ -107,7 +106,9 @@ class MemoryTool(BaseTool):
 
         except Exception as e:
             logger.exception("Memory tool interaction failed")
-            err_res = MemoryOperationResult(False, action, f"❌ Error executing memory action: {str(e)}")
+            err_res = MemoryOperationResult(
+                False, action, f"❌ Error executing memory action: {str(e)}"
+            )
             if fmt == "markdown":
                 return f"❌ **Error**: {str(e)}"
             return err_res.to_dict()
@@ -127,7 +128,9 @@ class MemoryTool(BaseTool):
         loop = asyncio.get_running_loop()
         existing = await loop.run_in_executor(
             None,
-            lambda: self.store.query(collection, "", n_results=1, filter_metadata={"content_hash": content_hash})
+            lambda: self.store.query(
+                collection, "", n_results=1, filter_metadata={"content_hash": content_hash}
+            ),
         )
 
         if existing:
@@ -137,7 +140,7 @@ class MemoryTool(BaseTool):
                 True,
                 "remember",
                 f"🧠 Memory already exists (deduplicated). ID: {node.id}",
-                data=[MemoryNode(node.id, node.content, metadata=node.metadata)]
+                data=[MemoryNode(node.id, node.content, metadata=node.metadata)],
             )
 
         # 2. Create New
@@ -151,10 +154,7 @@ class MemoryTool(BaseTool):
             start_line=0,
             end_line=0,
             language="text",
-            metadata={
-                "tags": tags,
-                "content_hash": content_hash
-            }
+            metadata={"tags": tags, "content_hash": content_hash},
         )
 
         await loop.run_in_executor(None, lambda: self.store.add_nodes(collection, [node]))
@@ -163,8 +163,10 @@ class MemoryTool(BaseTool):
         self._invalidate_cache(collection)
 
         return MemoryOperationResult(
-            True, "remember", f"✅ Stored memory: {memory_id}",
-            data=[MemoryNode(memory_id, content, tags=[tags], metadata=node.metadata)]
+            True,
+            "remember",
+            f"✅ Stored memory: {memory_id}",
+            data=[MemoryNode(memory_id, content, tags=[tags], metadata=node.metadata)],
         )
 
     async def _recall(self, collection: str, kwargs: dict[str, Any]) -> MemoryOperationResult:
@@ -180,8 +182,7 @@ class MemoryTool(BaseTool):
 
         loop = asyncio.get_running_loop()
         results = await loop.run_in_executor(
-            None,
-            lambda: self.store.query(collection, query, n_results=5)
+            None, lambda: self.store.query(collection, query, n_results=5)
         )
 
         if not results:
@@ -191,19 +192,23 @@ class MemoryTool(BaseTool):
         for res in results:
             tags_str = str(res.node.metadata.get("tags") or "")
             tags = [t.strip() for t in tags_str.split(",")] if tags_str else []
-            memory_nodes.append(MemoryNode(
-                id=res.node.id,
-                content=res.node.content,
-                tags=tags,
-                metadata=res.node.metadata,
-                score=res.score
-            ))
+            memory_nodes.append(
+                MemoryNode(
+                    id=res.node.id,
+                    content=res.node.content,
+                    tags=tags,
+                    metadata=res.node.metadata,
+                    score=res.score,
+                )
+            )
 
-        res_obj = MemoryOperationResult(True, "recall", f"Found {len(memory_nodes)} memories.", data=memory_nodes)
+        res_obj = MemoryOperationResult(
+            True, "recall", f"Found {len(memory_nodes)} memories.", data=memory_nodes
+        )
 
         # Update Cache
         if len(_RECALL_CACHE) >= _MAX_CACHE_SIZE:
-             _RECALL_CACHE.pop(next(iter(_RECALL_CACHE))) # Simple FIFO for now/LRU logic approx
+            _RECALL_CACHE.pop(next(iter(_RECALL_CACHE)))  # Simple FIFO for now/LRU logic approx
         _RECALL_CACHE[cache_key] = res_obj
 
         return res_obj
@@ -225,7 +230,7 @@ class MemoryTool(BaseTool):
         tags = kwargs.get("tags")
 
         if not memory_id:
-             return MemoryOperationResult(False, "update", "❌ 'memory_id' is required.")
+            return MemoryOperationResult(False, "update", "❌ 'memory_id' is required.")
 
         # We need to fetch original to merge or overwrite
         # Ideally store supports update, but here we might need delete + add to ensure embedding updates
@@ -240,10 +245,10 @@ class MemoryTool(BaseTool):
 
         metadata = {}
         if content:
-             content_hash = hashlib.md5(content.encode()).hexdigest()
-             metadata["content_hash"] = content_hash
+            content_hash = hashlib.md5(content.encode()).hexdigest()
+            metadata["content_hash"] = content_hash
         if tags:
-             metadata["tags"] = tags
+            metadata["tags"] = tags
 
         # We construct a node.
         # Note: If we don't provide content, we can't re-embed.
@@ -251,10 +256,14 @@ class MemoryTool(BaseTool):
         # For simplicity, if content missing, we error out OR fetch.
 
         if not content:
-             # Fetch existing
-             # self.store.get_nodes(...) ?? Store generic doesn't expose get by ID easily without query usually
-             # But let's assume valid usage provides content.
-             return MemoryOperationResult(False, "update", "❌ New 'content' is required for update (partial update not supported yet).")
+            # Fetch existing
+            # self.store.get_nodes(...) ?? Store generic doesn't expose get by ID easily without query usually
+            # But let's assume valid usage provides content.
+            return MemoryOperationResult(
+                False,
+                "update",
+                "❌ New 'content' is required for update (partial update not supported yet).",
+            )
 
         node = ASTNode(
             id=memory_id,
@@ -262,12 +271,15 @@ class MemoryTool(BaseTool):
             name=f"Memory-{memory_id[:8]}",
             content=content,
             file_path="memory://working-memory",
-            start_line=0, end_line=0,
+            start_line=0,
+            end_line=0,
             language="text",
-            metadata=metadata
+            metadata=metadata,
         )
 
-        await loop.run_in_executor(None, lambda: self.store.add_nodes(collection, [node])) # add_nodes uses upsert usually
+        await loop.run_in_executor(
+            None, lambda: self.store.add_nodes(collection, [node])
+        )  # add_nodes uses upsert usually
 
         self._invalidate_cache(collection)
         return MemoryOperationResult(True, "update", f"✅ Updated memory: {memory_id}")

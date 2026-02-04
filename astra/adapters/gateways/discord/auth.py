@@ -24,9 +24,18 @@ class AuthManager:
     def is_user_authorized(self, user_id: str) -> bool:
         """Check if a user is in the allowed list."""
         allowed = self._config.allowed_users
-        if not allowed:
-            # If no users configured, deny access
-            return False
+        admins = self._config.orchestration.security.admin_users
+
+        # Implicitly allow admins
+        if user_id in admins:
+            return True
+
+        if not allowed or (len(allowed) == 1 and allowed[0] == "YOUR_DISCORD_ID"):
+             # If only default value, check if admins exist
+             if admins:
+                 return False # Admins exist but user is not one (checked above)
+             return False # No configuration
+
         return user_id in allowed
 
     def is_admin(self, user_id: str) -> bool:
@@ -112,7 +121,9 @@ class AuthManager:
 
             # Update values
             data["orchestration"]["allowed_users"] = self._config.allowed_users
-            data["orchestration"]["security"]["mfa_secrets"] = self._config.orchestration.security.mfa_secrets
+            data["orchestration"]["security"]["mfa_secrets"] = (
+                self._config.orchestration.security.mfa_secrets
+            )
 
             # Handle legacy root allowed_users if present
             if "allowed_users" in data:

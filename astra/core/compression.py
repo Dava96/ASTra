@@ -9,6 +9,7 @@ from astra.config import get_config
 
 logger = logging.getLogger(__name__)
 
+
 class ContextCompressor:
     """
     Compresses text context using LLMLingua to fit within token limits.
@@ -19,8 +20,12 @@ class ContextCompressor:
         self._config = get_config()
         self._compressor = None
         self._enabled = self._config.get("context", "compression_enabled", default=False)
-        self._model_name = self._config.get("context", "compression_model", default="microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank")
-        self._device_map = "cpu" # Force CPU for VPS compatibility unless configured otherwise
+        self._model_name = self._config.get(
+            "context",
+            "compression_model",
+            default="microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+        )
+        self._device_map = "cpu"  # Force CPU for VPS compatibility unless configured otherwise
 
     def _load_model(self):
         """Lazy load the compression model."""
@@ -29,11 +34,10 @@ class ContextCompressor:
 
         try:
             from llmlingua import PromptCompressor
+
             logger.info(f"Loading LLMLingua model: {self._model_name} on {self._device_map}")
             self._compressor = PromptCompressor(
-                model_name=self._model_name,
-                device_map=self._device_map,
-                use_auth_token=False
+                model_name=self._model_name, device_map=self._device_map, use_auth_token=False
             )
         except ImportError:
             logger.error("LLMLingua not installed. Context compression disabled.")
@@ -45,11 +49,11 @@ class ContextCompressor:
     def compress(self, context: str, target_token_count: int = 2000) -> str:
         """
         Compress the given context string to approximately the target token count.
-        
+
         Args:
             context: The text to compress.
             target_token_count: The desired number of tokens after compression.
-            
+
         Returns:
             The compressed string, or the original if compression fails/disabled.
         """
@@ -71,7 +75,9 @@ class ContextCompressor:
             if current_est_tokens <= target_token_count:
                 return context
 
-            logger.info(f"Compressing context from ~{int(current_est_tokens)} to {target_token_count} tokens")
+            logger.info(
+                f"Compressing context from ~{int(current_est_tokens)} to {target_token_count} tokens"
+            )
 
             # compress_prompt returns a dictionary
             result = self._compressor.compress_prompt(
@@ -79,11 +85,11 @@ class ContextCompressor:
                 target_token=target_token_count,
                 # Heuristic parameters for code/structured text preservation
                 rank_method="longllmlingua",
-                context_budget="+100", # Slack
-                dynamic_context_compression_ratio=0.5 # Aggressiveness
+                context_budget="+100",  # Slack
+                dynamic_context_compression_ratio=0.5,  # Aggressiveness
             )
 
-            compressed_text = result['compressed_prompt']
+            compressed_text = result["compressed_prompt"]
             logger.info(f"Context compressed. New length: {len(compressed_text)}")
             return compressed_text
 

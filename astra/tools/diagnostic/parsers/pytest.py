@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 def _register_pytest_parser(cls):
     """Delayed registration to avoid circular import."""
     from astra.tools.diagnostic.registry import register_parser
+
     return register_parser(cls)
 
 
@@ -72,9 +73,9 @@ class PytestParser(OutputParser):
     # E   message
     FAILURE_BLOCK_REGEX = re.compile(
         r"_{10,}\s*(?P<func>[^\s]+)\s*_{10,}\s*"  # Header
-        r"(?P<body>.+?)"                          # Body (lazy)
-        r"(?=\n_{10,}|\n=+\s*short test summary|\Z)", # Lookahead for next header/footer
-        re.DOTALL
+        r"(?P<body>.+?)"  # Body (lazy)
+        r"(?=\n_{10,}|\n=+\s*short test summary|\Z)",  # Lookahead for next header/footer
+        re.DOTALL,
     )
 
     def parse(self, output: str) -> TestResult:
@@ -82,17 +83,21 @@ class PytestParser(OutputParser):
         result = TestResult(framework="pytest")
 
         # 1. Extract Summary (End of file usually)
-        summary_block = output[-2048:] # Summary is at end
+        summary_block = output[-2048:]  # Summary is at end
 
         passed = self.PASSED_REGEX.search(summary_block)
         failed = self.FAILED_REGEX.search(summary_block)
         skipped = self.SKIPPED_REGEX.search(summary_block)
         duration = self.DURATION_REGEX.search(summary_block)
 
-        if passed: result.passed = int(passed.group(1))
-        if failed: result.failed = int(failed.group(1))
-        if skipped: result.skipped = int(skipped.group(1))
-        if duration: result.duration_seconds = float(duration.group(1))
+        if passed:
+            result.passed = int(passed.group(1))
+        if failed:
+            result.failed = int(failed.group(1))
+        if skipped:
+            result.skipped = int(skipped.group(1))
+        if duration:
+            result.duration_seconds = float(duration.group(1))
 
         # Fallback if no specific format found but "short test summary info" exists
         # (Already handled by regex searches above if lines exist)
@@ -107,7 +112,7 @@ class PytestParser(OutputParser):
             error = ParsedError(
                 error_type="TestFailure",
                 function=func_name,
-                traceback=block[:1000] # Initial truncate
+                traceback=block[:1000],  # Initial truncate
             )
 
             # Extract details from body

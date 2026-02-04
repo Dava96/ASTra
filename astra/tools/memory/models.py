@@ -5,15 +5,18 @@ from typing import Any
 @dataclass
 class MemoryNode:
     """Represents a single memory item."""
+
     id: str
     content: str
     tags: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
     score: float | None = None  # Similarity score if from recall
 
+
 @dataclass
 class MemoryOperationResult:
     """Structured result from a memory operation."""
+
     success: bool
     action: str
     message: str
@@ -31,8 +34,9 @@ class MemoryOperationResult:
                     "content": m.content,
                     "tags": m.tags,
                     "metadata": m.metadata,
-                    "score": m.score
-                } for m in (self.data or [])
+                    "score": m.score,
+                }
+                for m in (self.data or [])
             ],
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }

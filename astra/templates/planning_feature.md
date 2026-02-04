@@ -4,7 +4,10 @@
 [Briefly describe the objective]
 
 ## Context Analysis
-[Summarize relevant parts of the provided context]
+## Context Analysis
+*Analyze the following project context (Architecture, Dependencies, Knowledge Graph) to ensure your plan aligns with existing patterns and constraints.*
+
+{{context}}
 
 ## Proposed Changes
 - [ ] `path/to/file`

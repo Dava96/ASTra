@@ -13,6 +13,7 @@ from astra.core.task_queue import TaskQueue
 def mock_gateway():
     return AsyncMock()
 
+
 @pytest.fixture
 def mock_config():
     # Use real config to avoid mock attribute issues
@@ -22,9 +23,19 @@ def mock_config():
     config.llm.model = "ollama/deepseek-coder"
     return config
 
+
 @pytest.fixture
-def orchestrator(mock_gateway, mock_config):
-    return Orchestrator(mock_gateway, mock_config)
+async def orchestrator(mock_gateway, mock_config):
+    with (
+        patch("astra.core.orchestrator.LiteLLMClient"),
+        patch("astra.core.orchestrator.BrowserTool"),
+        patch("astra.core.orchestrator.SearchTool"),
+    ):
+        orch = Orchestrator(mock_gateway, mock_config)
+        orch._llm.for_planning = MagicMock(return_value=orch._llm)
+        orch._llm.chat = AsyncMock()
+        return orch
+
 
 @pytest.mark.asyncio
 async def test_fallback_flow(orchestrator, mock_gateway, mock_config, tmp_path):
@@ -43,7 +54,7 @@ async def test_fallback_flow(orchestrator, mock_gateway, mock_config, tmp_path):
         errors=["Error 1", "Error 2", "Final Error"],
         phase="executing",
         collection_name="test_col",
-        project_path=str(project_dir)
+        project_path=str(project_dir),
     )
 
     # Mock Gateway confirmation
@@ -55,7 +66,15 @@ async def test_fallback_flow(orchestrator, mock_gateway, mock_config, tmp_path):
     orchestrator._queue = MagicMock(spec=TaskQueue)
 
     # Patch LLMClient to verify re-init
-    with patch("astra.core.orchestrator.LiteLLMClient") as MockLLMClient:
+    with patch("astra.core.orchestrator.LiteLLMClient") as MockLLM:
+        MockLLM.return_value.for_planning.return_value.chat = AsyncMock(
+            return_value=SimpleNamespace(
+                content="Plan content", tool_calls=None, usage=SimpleNamespace(total_tokens=0)
+            )
+        )
+        # Mock _plan to avoid it failing on missing mocks for its dependencies
+        orchestrator._plan = AsyncMock()
+
         await orchestrator._handle_failure(context)
 
         # Verify Confirmation Request
@@ -67,6 +86,7 @@ async def test_fallback_flow(orchestrator, mock_gateway, mock_config, tmp_path):
 
         # Verify Config Update
         assert mock_config.llm.model == "openai/gpt-4o"
+
 
 @pytest.mark.asyncio
 async def test_fallback_declined(orchestrator, mock_gateway, tmp_path):
@@ -84,7 +104,7 @@ async def test_fallback_declined(orchestrator, mock_gateway, tmp_path):
         errors=["Error"],
         phase="executing",
         collection_name="test_col",
-        project_path=str(project_dir)
+        project_path=str(project_dir),
     )
 
     # User says No
@@ -99,4 +119,4 @@ async def test_fallback_declined(orchestrator, mock_gateway, tmp_path):
     orchestrator._queue.complete.assert_called_once()
     args = orchestrator._queue.complete.call_args
     assert args[0][0] == task
-    assert args[1]['success'] is False
+    assert args[1]["success"] is False

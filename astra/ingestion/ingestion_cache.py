@@ -8,6 +8,7 @@ from astra.config import get_config
 
 logger = logging.getLogger(__name__)
 
+
 class IngestionCache:
     """
     Persistent cache to track file states and support delta ingestion.
@@ -73,7 +74,10 @@ class IngestionCache:
         try:
             stat = file_path.stat()
             # We allow a small tolerance for float comparison, though mtime is usually exact
-            if entry.get("size") == stat.st_size and abs(entry.get("mtime", 0) - stat.st_mtime) < 0.0001:
+            if (
+                entry.get("size") == stat.st_size
+                and abs(entry.get("mtime", 0) - stat.st_mtime) < 0.0001
+            ):
                 return True
         except Exception:
             pass
@@ -93,11 +97,7 @@ class IngestionCache:
             mtime = 0
             size = 0
 
-        new_entry = {
-            "hash": content_hash,
-            "mtime": mtime,
-            "size": size
-        }
+        new_entry = {"hash": content_hash, "mtime": mtime, "size": size}
 
         # Check if actually changed to avoid setting dirty flag unnecessarily
         current = self._cache.get(key)

@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 def _register_generic_parser(cls):
     """Delayed registration."""
     from astra.tools.diagnostic.registry import register_parser
+
     return register_parser(cls)
 
 
@@ -27,7 +28,7 @@ class GenericParser(OutputParser):
     # Captures: ErrorType: Message
     ERROR_REGEX = re.compile(
         r"^(?P<type>[\w\.]*Error|Exception|Fail|Fatal|Crit(?:ical)?):\s*(?P<message>.+)$",
-        re.MULTILINE | re.IGNORECASE
+        re.MULTILINE | re.IGNORECASE,
     )
 
     def parse(self, output: str) -> TestResult:
@@ -44,11 +45,13 @@ class GenericParser(OutputParser):
                 continue
 
             result.failed += 1
-            result.failures.append(ParsedError(
-                error_type=error_type,
-                message=message,
-                suggestion=get_suggestion(f"{error_type}: {message}")
-            ))
+            result.failures.append(
+                ParsedError(
+                    error_type=error_type,
+                    message=message,
+                    suggestion=get_suggestion(f"{error_type}: {message}"),
+                )
+            )
 
         # Attempt to find summary counts if they exist
         # "X passed, Y failed"

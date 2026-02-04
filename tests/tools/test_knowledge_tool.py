@@ -7,8 +7,11 @@ from astra.tools.knowledge import KnowledgeTool
 
 @pytest.fixture
 def mock_graph():
+    from astra.tools import knowledge
+    knowledge._SHARED_GRAPH = None  # Force re-init with mock
     with patch("astra.tools.knowledge.KnowledgeGraph") as MockKG:
         yield MockKG.return_value
+
 
 @pytest.mark.asyncio
 async def test_knowledge_tool(mock_graph):

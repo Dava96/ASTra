@@ -28,25 +28,39 @@ def clean_registry():
     detect_linters.cache_clear() if hasattr(detect_linters, "cache_clear") else None
     # Also clear manifest cache since detect_language uses it
     from astra.tools.manifest import get_project_manifest
+
     get_project_manifest.cache_clear()
+
 
 class MockLinter(BaseLinter):
     name = "mock_linter"
     languages = ["python"]
     is_type_checker = False
 
-    def can_run(self, path): return True
-    def run(self, path, auto_fix=False): return LintResult(self.name, True, 0, 0)
-    def parse(self, output): return [] # Abstract method from BaseLinter?
+    def can_run(self, path):
+        return True
+
+    def run(self, path, auto_fix=False):
+        return LintResult(self.name, True, 0, 0)
+
+    def parse(self, output):
+        return []  # Abstract method from BaseLinter?
+
 
 class MockTypeChecker(BaseLinter):
     name = "mock_type"
     languages = ["python"]
     is_type_checker = True
 
-    def can_run(self, path): return True
-    def run(self, path, auto_fix=False): return LintResult(self.name, True, 0, 0)
-    def parse(self, output): return []
+    def can_run(self, path):
+        return True
+
+    def run(self, path, auto_fix=False):
+        return LintResult(self.name, True, 0, 0)
+
+    def parse(self, output):
+        return []
+
 
 def test_registry_mechanics(clean_registry):
     LINTER_REGISTRY.clear()
@@ -59,6 +73,7 @@ def test_registry_mechanics(clean_registry):
 
     assert get_linter("unknown") is None
 
+
 def test_get_linters_for_language(clean_registry):
     LINTER_REGISTRY.clear()
     register_linter(MockLinter)
@@ -70,16 +85,18 @@ def test_get_linters_for_language(clean_registry):
     js_linters = get_linters_for_language("javascript")
     assert len(js_linters) == 0
 
+
 def test_detect_language(tmp_path, clean_registry):
     assert detect_language(tmp_path) is None
 
     (tmp_path / "pyproject.toml").touch()
     # Clear cache because we modified filesystem
     from astra.tools.manifest import get_project_manifest
+
     get_project_manifest.cache_clear()
     detect_language.cache_clear() if hasattr(detect_language, "cache_clear") else None
     detect_languages.cache_clear() if hasattr(detect_languages, "cache_clear") else None
-    
+
     assert detect_language(tmp_path) == "python"
     (tmp_path / "pyproject.toml").unlink()
     # Clear again for next step
@@ -99,6 +116,7 @@ def test_detect_language(tmp_path, clean_registry):
     res = detect_language(tmp_path)
     assert res in ["javascript", "typescript"], f"Expected JS/TS, got {res}"
 
+
 def test_run_lint(clean_registry, tmp_path):
     LINTER_REGISTRY.clear()
     register_linter(MockLinter)
@@ -107,6 +125,7 @@ def test_run_lint(clean_registry, tmp_path):
     # Auto detect python
     (tmp_path / "pyproject.toml").touch()
     from astra.tools.manifest import get_project_manifest
+
     get_project_manifest.cache_clear()
 
     # Normal run (no type check)
@@ -128,18 +147,19 @@ def test_run_lint(clean_registry, tmp_path):
     real_results = [r for r in results if r.linter != "system"]
     assert len(real_results) == 0
 
+
 def test_run_lint_skips(clean_registry, tmp_path):
     LINTER_REGISTRY.clear()
     register_linter(MockLinter)
-    
-    # Needs manifest for language detection if not passed? 
+
+    # Needs manifest for language detection if not passed?
     # But here we pass language="python"
-    
-    with patch.object(MockLinter, 'can_run', return_value=False):
+
+    with patch.object(MockLinter, "can_run", return_value=False):
         results = run_lint(tmp_path, language="python")
         # Since MockLinter matches python but can_run=False, it skips.
         # If no linters run, system suggestion might appear if no linters *exist*?
-        # But MockLinter exists. 
+        # But MockLinter exists.
         # If all linters skip, do we suggest? Probably not if they exist but decline.
         # However, run_lint logic: if linters found but issues.
         # If no linters run, results is empty.

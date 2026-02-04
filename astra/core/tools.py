@@ -21,6 +21,7 @@ class Tool(Protocol):
 
 class BaseTool:
     """Helper base class for tools."""
+
     name: str
     description: str
     parameters: dict[str, Any]
@@ -54,12 +55,14 @@ class ToolRegistry:
         """Get JSON schema definitions for all tools (for LLM)."""
         definitions = []
         for tool in self._tools.values():
-            definitions.append({
-                "type": "function",
-                "function": {
-                    "name": tool.name,
-                    "description": tool.description,
-                    "parameters": tool.parameters
+            definitions.append(
+                {
+                    "type": "function",
+                    "function": {
+                        "name": tool.name,
+                        "description": tool.description,
+                        "parameters": tool.parameters,
+                    },
                 }
-            })
+            )
         return definitions

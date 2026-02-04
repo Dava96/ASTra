@@ -3,12 +3,14 @@
     "max_self_heal_attempts": 3,
     "log_ingestion_limit_kb": 50,
     "fallback_to_cloud": true,
+    "fallback_model": null,
     "temperature": 0.0,
     "resume_tasks": true,
     "global_timeout_seconds": 600,
+    "test_timeout_seconds": 300,
     "log_path": "./logs/astra.log",
     "allowed_users": [
-      "YOUR_DISCORD_ID"
+      "242383380711342080"
     ],
     "fallback_strategy": {
       "mode": "ask_user",
@@ -18,10 +20,28 @@
     "security": {
       "auto_install_packages": false,
       "require_permission_for_shell": true,
+      "command_allowlist": [
+        "git",
+        "npm",
+        "node",
+        "python",
+        "pytest",
+        "php",
+        "composer",
+        "cargo"
+      ],
       "admin_users": [
-        "YOUR_DISCORD_ID"
-      ]
+        "242383380711342080"
+      ],
+      "mfa_secrets": {
+        "242383380711342080": "35MM6NPZVFV4WOGIDYIRYX5ZE2BC3WNZ"
+      }
     },
+    "auto_fix_lint": true,
+    "run_lint_before_test": true,
+    "use_manifest_scripts": true,
+    "critic_enabled": true,
+    "critic_loops": 3,
     "test_heuristics": {
       "npm": "npm test",
       "composer": "vendor/bin/phpunit",
@@ -52,23 +72,23 @@
       "Makefile"
     ],
     "max_file_size_kb": 2048,
-    "ast_depth": 3
+    "embedding_model": "default",
+    "lazy_loading": true,
+    "batch_size": 50,
+    "ast_depth": 3,
+    "safe_branches": [
+      "main",
+      "master"
+    ]
   },
   "llm": {
-    "planning_model": "gpt-5",
-    "coding_model": null,
     "model": "ollama_chat/qwen2.5-coder:7b",
     "host": "http://localhost:11434",
     "context_limit": 65536,
-    "base_url": null
-  },
-  "allowed_users": [
-    "123"
-  ],
-  "skills_mp": {
-    "enabled": true,
-    "api_key": "sk_live_your_api_key",
-    "endpoint": "https://skillsmp.com/api/v1"
+    "base_url": null,
+    "planning_model": "ollama_chat/qwen2.5-coder:7b",
+    "coding_model": null,
+    "critic_model": null
   },
   "vectordb": {
     "cleanup_threshold_days": 90,
@@ -87,5 +107,25 @@
     "compression_enabled": false,
     "compression_model": "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
     "target_token_count": 2000
+  },
+  "skills_mp": {
+    "enabled": true,
+    "api_key": "sk_live_skillsmp_5N2Y59LlIzntVx8UrPjEOqITaW-kblFcRFOfM9KOxFEsk_live_skillsmp_5N2Y59LlIzntVx8UrPjEOqITaW-kblFcRFOfM9KOxFE",
+    "cache_expiry_hours": 24,
+    "endpoint": "https://skillsmp.com/api/v1"
+  },
+  "scheduler": {
+    "enabled": true,
+    "db_path": "./data/scheduler.db",
+    "resource_guard_enabled": true,
+    "max_memory_percent": 90,
+    "misfire_grace_time": 3600,
+    "coalesce": true
+  },
+  "webui": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8000,
+    "api_key": null
   }
 }

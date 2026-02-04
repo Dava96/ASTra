@@ -1,75 +1,62 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-# .venv  <-- User pref to keep or ignore? Standard is ignore. I will ignore it as it's standard.
-.venv/
-venv/
-env/
-# UV
-uv.lock
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-test_output*.txt
-*_TEST_RUN.txt
-.tox/
-.nox/
-
-# Logs
-logs/
-*.log
-
-# Data & Databases
-data/*/
-*.sqlite3
-*.db
-
-# Temp / Junk
-tmp/
-tmp_chroma/
-dummy/
-out.txt
-MagicMock/
-
-# IDE
-.vscode/
-.idea/
-
-# Aider
-.aider*
-
-# Config
-config.json
-
-# System & IDE
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-# Python / Environment
+# --- Python & Environment ---
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyd
+.Python
 .venv/
 venv/
 env/
 .pytest_cache/
+.ruff_cache/
 .coverage
 htmlcov/
+.ipynb_checkpoints/
+.tox/
+.nox/
+uv.lock
 
-# Logs & Output
+# --- IDE & System ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Config & Secrets ---
+config.json
+.env
+.env.*
+!.env.example
+
+# --- Data & Databases ---
+data/
+*.sqlite3
+*.db
+repos/
+
+# --- Tools & Aider ---
+.aider*
 logs/
 *.log
 tools_output*.txt
+tools_verify*.txt
 test_output*.txt
+*_TEST_RUN.txt
 out.txt
-.gitignore
+MagicMock/
+dummy/
+file.py
 
-tools_verify_2.txt
-tools_verify.txt
+# --- Build & Dependencies ---
+node_modules/
+dist/
+build/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Miscellaneous ---
+.gitignore_old
+*.bak
+*.tmp
+*.swp

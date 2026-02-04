@@ -2,7 +2,7 @@
 
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 
@@ -17,19 +17,34 @@ class TestShellCommandTool:
 
     @pytest.fixture
     def echo_tool(self):
-        with patch("astra.tools.shell.ShellExecutor._is_allowed", return_value=(True, None)):
-            return ShellCommandTool(
-            name="echo_test",
-            description="Echo a message",
-            command="echo {message}",
-            parameters={
-                "type": "object",
-                "properties": {
-                    "message": {"type": "string", "description": "Message to echo"}
+        with (
+            patch("astra.tools.shell.ShellExecutor._is_allowed", return_value=(True, None)),
+            patch(
+                "astra.tools.shell.ShellExecutor.run_string_async"
+            ) as mock_run,
+        ):
+            # Setup mock response
+            from types import SimpleNamespace
+
+            mock_run.side_effect = lambda cmd, cwd=None: SimpleNamespace(
+                success=True,
+                stdout=cmd.replace("echo ", ""),
+                stderr="",
+                return_code=0,
+                blocked=False,
+                message="",
+            )
+
+            yield ShellCommandTool(
+                name="echo_test",
+                description="Echo a message",
+                command="echo {message}",
+                parameters={
+                    "type": "object",
+                    "properties": {"message": {"type": "string", "description": "Message to echo"}},
+                    "required": ["message"],
                 },
-                "required": ["message"]
-            }
-        )
+            )
 
     @pytest.mark.asyncio
     async def test_execute_simple_command(self, echo_tool):

@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class TaskStatus(Enum):
     """Task execution status."""
+
     QUEUED = "queued"
     PLANNING = "planning"
     WAITING_APPROVAL = "waiting_approval"
@@ -28,9 +29,19 @@ class TaskStatus(Enum):
     CANCELLED = "cancelled"
 
 
+class TaskType(Enum):
+    """Types of tasks."""
+
+    FEATURE = "feature"
+    FIX = "fix"
+    QUICK = "quick"
+    CHAT = "chat"
+
+
 @dataclass
 class Task:
     """Represents a task in the queue."""
+
     id: str
     type: str  # feature, fix, quick
     request: str
@@ -75,7 +86,7 @@ class TaskQueue:
         self._queued_list: list[Task] = []
         self._current_task: Task | None = None
         self._history: list[Task] = []
-        self._lut: dict[str, Task] = {} # Lookup table for O(1) accessing
+        self._lut: dict[str, Task] = {}  # Lookup table for O(1) accessing
         self._lock = threading.RLock()
         self._persist_path = Path(persist_path)
         self._cancel_requested = False
@@ -116,7 +127,9 @@ class TaskQueue:
                 for task in self._history:
                     self._lut[task.id] = task
 
-                logger.info(f"Loaded {len(self._queued_list)} queued tasks and {len(self._history)} history entries")
+                logger.info(
+                    f"Loaded {len(self._queued_list)} queued tasks and {len(self._history)} history entries"
+                )
             except Exception as e:
                 logger.error(f"Failed to load task queue: {e}")
 
@@ -128,24 +141,28 @@ class TaskQueue:
             queued = [t.to_dict() for t in self._queued_list]
             history = [t.to_dict() for t in self._history[-50:]]
 
-        data = {
-            "queued": queued,
-            "history": history
-        }
+        data = {"queued": queued, "history": history}
 
         def _persist_worker(data_dict):
-             try:
+            try:
                 temp_path = self._persist_path.with_suffix(".tmp")
                 with open(temp_path, "w") as f:
                     json.dump(data_dict, f, indent=2)
                 temp_path.replace(self._persist_path)
-             except Exception as e:
-                 logger.error(f"Background save failed: {e}")
+            except Exception as e:
+                logger.error(f"Background save failed: {e}")
 
         # Fire and forget (fire_and_forget logic)
         _io_executor.submit(_persist_worker, data)
 
-    def add(self, task_type: str, request: str, user_id: str, channel_id: str, project: str | None = None) -> Task:
+    def add(
+        self,
+        task_type: str,
+        request: str,
+        user_id: str,
+        channel_id: str,
+        project: str | None = None,
+    ) -> Task:
         """Add a new task to the queue."""
         task = Task(
             id=str(uuid4())[:8],
@@ -153,7 +170,7 @@ class TaskQueue:
             request=request,
             user_id=user_id,
             channel_id=channel_id,
-            project=project
+            project=project,
         )
 
         with self._lock:
@@ -179,7 +196,9 @@ class TaskQueue:
         logger.info(f"Starting task {task.id}: {task.request[:50]}...")
         return task
 
-    def complete(self, task: Task, success: bool, result: dict | None = None, error: str | None = None) -> None:
+    def complete(
+        self, task: Task, success: bool, result: dict | None = None, error: str | None = None
+    ) -> None:
         """Mark a task as complete."""
         with self._lock:
             task.status = TaskStatus.SUCCESS if success else TaskStatus.FAILED
@@ -210,13 +229,33 @@ class TaskQueue:
         """Get the currently running task."""
         return self._current_task
 
+    def requeue(self, task_id: str) -> bool:
+        """Re-queue a task by ID (e.g., after approval or revision)."""
+        with self._lock:
+            task = self._lut.get(task_id)
+            if task:
+                task.status = TaskStatus.QUEUED
+
+                # Check if already in queue to avoid duplicates
+                in_queue = any(t.id == task.id for t in self._queued_list)
+                if not in_queue:
+                    # Prepend? Append? Usually resume means high priority?
+                    # Or FIFO? If I just revised, I probably want it to run next.
+                    # Let's insert at index 0 (high priority)
+                    self._queued_list.insert(0, task)
+
+                self._save()
+                logger.info(f"Task {task.id} re-queued.")
+                return True
+            return False
+
     def get_queue_status(self) -> dict:
         """Get queue status summary."""
         with self._lock:
             return {
                 "queued": len(self._queued_list),
                 "current": self._current_task.to_dict() if self._current_task else None,
-                "recent": [t.to_dict() for t in self._history[-5:]]
+                "recent": [t.to_dict() for t in self._history[-5:]],
             }
 
     def get_position(self, task_id: str) -> int | None:

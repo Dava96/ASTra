@@ -13,6 +13,7 @@ class DummyTool(BaseTool):
     async def execute(self, **kwargs):
         return "executed"
 
+
 class TestToolRegistry:
     @pytest.fixture
     def registry(self):

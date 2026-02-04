@@ -1,6 +1,5 @@
 """Tests for TemplateManager."""
 
-
 import pytest
 
 from astra.core.template_manager import TemplateManager

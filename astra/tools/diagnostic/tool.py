@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class DiagnosticTool(BaseTool):
     """Tool for parsing test output and error diagnostics.
-    
+
     This tool can be called by the orchestrator to parse test output
     and provide structured diagnostic information.
     """
@@ -23,22 +23,19 @@ class DiagnosticTool(BaseTool):
     parameters = {
         "type": "object",
         "properties": {
-            "output": {
-                "type": "string",
-                "description": "Raw test output or error log to parse"
-            },
+            "output": {"type": "string", "description": "Raw test output or error log to parse"},
             "framework": {
                 "type": "string",
                 "enum": ["auto", "pytest", "jest", "phpunit", "browser"],
-                "description": "Framework to use for parsing (default: auto-detect)"
+                "description": "Framework to use for parsing (default: auto-detect)",
             },
             "format": {
                 "type": "string",
                 "enum": ["dict", "markdown", "summary"],
-                "description": "Output format (default: dict)"
-            }
+                "description": "Output format (default: dict)",
+            },
         },
-        "required": ["output"]
+        "required": ["output"],
     }
 
     async def execute(
@@ -47,16 +44,16 @@ class DiagnosticTool(BaseTool):
         framework: str = "auto",
         format: str = "dict",
         manifest_info: dict | None = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any:
         """Execute diagnostic parsing.
-        
+
         Args:
             output: Raw test output to parse
             framework: Framework name or "auto" for auto-detection
             format: Output format ("dict", "markdown", "summary")
             manifest_info: Optional manifest info for context
-            
+
         Returns:
             Parsed diagnostic information in requested format
         """
@@ -86,25 +83,27 @@ class DiagnosticTool(BaseTool):
 
         # Missing Test Runner Logic (Diagnostic Consistency)
         # If unknown/generic framework with no results, and we detect languages, suggest a runner.
-        if (result.framework == "unknown" or result.total == 0) and not result.failed and not result.passed:
-             # Lazy import to avoid circular dependency, though registry is separate
-             from astra.tools.linters.registry import detect_languages
+        if (
+            (result.framework == "unknown" or result.total == 0)
+            and not result.failed
+            and not result.passed
+        ):
+            # Lazy import to avoid circular dependency, though registry is separate
+            from astra.tools.linters.registry import detect_languages
 
-             # We need a project path to detect languages.
-             # If manifest_info has a 'path' key, use it. Otherwise, this feature is limited.
-             # Alternatively, look at 'files' list if they are absolute paths.
-             # But manifest_info usually comes from 'codebase_search' or similar which has paths.
-             # Let's try to infer from manifest_info['root_path'] if available, or skip.
+            # We need a project path to detect languages.
+            # If manifest_info has a 'path' key, use it. Otherwise, this feature is limited.
+            # Alternatively, look at 'files' list if they are absolute paths.
+            # But manifest_info usually comes from 'codebase_search' or similar which has paths.
+            # Let's try to infer from manifest_info['root_path'] if available, or skip.
 
-             root_path = manifest_info.get("root_path") if manifest_info else None
-             if root_path:
-                 langs = detect_languages(root_path)
-                 if "python" in langs and "pytest" not in hints:
-                     result.suggestion = "Python project detected but no test runner output found. Recommended: `uv add --dev pytest`."
-                 elif ("javascript" in langs or "typescript" in langs) and "jest" not in hints:
-                     result.suggestion = "JS/TS project detected but no test runner output found. Recommended: `npm install --save-dev jest`."
-
-
+            root_path = manifest_info.get("root_path") if manifest_info else None
+            if root_path:
+                langs = detect_languages(root_path)
+                if "python" in langs:
+                    result.suggestion = "Python project detected but no test runner output found. Recommended: `uv add --dev pytest`."
+                elif "javascript" in langs or "typescript" in langs:
+                    result.suggestion = "JS/TS project detected but no test runner output found. Recommended: `npm install --save-dev jest`."
 
         if format == "markdown":
             return format_diagnostic_context(result, manifest_info)

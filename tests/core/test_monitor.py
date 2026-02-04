@@ -12,11 +12,15 @@ from astra.core.monitor import Monitor
 class TestMonitor:
     """Test Monitor health checks."""
 
-    @pytest.fixture
+    @pytest.fixture(autouse=True)
     def monitor(self):
         with patch("astra.core.monitor.get_config") as mock:
             mock.return_value = MagicMock()
-            return Monitor()
+            m = Monitor()
+            # Reset cache and singleton state for each test if possible
+            # or just clear the cache dictionary
+            m._cache.clear()
+            return m
 
     def test_check_disk_usage_ok(self, monitor):
         """Test disk check when space is sufficient."""
@@ -93,8 +97,7 @@ class TestMonitor:
 
     def test_run_all_checks(self, monitor):
         """Test running all health checks."""
-        with patch("shutil.disk_usage") as disk_mock, \
-             patch("psutil.virtual_memory") as mem_mock:
+        with patch("shutil.disk_usage") as disk_mock, patch("psutil.virtual_memory") as mem_mock:
             disk_mock.return_value = MagicMock(free=50 * 1024**3)
             mem_mock.return_value = MagicMock(percent=40.0)
             monitor._repos_path = Path("/nonexistent")
@@ -109,8 +112,7 @@ class TestMonitor:
 
     def test_get_alerts_returns_failures(self, monitor):
         """Test that get_alerts returns failed check messages."""
-        with patch("shutil.disk_usage") as disk_mock, \
-             patch("psutil.virtual_memory") as mem_mock:
+        with patch("shutil.disk_usage") as disk_mock, patch("psutil.virtual_memory") as mem_mock:
             disk_mock.return_value = MagicMock(free=2 * 1024**3)  # Low
             mem_mock.return_value = MagicMock(percent=95.0)  # High
             monitor._repos_path = Path("/nonexistent")

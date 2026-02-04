@@ -13,12 +13,13 @@ class TestKnowledgeGraphBasics:
     @pytest.fixture
     def kg(self, tmp_path):
         """Create knowledge graph with temp persist path."""
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=str(tmp_path / "test_graph.graphml"))
             mock_config.return_value = config
 
             from astra.ingestion.knowledge_graph import KnowledgeGraph
+
             return KnowledgeGraph(persist_path=str(tmp_path / "test_graph.graphml"))
 
     def test_add_node(self, kg):
@@ -31,7 +32,7 @@ class TestKnowledgeGraphBasics:
             file_path="src/utils.ts",
             start_line=1,
             end_line=3,
-            language="typescript"
+            language="typescript",
         )
 
         kg.add_node(node)
@@ -77,12 +78,13 @@ class TestDependencyAnalysis:
     @pytest.fixture
     def kg_with_graph(self, tmp_path):
         """Create graph with pre-populated dependencies."""
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=str(tmp_path / "test.graphml"))
             mock_config.return_value = config
 
             from astra.ingestion.knowledge_graph import KnowledgeGraph
+
             kg = KnowledgeGraph(persist_path=str(tmp_path / "test.graphml"))
 
             # Build a dependency chain: A -> B -> C -> D
@@ -136,12 +138,13 @@ class TestCircularDependencies:
 
     @pytest.fixture
     def kg(self, tmp_path):
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=str(tmp_path / "test.graphml"))
             mock_config.return_value = config
 
             from astra.ingestion.knowledge_graph import KnowledgeGraph
+
             return KnowledgeGraph(persist_path=str(tmp_path / "test.graphml"))
 
     def test_detect_circular_dependency(self, kg):
@@ -180,7 +183,7 @@ class TestPersistence:
         """Test saving and loading graph."""
         persist_path = str(tmp_path / "graph.graphml")
 
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=persist_path)
             mock_config.return_value = config
@@ -202,7 +205,7 @@ class TestPersistence:
         """Test loading when file doesn't exist."""
         persist_path = str(tmp_path / "nonexistent.graphml")
 
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=persist_path)
             mock_config.return_value = config
@@ -220,12 +223,13 @@ class TestGraphStats:
 
     @pytest.fixture
     def kg(self, tmp_path):
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=str(tmp_path / "test.graphml"))
             mock_config.return_value = config
 
             from astra.ingestion.knowledge_graph import KnowledgeGraph
+
             return KnowledgeGraph(persist_path=str(tmp_path / "test.graphml"))
 
     def test_get_stats_empty(self, kg):
@@ -254,12 +258,13 @@ class TestEdgeCases:
 
     @pytest.fixture
     def kg(self, tmp_path):
-        with patch('astra.ingestion.knowledge_graph.get_config') as mock_config:
+        with patch("astra.ingestion.knowledge_graph.get_config") as mock_config:
             config = MagicMock()
             config.get = MagicMock(return_value=str(tmp_path / "test.graphml"))
             mock_config.return_value = config
 
             from astra.ingestion.knowledge_graph import KnowledgeGraph
+
             return KnowledgeGraph(persist_path=str(tmp_path / "test.graphml"))
 
     def test_clear_graph(self, kg):

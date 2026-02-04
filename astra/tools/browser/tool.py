@@ -21,15 +21,19 @@ logger = logging.getLogger(__name__)
 
 # Try to import playwright
 try:
-    from playwright.async_api import Browser, Route, async_playwright
+    from playwright.async_api import Browser, async_playwright
+
     PLAYWRIGHT_AVAILABLE = True
 except ImportError:
     PLAYWRIGHT_AVAILABLE = False
-    logger.warning("Playwright not installed. Run: pip install playwright && playwright install chromium")
+    logger.warning(
+        "Playwright not installed. Run: pip install playwright && playwright install chromium"
+    )
 
 # Try to import Pillow
 try:
     from PIL import Image, ImageChops
+
     PILLOW_AVAILABLE = True
 except ImportError:
     PILLOW_AVAILABLE = False
@@ -50,45 +54,41 @@ class BrowserTool(BaseTool):
             "action": {
                 "type": "string",
                 "enum": ["screenshot", "dom", "a11y", "click", "type", "get_text"],
-                "description": "Action to perform"
+                "description": "Action to perform",
             },
             "url": {
                 "type": "string",
-                "description": "The URL to visit (optional for subsequent actions)"
+                "description": "The URL to visit (optional for subsequent actions)",
             },
             "selector": {
                 "type": "string",
-                "description": "Selector (e.g., 'button:Submit' for A11y, or CSS/XPath)"
+                "description": "Selector (e.g., 'button:Submit' for A11y, or CSS/XPath)",
             },
-            "text": {
-                "type": "string",
-                "description": "Text to type (for type action)"
-            },
+            "text": {"type": "string", "description": "Text to type (for type action)"},
             "full_page": {
                 "type": "boolean",
                 "description": "Capture full page screenshot",
-                "default": False
+                "default": False,
             },
             "mode": {
                 "type": "string",
                 "enum": ["hybrid", "a11y", "dom"],
                 "description": "Navigation mode (default: a11y)",
-                "default": "a11y"
-            }
+                "default": "a11y",
+            },
         },
-        "required": ["action"]
+        "required": ["action"],
     }
 
     def __init__(
         self,
         screenshot_dir: str | Path | None = None,
         viewport: tuple[int, int] = (1280, 720),
-        headless: bool = True
+        headless: bool = True,
     ):
         config = get_config()
         self._screenshot_dir = Path(
-            screenshot_dir or
-            config.get("browser", "screenshot_dir", default="./data/screenshots")
+            screenshot_dir or config.get("browser", "screenshot_dir", default="./data/screenshots")
         )
         self._viewport = viewport
         self._headless = headless
@@ -110,7 +110,9 @@ class BrowserTool(BaseTool):
     async def start(self):
         """Start the browser."""
         if not PLAYWRIGHT_AVAILABLE:
-            raise ImportError("Playwright not installed. Run: pip install playwright && playwright install chromium")
+            raise ImportError(
+                "Playwright not installed. Run: pip install playwright && playwright install chromium"
+            )
 
         if not self._playwright:
             self._playwright = await async_playwright().start()
@@ -165,12 +167,20 @@ class BrowserTool(BaseTool):
                 if not self._are_urls_equivalent(page.url, url):
                     # Blocking resources for faster loading on data extraction
                     if action in ["dom", "a11y", "get_text"]:
-                         await page.route("**/*", lambda route: route.abort()
-                            if route.request.resource_type in ["image", "media", "font", "stylesheet"]
-                            else route.continue_())
+                        await page.route(
+                            "**/*",
+                            lambda route: route.abort()
+                            if route.request.resource_type
+                            in ["image", "media", "font", "stylesheet"]
+                            else route.continue_(),
+                        )
 
-                    wait_until = "domcontentloaded" if action in ["dom", "a11y", "get_text"] else "load"
-                    await page.goto(url, timeout=kwargs.get("timeout_ms", 30000), wait_until=wait_until)
+                    wait_until = (
+                        "domcontentloaded" if action in ["dom", "a11y", "get_text"] else "load"
+                    )
+                    await page.goto(
+                        url, timeout=kwargs.get("timeout_ms", 30000), wait_until=wait_until
+                    )
             except Exception as e:
                 return f"❌ Failed to load URL: {e}"
 
@@ -181,24 +191,31 @@ class BrowserTool(BaseTool):
             return await self.interact(action, selector=sel, mode=m, **kwargs)
         elif action == "screenshot":
             if not url and not self._page:
-                 return "❌ URL required for initial screenshot"
-            res = await self.screenshot(url or self._page.url, **kwargs) # type: ignore
-            if not res: return "❌ Screenshot failed"
+                return "❌ URL required for initial screenshot"
+            res = await self.screenshot(url or self._page.url, **kwargs)  # type: ignore
+            if not res:
+                return "❌ Screenshot failed"
             return f"✅ Screenshot saved to {res.path} (URL: {res.url})"
         elif action == "dom":
-            if not url and not self._page: return "❌ URL required"
-            res = await self.get_dom(url or self._page.url, **kwargs) # type: ignore
-            if isinstance(res, str): return res
+            if not url and not self._page:
+                return "❌ URL required"
+            res = await self.get_dom(url or self._page.url, **kwargs)  # type: ignore
+            if isinstance(res, str):
+                return res
             return self.format_dom_summary(res)
         elif action == "a11y":
-            if not url and not self._page: return "❌ URL required"
-            res = await self.get_accessibility_tree(url or self._page.url, **kwargs) # type: ignore
-            if isinstance(res, str): return res
+            if not url and not self._page:
+                return "❌ URL required"
+            res = await self.get_accessibility_tree(url or self._page.url, **kwargs)  # type: ignore
+            if isinstance(res, str):
+                return res
             return self.format_a11y_summary(res)
         else:
             return f"❌ Unknown action: {action}"
 
-    async def interact(self, action: str, selector: str | None = None, mode: str = "a11y", **kwargs) -> str:
+    async def interact(
+        self, action: str, selector: str | None = None, mode: str = "a11y", **kwargs
+    ) -> str:
         """Perform interaction using configured navigator."""
         if not selector:
             return "❌ Selector required for interaction"
@@ -217,7 +234,7 @@ class BrowserTool(BaseTool):
 
         # Hybrid Mode: Try A11y first, then DOM
         if mode == "hybrid":
-             # Prioritize A11y for everything in hybrid mode
+            # Prioritize A11y for everything in hybrid mode
             result = await run_nav("a11y")
             if result and result.success:
                 data = f" Data: {result.data}" if result.data else ""
@@ -243,9 +260,9 @@ class BrowserTool(BaseTool):
 
         # Fallthrough for failure or unknown mode (shouldn't happen with enum)
         if result and result.success:
-             # Should be covered above, but safety net
-             data = f" Data: {result.data}" if result.data else ""
-             return f"✅ {action} on '{selector}' ({mode}){data}"
+            # Should be covered above, but safety net
+            data = f" Data: {result.data}" if result.data else ""
+            return f"✅ {action} on '{selector}' ({mode}){data}"
 
         error = result.error_message if result else "Unknown error"
         return f"❌ Interaction failed: {error}"
@@ -256,7 +273,7 @@ class BrowserTool(BaseTool):
         full_page: bool = False,
         selector: str | None = None,
         wait_for: str | None = None,
-        timeout_ms: int = 30000
+        timeout_ms: int = 30000,
     ) -> ScreenshotResult:
         """Capture screenshot."""
         url = self._normalize_url(url)
@@ -293,7 +310,7 @@ class BrowserTool(BaseTool):
             full_page=full_page,
             timestamp=start_time.isoformat(),
             title=await page.title(),
-            load_time_ms=load_time_ms
+            load_time_ms=load_time_ms,
         )
 
     async def get_dom(self, url: str, max_depth: int = 10, timeout_ms: int = 30000) -> DOMElement:
@@ -303,12 +320,12 @@ class BrowserTool(BaseTool):
         if not self._are_urls_equivalent(page.url, url):
             await page.goto(url, timeout=timeout_ms, wait_until="domcontentloaded")
 
-
         data = await page.evaluate(DOM_EXTRACTION_SCRIPT, max_depth)
         return self._parse_dom_data(data)
 
     def _parse_dom_data(self, data: dict) -> DOMElement:
-        if not data: return DOMElement(tag="body")
+        if not data:
+            return DOMElement(tag="body")
         return DOMElement(
             tag=data.get("tag", "unknown"),
             id=data.get("id"),
@@ -316,7 +333,7 @@ class BrowserTool(BaseTool):
             text=data.get("text"),
             role=data.get("role"),
             attributes=data.get("attributes", {}),
-            children=[self._parse_dom_data(c) for c in data.get("children", [])]
+            children=[self._parse_dom_data(c) for c in data.get("children", [])],
         )
 
     async def get_accessibility_tree(self, url: str, timeout_ms: int = 30000) -> A11yNode:
@@ -333,7 +350,11 @@ class BrowserTool(BaseTool):
             return A11yNode(role="document", name="Accessibility Unavailable")
 
         snapshot = await page.accessibility.snapshot()
-        return self._parse_a11y_node(snapshot) if snapshot else A11yNode(role="document", name="Unavailable")
+        return (
+            self._parse_a11y_node(snapshot)
+            if snapshot
+            else A11yNode(role="document", name="Unavailable")
+        )
 
     def _parse_a11y_node(self, data: dict) -> A11yNode:
         return A11yNode(
@@ -344,7 +365,7 @@ class BrowserTool(BaseTool):
             keyshortcuts=data.get("keyshortcuts"),
             focused=data.get("focused", False),
             disabled=data.get("disabled", False),
-            children=[self._parse_a11y_node(c) for c in data.get("children", [])]
+            children=[self._parse_a11y_node(c) for c in data.get("children", [])],
         )
 
     def cleanup(self, max_age_hours: int | None = None) -> int:
@@ -368,7 +389,9 @@ class BrowserTool(BaseTool):
         logger.info(f"Cleaned up {count} old screenshots")
         return count
 
-    def compare_screenshots(self, before: Path, after: Path, threshold: float = 0.05) -> ComparisonResult:
+    def compare_screenshots(
+        self, before: Path, after: Path, threshold: float = 0.05
+    ) -> ComparisonResult:
         """Compare screenshots (Pillow wrapper)."""
         if not PILLOW_AVAILABLE:
             return ComparisonResult(None, 0.0, True, "Pillow missing")
@@ -376,7 +399,8 @@ class BrowserTool(BaseTool):
         try:
             img1 = Image.open(before).convert("RGB")
             img2 = Image.open(after).convert("RGB")
-            if img1.size != img2.size: img2 = img2.resize(img1.size)
+            if img1.size != img2.size:
+                img2 = img2.resize(img1.size)
 
             diff = ImageChops.difference(img1, img2)
             if not diff.getbbox():
@@ -388,7 +412,7 @@ class BrowserTool(BaseTool):
 
             # Simple diff logic for brevity
             hist = diff.convert("L").histogram()
-            diff_pixels = sum(hist[20:]) # Ignore noise
+            diff_pixels = sum(hist[20:])  # Ignore noise
             pct = diff_pixels / (img1.size[0] * img1.size[1])
 
             return ComparisonResult(diff_path, pct, pct < threshold, f"Difference: {pct:.2%}")
@@ -398,34 +422,49 @@ class BrowserTool(BaseTool):
     # Format helpers (kept from original)
     def format_dom_summary(self, dom: DOMElement, max_lines: int = 50) -> str:
         lines = []
+
         def traverse(el, indent=0):
-            if len(lines) >= max_lines: return
+            if len(lines) >= max_lines:
+                return
             p = "  " * indent
             meta = []
-            if el.id: meta.append(f'#{el.id}')
-            if el.role: meta.append(f'[{el.role}]')
-            if el.text: meta.append(f'"{el.text}"')
+            if el.id:
+                meta.append(f"#{el.id}")
+            if el.role:
+                meta.append(f"[{el.role}]")
+            if el.text:
+                meta.append(f'"{el.text}"')
             meta_str = f" {' '.join(meta)}" if meta else ""
             lines.append(f"{p}<{el.tag}{meta_str}>")
-            for c in el.children: traverse(c, indent + 1)
+            for c in el.children:
+                traverse(c, indent + 1)
+
         traverse(dom)
         return "\n".join(lines)
 
     def format_a11y_summary(self, node: A11yNode, max_lines: int = 5000) -> str:
         lines = []
+
         def traverse(n, indent=0):
-            if len(lines) >= max_lines: return
+            if len(lines) >= max_lines:
+                return
             p = "  " * indent
             # Enhanced details
             details = []
-            if n.value: details.append(f"val='{n.value}'")
-            if n.keyshortcuts: details.append(f"keys='{n.keyshortcuts}'")
-            if n.focused: details.append("[FOCUSED]")
-            if n.disabled: details.append("[DISABLED]")
+            if n.value:
+                details.append(f"val='{n.value}'")
+            if n.keyshortcuts:
+                details.append(f"keys='{n.keyshortcuts}'")
+            if n.focused:
+                details.append("[FOCUSED]")
+            if n.disabled:
+                details.append("[DISABLED]")
             detail_str = f" ({', '.join(details)})" if details else ""
 
             lines.append(f"{p}[{n.role}] {n.name}{detail_str}")
-            for c in n.children: traverse(c, indent + 1)
+            for c in n.children:
+                traverse(c, indent + 1)
+
         traverse(node)
         return "\n".join(lines)
 
@@ -433,5 +472,7 @@ class BrowserTool(BaseTool):
 # Synchronous wrappers
 def capture_screenshot(url: str, **kwargs) -> ScreenshotResult:
     async def _run():
-        async with BrowserTool() as b: return await b.screenshot(url, **kwargs)
+        async with BrowserTool() as b:
+            return await b.screenshot(url, **kwargs)
+
     return asyncio.run(_run())

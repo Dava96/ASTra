@@ -7,4 +7,10 @@ from astra.tools.browser.navigators.registry import (
     register_navigator,
 )
 
-__all__ = ["BaseNavigator", "NavigationResult", "get_navigator", "register_navigator", "get_navigator_names"]
+__all__ = [
+    "BaseNavigator",
+    "NavigationResult",
+    "get_navigator",
+    "register_navigator",
+    "get_navigator_names",
+]

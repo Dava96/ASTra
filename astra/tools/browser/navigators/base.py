@@ -8,6 +8,7 @@ from typing import Any
 @dataclass
 class NavigationResult:
     """Result of a navigation action."""
+
     success: bool
     element_found: bool = False
     action_performed: str = ""

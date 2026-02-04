@@ -8,6 +8,7 @@ from typing import Any
 @dataclass
 class ScreenshotResult:
     """Result of a screenshot capture."""
+
     path: Path
     url: str
     viewport: tuple[int, int]
@@ -24,13 +25,14 @@ class ScreenshotResult:
             "full_page": self.full_page,
             "timestamp": self.timestamp,
             "title": self.title,
-            "load_time_ms": self.load_time_ms
+            "load_time_ms": self.load_time_ms,
         }
 
 
 @dataclass
 class DOMElement:
     """Cleaned DOM element representation."""
+
     tag: str
     id: str | None = None
     classes: list[str] = field(default_factory=list)
@@ -59,6 +61,7 @@ class DOMElement:
 @dataclass
 class A11yNode:
     """Accessibility tree node."""
+
     role: str
     name: str
     value: str | None = None
@@ -91,6 +94,7 @@ class A11yNode:
 @dataclass
 class ComparisonResult:
     """Result of comparing two screenshots."""
+
     diff_image: Path | None
     diff_percentage: float
     structurally_similar: bool

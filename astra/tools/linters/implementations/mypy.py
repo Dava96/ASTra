@@ -9,6 +9,7 @@ from astra.tools.linters.models import LintIssue
 def _register_mypy(cls):
     """Delayed registration to avoid circular import."""
     from astra.tools.linters.registry import register_linter
+
     return register_linter(cls)
 
 
@@ -28,13 +29,15 @@ class MypyLinter(BaseLinter):
         issues = []
         # Format: file.py:10: error: message
         for match in re.finditer(r"(\S+):(\d+):\s*(error|warning|note):\s*(.+)", output):
-            issues.append(LintIssue(
-                file=match.group(1),
-                line=int(match.group(2)),
-                column=None,
-                severity=match.group(3),
-                message=match.group(4),
-                code="mypy",
-                fixable=False
-            ))
+            issues.append(
+                LintIssue(
+                    file=match.group(1),
+                    line=int(match.group(2)),
+                    column=None,
+                    severity=match.group(3),
+                    message=match.group(4),
+                    code="mypy",
+                    fixable=False,
+                )
+            )
         return issues

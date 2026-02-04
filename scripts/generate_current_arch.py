@@ -9,6 +9,7 @@ from astra.core.architecture import ArchitectureGenerator
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+
 async def main():
     root_dir = os.getcwd()
     print(f"Generating architecture for: {root_dir}")
@@ -24,6 +25,7 @@ async def main():
 
     await generator.generate_if_missing(root_dir)
     print("Done!")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

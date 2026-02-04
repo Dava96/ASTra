@@ -1,4 +1,3 @@
-
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -13,18 +12,20 @@ def mock_gatherer():
     tools = ToolRegistry()
     return ContextGatherer(vector_store, tools)
 
+
 @pytest.mark.asyncio
 async def test_gather_context_guard_limit(mock_gatherer):
     """Test that context guard truncates context when exceeding the limit."""
 
     # 1. Mock Manifests (get_manifest_files_for_project)
-    with patch('astra.core.context.get_manifest_files_for_project') as mock_manifest:
+    with patch("astra.core.context.get_manifest_files_for_project") as mock_manifest:
         mock_manifest.return_value = {"huge_file.txt": "A" * 1000}
 
         # 2. Mock Path operations for Architecture
-        with patch('pathlib.Path.exists') as mock_exists, \
-             patch('pathlib.Path.read_text') as mock_read:
-
+        with (
+            patch("pathlib.Path.exists") as mock_exists,
+            patch("pathlib.Path.read_text") as mock_read,
+        ):
             # Ensure Architecture file is found and read
             mock_exists.return_value = True
             mock_read.return_value = "B" * 10000

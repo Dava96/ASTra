@@ -8,6 +8,7 @@ from typing import Any
 @dataclass
 class ASTNode:
     """Represents a parsed AST node for storage."""
+
     id: str
     type: str  # function, class, interface, etc.
     name: str
@@ -22,6 +23,7 @@ class ASTNode:
 @dataclass
 class QueryResult:
     """Result from a vector similarity query."""
+
     node: ASTNode
     score: float
     distance: float
@@ -56,7 +58,7 @@ class VectorStore(ABC):
         collection: str,
         query_text: str,
         n_results: int = 10,
-        filter_metadata: dict[str, Any] | None = None
+        filter_metadata: dict[str, Any] | None = None,
     ) -> list[QueryResult]:
         """Query for similar nodes."""
         pass

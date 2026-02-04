@@ -1,3 +1,4 @@
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -8,9 +9,11 @@ from astra.core.task_queue import TaskQueue, TaskStatus
 def persist_path(tmp_path):
     return tmp_path / "tasks.json"
 
+
 @pytest.fixture
 def tq(persist_path):
     return TaskQueue(persist_path=str(persist_path))
+
 
 def test_task_queue_add(tq):
     task = tq.add("feature", "req", "u1", "c1", "p1")
@@ -18,13 +21,25 @@ def test_task_queue_add(tq):
     assert task.type == "feature"
     assert tq.get_task(task.id) == task
 
-def test_task_queue_persistence(persist_path):
-    q1 = TaskQueue(str(persist_path))
-    task = q1.add("fix", "err", "u2", "c2")
 
-    # Load in new queue
-    q2 = TaskQueue(str(persist_path))
-    assert q2.get_task(task.id).request == "err"
+class SyncExecutor:
+    def submit(self, fn, *args, **kwargs):
+        fn(*args, **kwargs)
+        return MagicMock()
+
+    def shutdown(self, wait=True):
+        pass
+
+
+def test_task_queue_persistence(persist_path):
+    with patch("astra.core.task_queue._io_executor", SyncExecutor()):
+        q1 = TaskQueue(str(persist_path))
+        task = q1.add("fix", "err", "u2", "c2")
+
+        # Load in new queue
+        q2 = TaskQueue(str(persist_path))
+        assert q2.get_task(task.id).request == "err"
+
 
 def test_task_queue_lifecycle(tq):
     t1 = tq.add("q", "r1", "u", "c")
@@ -45,6 +60,7 @@ def test_task_queue_lifecycle(tq):
     assert tq.get_current() is None
     assert len(tq.get_history()) == 1
 
+
 def test_task_queue_cancel(tq):
     tq.add("type", "req", "u", "c")
     current = tq.get_next()
@@ -56,15 +72,17 @@ def test_task_queue_cancel(tq):
     tq.complete(current, success=False, error="cancelled")
     assert not tq.is_cancel_requested()
 
+
 def test_task_history_filtering(tq):
-    t1 = tq.add("t", "r1", "user1", "c")
+    tq.add("t", "r1", "user1", "c")
     t2 = tq.add("t", "r2", "user2", "c")
 
-    tq.complete(tq.get_next(), True) # t1
-    tq.complete(tq.get_next(), True) # t2
+    tq.complete(tq.get_next(), True)  # t1
+    tq.complete(tq.get_next(), True)  # t2
 
     assert len(tq.get_history(user_id="user1")) == 1
     assert tq.get_last_result(user_id="user2").id == t2.id
+
 
 def test_queue_status(tq):
     tq.add("t", "r", "u", "c")
@@ -76,6 +94,7 @@ def test_queue_status(tq):
     status = tq.get_queue_status()
     assert status["queued"] == 0
     assert status["current"] is not None
+
 
 def test_load_corrupted_data(persist_path):
     persist_path.write_text("invalid json")

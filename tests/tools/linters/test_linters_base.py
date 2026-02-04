@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -15,6 +14,7 @@ class ConcreteLinter(BaseLinter):
     def parse(self, output: str) -> list[LintIssue]:
         return []
 
+
 def test_can_run_extensions(tmp_path):
     linter = ConcreteLinter()
 
@@ -25,16 +25,20 @@ def test_can_run_extensions(tmp_path):
     (tmp_path / "test.py").touch()
     assert linter.can_run(tmp_path)
 
+
 def test_can_run_exact_file(tmp_path):
     linter = ConcreteLinter()
     (tmp_path / "config.json").touch()
     assert linter.can_run(tmp_path)
 
+
 def test_can_run_no_detect_files():
     class UniversalLinter(BaseLinter):
-        def parse(self, o): return []
+        def parse(self, o):
+            return []
 
     assert UniversalLinter().can_run(Path("."))
+
 
 def test_run_check_only():
     linter = ConcreteLinter()
@@ -49,12 +53,17 @@ def test_run_check_only():
         assert result.success is True
         assert result.fixed_count == 0
 
+
 def test_run_with_fix():
     linter = ConcreteLinter()
-    linter.parse = MagicMock(side_effect=[
-        [LintIssue(file="f", line=1, message="err", severity="error", fixable=True)], # First run
-        [] # Second run (clean)
-    ])
+    linter.parse = MagicMock(
+        side_effect=[
+            [
+                LintIssue(file="f", line=1, message="err", severity="error", fixable=True)
+            ],  # First run
+            [],  # Second run (clean)
+        ]
+    )
 
     with patch("astra.tools.shell.ShellExecutor") as MockShell:
         shell = MockShell.return_value
@@ -70,10 +79,13 @@ def test_run_with_fix():
         assert result.fixed_count == 1
         assert len(result.issues) == 0
 
+
 def test_run_fix_not_supported():
     class ReadOnlyLinter(BaseLinter):
         check_cmd = ["check"]
-        def parse(self, o): return []
+
+        def parse(self, o):
+            return []
 
     linter = ReadOnlyLinter()
 

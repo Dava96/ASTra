@@ -13,6 +13,7 @@ def test_get_suggestion():
     assert "not defined" in get_suggestion("NameError: name 'x' is not defined")
     assert get_suggestion("Unknown error message") == ""
 
+
 def test_extract_file_context(tmp_path):
     test_file = tmp_path / "code.py"
     test_file.write_text("line1\nline2\nline3\nline4\nline5\n")
@@ -24,6 +25,7 @@ def test_extract_file_context(tmp_path):
 
     # Non-existent
     assert extract_file_context("none.py", 1) == ""
+
 
 def test_parse_pytest_output():
     output = "5 passed, 2 failed in 0.5s\n"
@@ -43,12 +45,14 @@ E  assert 1 == 2
     assert len(res.failures) == 1
     assert res.failures[0].function == "test_fail"
 
+
 def test_parse_jest_output():
     output = "Tests: 1 failed, 10 passed, 11 total\nTime: 5.2s"
     res = parse_jest_output(output)
     assert res.failed == 1
     assert res.passed == 10
     assert res.duration_seconds == 5.2
+
 
 def test_parse_test_output_detection():
     # Pytest detection - use pytest-specific pattern

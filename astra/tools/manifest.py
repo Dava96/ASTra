@@ -149,7 +149,7 @@ def parse_cargo_toml(file_path: str | Path) -> dict[str, Any]:
 @lru_cache(maxsize=128)
 def get_project_manifest(project_path: str | Path) -> dict[str, Any]:
     """Detect and parse the appropriate manifest file for a project.
-    
+
     Returns dict with:
         - name: project name
         - language: detected language
@@ -168,7 +168,7 @@ def get_project_manifest(project_path: str | Path) -> dict[str, Any]:
         "scripts": {},
         "test_command": None,
         "lint_command": None,
-        "dependencies": []
+        "dependencies": [],
     }
 
     # Check each manifest type in priority order
@@ -187,7 +187,11 @@ def get_project_manifest(project_path: str | Path) -> dict[str, Any]:
         result["language"] = "php"
         result.update(data)
         if data.get("test_command"):
-            result["test_command"] = f"composer run {data['test_command']}" if not data["test_command"].startswith("vendor/") else data["test_command"]
+            result["test_command"] = (
+                f"composer run {data['test_command']}"
+                if not data["test_command"].startswith("vendor/")
+                else data["test_command"]
+            )
 
     elif (path / "pyproject.toml").exists():
         data = parse_pyproject_toml(path / "pyproject.toml")

@@ -13,14 +13,16 @@ async def test_generate_new(tmp_path):
     """Test generating doc when missing."""
     # Mock LLM
     mock_llm = MagicMock()
-    mock_llm.chat = AsyncMock(return_value=LLMResponse(
-        content="# Test Arch Content",
-        tool_calls=None,
-        prompt_tokens=10,
-        completion_tokens=10,
-        total_tokens=20,
-        model="test-ai"
-    ))
+    mock_llm.chat = AsyncMock(
+        return_value=LLMResponse(
+            content="# Test Arch Content",
+            tool_calls=None,
+            prompt_tokens=10,
+            completion_tokens=10,
+            total_tokens=20,
+            model="test-ai",
+        )
+    )
 
     generator = ArchitectureGenerator(llm=mock_llm)
     # Mock dependencies
@@ -32,12 +34,16 @@ async def test_generate_new(tmp_path):
     from unittest.mock import patch
 
     # Mock global function
-    with patch("astra.core.architecture.get_manifest_files_for_project", return_value={"package.json": "{}"}):
-         result = await generator.generate_if_missing(str(tmp_path))
+    with patch(
+        "astra.core.architecture.get_manifest_files_for_project",
+        return_value={"package.json": "{}"},
+    ):
+        result = await generator.generate_if_missing(str(tmp_path))
 
     assert result is True
     assert (tmp_path / "ARCHITECTURE.md").exists()
     assert "# Test Arch Content" in (tmp_path / "ARCHITECTURE.md").read_text()
+
 
 @pytest.mark.asyncio
 async def test_skip_existing(tmp_path):

@@ -1,0 +1,396 @@
+ASTra/
+├── .aider.chat.history.md
+├── .aider.input.history
+├── .aiignore
+├── .coverage
+├── .coveragerc
+├── .dockerignore
+├── .env
+├── .env.example
+├── .gitignore
+├── .pre-commit-config.yaml
+├── bundle_astra.py
+├── config.example.json
+├── config.json
+├── docker-compose.yml
+├── Dockerfile
+├── pyproject.toml
+├── README.md
+├── test_output.txt
+├── test_output_2.txt
+├── uv.lock
+├── astra/
+│   ├── config.py
+│   ├── main.py
+│   ├── setup_wizard.py
+│   ├── __init__.py
+│   ├── adapters/
+│   │   ├── chromadb_store.py
+│   │   ├── llm_client.py
+│   │   ├── mixins.py
+│   │   ├── vcs_git.py
+│   │   ├── __init__.py
+│   │   ├── gateways/
+│   │   │   ├── console.py
+│   │   │   ├── open_webui.py
+│   │   │   ├── __init__.py
+│   │   │   ├── discord/
+│   │   │   │   ├── auth.py
+│   │   │   │   ├── embeds.py
+│   │   │   │   ├── gateway.py
+│   │   │   │   ├── __init__.py
+│   ├── core/
+│   │   ├── architecture.py
+│   │   ├── clock.py
+│   │   ├── commands.py
+│   │   ├── compression.py
+│   │   ├── context.py
+│   │   ├── monitor.py
+│   │   ├── orchestrator.py
+│   │   ├── remote_provider.py
+│   │   ├── safeguard.py
+│   │   ├── task_queue.py
+│   │   ├── template_manager.py
+│   │   ├── tools.py
+│   │   ├── __init__.py
+│   ├── handlers/
+│   │   ├── command_handlers.py
+│   │   ├── project_handlers.py
+│   │   ├── system_handlers.py
+│   │   ├── task_handlers.py
+│   ├── ingestion/
+│   │   ├── dependency_resolver.py
+│   │   ├── ingestion_cache.py
+│   │   ├── knowledge_graph.py
+│   │   ├── parser.py
+│   │   ├── pipeline.py
+│   │   ├── size_estimator.py
+│   │   ├── __init__.py
+│   ├── interfaces/
+│   │   ├── gateway.py
+│   │   ├── llm.py
+│   │   ├── vcs.py
+│   │   ├── vector_store.py
+│   │   ├── __init__.py
+│   ├── memory/
+│   │   ├── store.py
+│   │   ├── __init__.py
+│   ├── templates/
+│   │   ├── architecture.md
+│   │   ├── critic_review.md
+│   │   ├── fastapi_rules.md
+│   │   ├── planning_feature.md
+│   │   ├── pr_description.md
+│   │   ├── pr_template.md
+│   │   ├── python_conventions.md
+│   │   ├── react_rules.md
+│   │   ├── system.md
+│   │   ├── system_prompt.md
+│   │   ├── typescript_conventions.md
+│   ├── tools/
+│   │   ├── aider_tool.py
+│   │   ├── custom_loader.py
+│   │   ├── file_ops.py
+│   │   ├── git_ops.py
+│   │   ├── knowledge.py
+│   │   ├── lint.py
+│   │   ├── manifest.py
+│   │   ├── pr_review.py
+│   │   ├── search.py
+│   │   ├── shell.py
+│   │   ├── __init__.py
+│   │   ├── browser/
+│   │   │   ├── models.py
+│   │   │   ├── scripts.py
+│   │   │   ├── tool.py
+│   │   │   ├── __init__.py
+│   │   │   ├── navigators/
+│   │   │   │   ├── base.py
+│   │   │   │   ├── registry.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── implementations/
+│   │   │   │   │   ├── a11y.py
+│   │   │   │   │   ├── dom.py
+│   │   │   │   │   ├── __init__.py
+│   │   ├── diagnostic/
+│   │   │   ├── base.py
+│   │   │   ├── formatter.py
+│   │   │   ├── models.py
+│   │   │   ├── registry.py
+│   │   │   ├── suggestions.py
+│   │   │   ├── tool.py
+│   │   │   ├── __init__.py
+│   │   │   ├── parsers/
+│   │   │   │   ├── browser.py
+│   │   │   │   ├── generic.py
+│   │   │   │   ├── jest.py
+│   │   │   │   ├── phpunit.py
+│   │   │   │   ├── pytest.py
+│   │   │   │   ├── __init__.py
+│   │   ├── linters/
+│   │   │   ├── base.py
+│   │   │   ├── models.py
+│   │   │   ├── registry.py
+│   │   │   ├── tool.py
+│   │   │   ├── __init__.py
+│   │   │   ├── implementations/
+│   │   │   │   ├── eslint.py
+│   │   │   │   ├── go.py
+│   │   │   │   ├── mypy.py
+│   │   │   │   ├── phpstan.py
+│   │   │   │   ├── ruff.py
+│   │   │   │   ├── rust.py
+│   │   │   │   ├── __init__.py
+│   │   ├── memory/
+│   │   │   ├── models.py
+│   │   │   ├── tool.py
+│   │   │   ├── __init__.py
+│   │   ├── scheduler/
+│   │   │   ├── service.py
+│   │   │   ├── tool.py
+│   │   │   ├── __init__.py
+├── data/
+│   ├── ingestion_cache.json
+│   ├── knowledge_graph.graphml
+│   ├── scheduler.db
+│   ├── task_queue.json
+│   ├── cache/
+│   │   ├── skills_mp/
+│   ├── chromadb/
+│   │   ├── chroma.sqlite3
+│   │   ├── 005a580f-7115-4de6-9298-4b40dbd953d8/
+│   │   │   ├── data_level0.bin
+│   │   │   ├── header.bin
+│   │   │   ├── length.bin
+│   │   │   ├── link_lists.bin
+│   │   ├── 0404d6c9-725a-49cd-b08e-e666816be2ca/
+│   │   │   ├── data_level0.bin
+│   │   │   ├── header.bin
+│   │   │   ├── length.bin
+│   │   │   ├── link_lists.bin
+│   │   ├── 0c8e5e6a-28fe-4290-aa5c-be64344398a9/
+│   │   │   ├── data_level0.bin
+│   │   │   ├── header.bin
+│   │   │   ├── length.bin
+│   │   │   ├── link_lists.bin
+│   │   ├── 5f040c2d-0793-49e0-8504-1cde4d88a466/
+│   │   │   ├── data_level0.bin
+│   │   │   ├── header.bin
+│   │   │   ├── index_metadata.pickle
+│   │   │   ├── length.bin
+│   │   │   ├── link_lists.bin
+│   ├── memory/
+│   │   ├── chroma.sqlite3
+│   ├── screenshots/
+│   │   ├── screenshot_20260204_001125_https_glassandgrain.pages.dev_.png
+├── docs/
+│   ├── configuration.md
+│   ├── project_audit_overview.md
+│   ├── README.md
+│   ├── security.md
+│   ├── features/
+│   │   ├── custom-tools.md
+│   │   ├── knowledge-graph.md
+│   │   ├── pr-review.md
+│   │   ├── rag-first.md
+│   │   ├── vector-search.md
+├── dummy/
+│   ├── architecture.md
+│   ├── critic_review.md
+│   ├── planning_feature.md
+│   ├── pr_description.md
+├── logs/
+│   ├── astra.log
+├── MagicMock/
+│   ├── mock.orchestration.log_path/
+│   │   ├── 1219709231824
+│   │   ├── 1345048245744
+│   │   ├── 1398438171696
+│   │   ├── 1537346984016
+│   │   ├── 1554465923264
+│   │   ├── 1560473282288
+│   │   ├── 1659438594720
+│   │   ├── 1707755226464
+│   │   ├── 1708227502464
+│   │   ├── 1715677521648
+│   │   ├── 1767535790848
+│   │   ├── 1792298681840
+│   │   ├── 1802119212560
+│   │   ├── 1890106177728
+│   │   ├── 1933328736640
+│   │   ├── 1990303271440
+│   │   ├── 2007467958416
+│   │   ├── 2024834491856
+│   │   ├── 2043181999664
+│   │   ├── 2081690653648
+│   │   ├── 2096536608960
+│   │   ├── 2170301771424
+│   │   ├── 2192328209904
+│   │   ├── 2197736967152
+│   │   ├── 2233318068336
+│   │   ├── 2240533790944
+│   │   ├── 2258017767824
+│   │   ├── 2260937905632
+│   │   ├── 2264963432576
+│   │   ├── 2329782014064
+│   │   ├── 2356253330272
+│   │   ├── 2361425817632
+│   │   ├── 2366913833168
+│   │   ├── 2373091209728
+│   │   ├── 2390985811024
+│   │   ├── 2440685208208
+│   │   ├── 2492698181024
+│   │   ├── 2511013355424
+│   │   ├── 2535363705840
+│   │   ├── 2535854158672
+│   │   ├── 2546565279200
+│   │   ├── 2588223002704
+│   │   ├── 2689592674112
+│   │   ├── 2698382808784
+│   │   ├── 2708181603424
+│   │   ├── 2795961068736
+│   │   ├── 2800698778992
+│   │   ├── 2813619549104
+│   │   ├── 2857183595072
+│   │   ├── 3030240378512
+├── repos/
+│   ├── ASTra/
+│   ├── osrs-progress-lambda/
+│   │   ├── .aider.model.settings.yml
+│   │   ├── .gitignore
+│   │   ├── lambda_function.py
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   ├── tests/
+│   │   │   ├── test_lambda_function.py
+│   │   │   ├── fixtures/
+│   │   │   │   ├── active-player-gained-response.json
+│   │   │   │   ├── inactive-player-gained-response.json
+├── scripts/
+│   ├── clear_chroma.py
+│   ├── debug_chroma.py
+│   ├── generate_current_arch.py
+│   ├── generate_graph.py
+│   ├── query_chroma.py
+│   ├── test_raw.py
+│   ├── verify_ingestion_robustness.py
+│   ├── verify_optimization.py
+├── tests/
+│   ├── conftest.py
+│   ├── conftest.py.bak
+│   ├── investigate_context.py
+│   ├── manual_verify_arch.py
+│   ├── reproduce_issue.py
+│   ├── test_main.py
+│   ├── test_setup_wizard_comprehensive.py
+│   ├── verify_context_and_isolation.py
+│   ├── __init__.py
+│   ├── adapters/
+│   │   ├── test_adapters_comprehensive.py
+│   │   ├── test_chromadb_optimization.py
+│   │   ├── test_chromadb_store.py
+│   │   ├── test_discord_auth.py
+│   │   ├── test_discord_commands.py
+│   │   ├── test_discord_gateway.py
+│   │   ├── test_discord_mfa.py
+│   │   ├── test_vcs_git.py
+│   │   ├── __init__.py
+│   ├── core/
+│   │   ├── test_architecture.py
+│   │   ├── test_compression.py
+│   │   ├── test_config.py
+│   │   ├── test_config_commands.py
+│   │   ├── test_context_guard.py
+│   │   ├── test_context_injection.py
+│   │   ├── test_core_comprehensive.py
+│   │   ├── test_core_enhancements.py
+│   │   ├── test_fallback.py
+│   │   ├── test_monitor.py
+│   │   ├── test_monitor_safeguards.py
+│   │   ├── test_monitor_safeguard_comprehensive.py
+│   │   ├── test_optimizations.py
+│   │   ├── test_orchestrator.py
+│   │   ├── test_orchestrator_comprehensive.py
+│   │   ├── test_performance.py
+│   │   ├── test_remote_provider.py
+│   │   ├── test_safeguard.py
+│   │   ├── test_task_duration.py
+│   │   ├── test_task_queue.py
+│   │   ├── test_template_system.py
+│   │   ├── __init__.py
+│   ├── e2e/
+│   │   ├── test_core_integration.py
+│   │   ├── test_diagnostic_integration.py
+│   │   ├── test_e2e.py
+│   │   ├── test_full_integration.py
+│   │   ├── test_gateway_orchestrator.py
+│   │   ├── test_rag_flow.py
+│   │   ├── test_scheduled_orchestration.py
+│   │   ├── test_template_acquisition.py
+│   │   ├── __init__.py
+│   ├── handlers/
+│   │   ├── test_command_compliance.py
+│   │   ├── test_command_handlers.py
+│   │   ├── test_handlers_audit_fixes.py
+│   │   ├── test_heartbeat.py
+│   │   ├── __init__.py
+│   ├── ingestion/
+│   │   ├── test_dependency_resolver.py
+│   │   ├── test_ingestion_cache.py
+│   │   ├── test_ingestion_efficiency.py
+│   │   ├── test_ingestion_integration.py
+│   │   ├── test_knowledge_graph.py
+│   │   ├── test_parser.py
+│   │   ├── test_path.py
+│   │   ├── test_pipeline.py
+│   │   ├── test_size_estimator.py
+│   │   ├── __init__.py
+│   ├── interfaces/
+│   │   ├── test_llm_client.py
+│   │   ├── test_llm_client_comprehensive.py
+│   │   ├── __init__.py
+│   ├── memory/
+│   │   ├── test_features.py
+│   │   ├── test_store.py
+│   ├── tools/
+│   │   ├── test_aider_tool.py
+│   │   ├── test_custom_loader.py
+│   │   ├── test_file_ops.py
+│   │   ├── test_git_ops.py
+│   │   ├── test_knowledge_tool.py
+│   │   ├── test_lint.py
+│   │   ├── test_lint_integration.py
+│   │   ├── test_manifest_detection.py
+│   │   ├── test_manifest_parser.py
+│   │   ├── test_manifest_test.py
+│   │   ├── test_memory.py
+│   │   ├── test_new_features.py
+│   │   ├── test_pr_review.py
+│   │   ├── test_scheduler.py
+│   │   ├── test_search.py
+│   │   ├── test_shell.py
+│   │   ├── test_shell_async.py
+│   │   ├── test_templates.py
+│   │   ├── test_tool_compliance.py
+│   │   ├── test_tool_registry.py
+│   │   ├── __init__.py
+│   │   ├── browser/
+│   │   │   ├── test_browser_comprehensive.py
+│   │   │   ├── test_browser_models.py
+│   │   │   ├── test_browser_navigation.py
+│   │   │   ├── __init__.py
+│   │   ├── diagnostic/
+│   │   │   ├── test_diagnostic.py
+│   │   │   ├── test_diagnostic_comprehensive.py
+│   │   │   ├── test_diagnostic_parsers_comprehensive.py
+│   │   │   ├── test_diagnostic_shim.py
+│   │   │   ├── test_diagnostic_suggestions.py
+│   │   │   ├── __init__.py
+│   │   ├── linters/
+│   │   │   ├── test_linters_base.py
+│   │   │   ├── test_linters_parallel.py
+│   │   │   ├── test_linters_registry.py
+│   │   │   ├── __init__.py
+├── tools/
+│   ├── custom/
+│   │   ├── example.yaml

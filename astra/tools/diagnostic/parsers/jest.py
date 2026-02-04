@@ -10,6 +10,7 @@ from astra.tools.diagnostic.suggestions import get_suggestion
 def _register_jest_parser(cls):
     """Delayed registration to avoid circular import."""
     from astra.tools.diagnostic.registry import register_parser
+
     return register_parser(cls)
 
 
@@ -26,8 +27,7 @@ class JestParser(OutputParser):
 
         # Extract summary: "Tests: 1 failed, 10 passed, 11 total"
         tests_match = re.search(
-            r"Tests:\s*(?:(\d+) failed,?\s*)?(?:(\d+) passed,?\s*)?(\d+) total",
-            output
+            r"Tests:\s*(?:(\d+) failed,?\s*)?(?:(\d+) passed,?\s*)?(\d+) total", output
         )
         if tests_match:
             result.failed = int(tests_match.group(1) or 0)
@@ -45,11 +45,7 @@ class JestParser(OutputParser):
             test_name = match.group(1).strip()
             block = match.group(2)
 
-            error = ParsedError(
-                error_type="TestFailure",
-                function=test_name,
-                traceback=block[:500]
-            )
+            error = ParsedError(error_type="TestFailure", function=test_name, traceback=block[:500])
 
             # Extract file and line
             file_match = re.search(r"at\s+.+?\s+\((.+?):(\d+):(\d+)\)", block)

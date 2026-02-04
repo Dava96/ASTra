@@ -13,6 +13,7 @@ def mock_gateway():
     gateway.send_followup = AsyncMock()
     return gateway
 
+
 @pytest.fixture
 def mock_orchestrator():
     orchestrator = MagicMock()
@@ -20,19 +21,23 @@ def mock_orchestrator():
     orchestrator._vector_store.get_collection_stats.return_value = {"count": 1}
     return orchestrator
 
+
 @pytest.fixture
 def mock_config():
     config = MagicMock()
     config.get.side_effect = lambda cat, key, default=None: default
     return config
 
+
 @pytest.fixture
 def system_handler(mock_gateway, mock_orchestrator, mock_config):
     return SystemHandlers(mock_gateway, mock_orchestrator, mock_config)
 
+
 @pytest.fixture
 def project_handler(mock_gateway, mock_orchestrator, mock_config):
     return ProjectHandlers(mock_gateway, mock_orchestrator, mock_config)
+
 
 @pytest.mark.asyncio
 async def test_system_handler_screenshot_domain_agnostic(system_handler, mock_gateway):
@@ -75,16 +80,20 @@ async def test_system_handler_screenshot_domain_agnostic(system_handler, mock_ga
         for val in last_call_kwargs.values():
             assert "discord" not in str(type(val)).lower()
 
+
 @pytest.mark.asyncio
-async def test_project_handler_checkout_security_sanitization(project_handler, mock_gateway, mock_orchestrator):
+async def test_project_handler_checkout_security_sanitization(
+    project_handler, mock_gateway, mock_orchestrator
+):
     """Verify repo_name is sanitized to prevent path traversal."""
     cmd = MagicMock(spec=Command)
     cmd.args = {"repo": "https://github.com/user/../../../etc/passwd"}
     cmd.raw_interaction = "interaction_ref"
 
-    with patch("astra.handlers.project_handlers.Safeguard") as MockSafe, \
-         patch("astra.handlers.project_handlers.GitHubVCS") as MockVCS:
-
+    with (
+        patch("astra.handlers.project_handlers.Safeguard") as MockSafe,
+        patch("astra.handlers.project_handlers.GitHubVCS") as MockVCS,
+    ):
         MockSafe.return_value.check_repo_size.return_value = (True, "")
         MockSafe.return_value.check_system_resources.return_value = (True, "")
 
@@ -102,8 +111,10 @@ async def test_project_handler_checkout_security_sanitization(project_handler, m
         # or just check set_active_project
         mock_orchestrator.set_active_project.assert_called_with("passwd")
 
+
 @pytest.mark.asyncio
 async def test_project_handler_missing_constant_fix(project_handler):
     """Verify UPDATE_INTERVAL_SECONDS is defined and used."""
     from astra.handlers.project_handlers import UPDATE_INTERVAL_SECONDS
+
     assert UPDATE_INTERVAL_SECONDS == 5

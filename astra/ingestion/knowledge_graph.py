@@ -17,7 +17,9 @@ class KnowledgeGraph:
     def __init__(self, persist_path: str | None = None):
         config = get_config()
         self._config = config
-        self._persist_path = persist_path or config.get("knowledge_graph", "persist_path", default="./data/knowledge_graph.pkl")
+        self._persist_path = persist_path or config.get(
+            "knowledge_graph", "persist_path", default="./data/knowledge_graph.pkl"
+        )
         self._graph = nx.DiGraph()
         self._load()
 
@@ -34,7 +36,9 @@ class KnowledgeGraph:
             try:
                 with open(path, "rb") as f:
                     self._graph = pickle.load(f)
-                logger.info(f"Loaded knowledge graph: {self._graph.number_of_nodes()} nodes, {self._graph.number_of_edges()} edges")
+                logger.info(
+                    f"Loaded knowledge graph: {self._graph.number_of_nodes()} nodes, {self._graph.number_of_edges()} edges"
+                )
             except Exception as e:
                 logger.warning(f"Failed to load knowledge graph: {e}")
                 self._graph = nx.DiGraph()
@@ -56,10 +60,7 @@ class KnowledgeGraph:
         file_path = node.file_path
         if file_path not in self._graph:
             self._graph.add_node(
-                file_path,
-                type="file",
-                name=Path(file_path).name,
-                file_path=file_path
+                file_path, type="file", name=Path(file_path).name, file_path=file_path
             )
 
         self._graph.add_node(
@@ -69,7 +70,7 @@ class KnowledgeGraph:
             file_path=node.file_path,
             language=node.language,
             start_line=node.start_line,
-            end_line=node.end_line
+            end_line=node.end_line,
         )
 
         # Link AST node to its file
@@ -80,22 +81,13 @@ class KnowledgeGraph:
         for node in nodes:
             self.add_node(node)
 
-    def add_relationship(
-        self,
-        source_id: str,
-        target_id: str,
-        relationship: str
-    ) -> None:
+    def add_relationship(self, source_id: str, target_id: str, relationship: str) -> None:
         """Add a relationship between nodes."""
         self._graph.add_edge(source_id, target_id, relationship=relationship)
 
     def add_import(self, importer_file: str, imported_file: str) -> None:
         """Add an import relationship between files."""
-        self._graph.add_edge(
-            importer_file,
-            imported_file,
-            relationship="imports"
-        )
+        self._graph.add_edge(importer_file, imported_file, relationship="imports")
 
     def add_call(self, caller_id: str, callee_id: str) -> None:
         """Add a function call relationship."""
@@ -161,8 +153,12 @@ class KnowledgeGraph:
             "nodes": self._graph.number_of_nodes(),
             "edges": self._graph.number_of_edges(),
             "files": len([n for n, d in self._graph.nodes(data=True) if d.get("type") == "file"]),
-            "functions": len([n for n, d in self._graph.nodes(data=True) if "function" in d.get("type", "")]),
-            "classes": len([n for n, d in self._graph.nodes(data=True) if "class" in d.get("type", "")])
+            "functions": len(
+                [n for n, d in self._graph.nodes(data=True) if "function" in d.get("type", "")]
+            ),
+            "classes": len(
+                [n for n, d in self._graph.nodes(data=True) if "class" in d.get("type", "")]
+            ),
         }
 
     def get_file_dependencies(self, file_path: str) -> list[str]:
@@ -180,3 +176,15 @@ class KnowledgeGraph:
             if data.get("relationship") == "imports":
                 deps.append(source)
         return deps
+
+        def calculate_centrality(self) -> dict[str, float]:
+        """
+        Calculate PageRank centrality for all nodes.
+        Returns a dict of {node_id: score}
+        """
+        try:
+            # Pagerank emphasizes nodes that are connected to other important nodes
+            return nx.pagerank(self._graph, alpha=0.85)
+        except Exception as e:
+            logger.warning(f"Failed to calculate centrality: {e}")
+            return {}

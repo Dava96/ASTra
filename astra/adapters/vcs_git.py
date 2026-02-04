@@ -94,12 +94,7 @@ class AiderGitAdapter(VCS):
             return False
 
     def create_pr(
-        self,
-        repo_path: str,
-        title: str,
-        body: str,
-        base: str = "main",
-        head: str | None = None
+        self, repo_path: str, title: str, body: str, base: str = "main", head: str | None = None
     ) -> PRResult:
         """Create a pull request (Stub - requires Git host API)."""
         logger.warning("PR creation requires specific host adapter (GitHub/GitLab).")
@@ -121,11 +116,7 @@ class AiderGitAdapter(VCS):
             return False
 
     def merge(
-        self,
-        repo_path: str,
-        source_branch: str,
-        target_branch: str = "main",
-        no_ff: bool = True
+        self, repo_path: str, source_branch: str, target_branch: str = "main", no_ff: bool = True
     ) -> MergeResult:
         """Merge source branch into target branch."""
         try:

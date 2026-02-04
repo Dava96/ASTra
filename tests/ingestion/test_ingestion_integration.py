@@ -12,6 +12,7 @@ from astra.interfaces.gateway import Command
 def mock_gateway():
     return AsyncMock()
 
+
 @pytest.fixture
 def mock_orchestrator():
     orch = MagicMock()
@@ -20,13 +21,16 @@ def mock_orchestrator():
     orch._vector_store.get_collection_stats.return_value = {"count": 0}
     return orch
 
+
 @pytest.fixture
 def mock_queue():
     return MagicMock()
 
+
 @pytest.fixture
 def mock_config():
     config = MagicMock()
+
     # Return appropriate values for different config paths
     def mock_get(*args, default=None):
         if args == ("ingestion", "ignore_patterns"):
@@ -34,12 +38,15 @@ def mock_config():
         if args == ("ingestion", "safe_branches"):
             return ["main", "master"]
         return default
+
     config.get = MagicMock(side_effect=mock_get)
     return config
+
 
 @pytest.fixture
 def command_handler(mock_gateway, mock_orchestrator, mock_queue, mock_config):
     return CommandHandler(mock_gateway, mock_orchestrator, mock_queue, mock_config)
+
 
 @pytest.mark.asyncio
 async def test_checkout_integrates_knowledge_graph(command_handler, mock_gateway):
@@ -50,7 +57,7 @@ async def test_checkout_integrates_knowledge_graph(command_handler, mock_gateway
         args={"request": "https://github.com/test/repo"},
         user_id="user1",
         channel_id="chan1",
-        raw_interaction=MagicMock()
+        raw_interaction=MagicMock(),
     )
 
     # Mock Safeguard in project_handlers
@@ -77,6 +84,7 @@ async def test_checkout_integrates_knowledge_graph(command_handler, mock_gateway
 
                 # Allow background task to start
                 import asyncio
+
                 await asyncio.sleep(0.1)
 
                 # Verify Pipeline interaction

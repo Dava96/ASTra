@@ -5,10 +5,10 @@ and errors from various frameworks (pytest, jest, phpunit, browser console).
 
 Usage:
     from astra.tools.diagnostic import DiagnosticTool, parse_test_output
-    
+
     # Auto-detect and parse
     result = parse_test_output(output)
-    
+
     # Or use specified parser
     result = parse_test_output(output, framework="pytest")
 """
