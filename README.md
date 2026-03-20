@@ -1,3 +1,29 @@
+# Project Idea (HUMAN WRITTEN TEXT!)
+
+The idea behind this codebase stemmed from Openclaw. The idea was that you could have a agent in the "cloud" that you could speak to via messaging platforms like discord. It was developed to a state where it would reliably checkout and parse codebases via discord commands. You could also chat to it.
+
+The idea was for it to be extremely cheap to run hence why I chose qwen2.5-coder:7b as the primary model with the ability to make API requests to the more frontier models like GPT or Claude if neccesary. The target hardware was a cheap hetzner VPS specifically the CCX13 line which had quite strict hardware limitations.
+
+The project ended up suffering from trying to do too much at once. Really the primary focus should been centered around the ability to checkout code and create PR's but It suffered from feature creep. 
+
+---
+
+
+
+What I would change if I was to do this again
+* It wouldn't be written in python I'd use a more memory efficient language like Rust.
+* Focus on the core capabilities of what I set out to do. Not add random stuff like the ability to schedule crons 😂
+* Focus on one method of communication rather than trying to add them all. Discord is also pretty bad for interacting with models using traditional discord commands (stupid idea).
+* Really bad AI sloppy
+
+
+What I thought worked well
+* Parsing Abstract Syntax Trees and inserting them into the knowledge graph & vector db. This would help the model have more context and be more informed when making code changes. This would happen automatically on branch checkout and would only add the changes to the knowledge graph.
+* Initial checkout there would be gaurdrail like files generated. When you would checkout a new repo it would generate a ARCHITECTURE.md file describing the architecture of the project so that it had a baseline of what to go off initially.
+
+
+---
+
 # 🤖 ASTra - Autonomous AI Coding Agent
 
 ASTra (Autonomous AI Coding Agent) is a powerful, self-hosted AI pair programmer designed to maintain and develop multi-language codebases. By combining **AST-based ingestion**, **Semantic Search**, and **Knowledge Graph relationships**, ASTra understands your code better than a simple text-based search.
