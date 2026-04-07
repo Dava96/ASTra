@@ -14,7 +14,7 @@ What I would change if I was to do this again
 * It wouldn't be written in python I'd use a more memory efficient language like Rust. Generating the Abstract Syntax Tree is slow and depends on the repo size and depth of the generation. Python is also a slow language.
 * Focus on the core capabilities of what I set out to do Agentic development. Not add random stuff like the ability to schedule crons 😂
 * Focus on one method of communication rather than trying to add them all. Discord is also pretty bad for interacting with models using traditional discord commands (stupid idea).
-* Really bad AI Slop along with no real thought process from my self which resulted in a messy project.
+* Got carried away with AI engineering, introduced a lot of complexity for no real value. Need to be more considerate on what is MVP.
 
 
 What I thought worked well
